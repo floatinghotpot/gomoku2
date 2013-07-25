@@ -683,6 +683,12 @@ function init_UI() {
 </div>";
 }
 
+//<tr>\
+//<td colspan=2><button class='I18N' i18n='welcome'>Welcome</button></td>\
+//<td></td>\
+//<td colspan=2><button class='I18N' i18n='about'>About</button></td>\
+//</tr>\
+
 var app = new hotjs.App();
 
 function game_main() {
@@ -716,7 +722,7 @@ function game_main() {
 	
 	board = (new GoBoard( app_data.opt.size ))
 		.setSize(w, h)
-		.setColor("black").showGrid(false)
+		.setColor("white").showGrid(false)
 		.setDraggable(true).setMoveable(true).setZoomable(true)
 		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
 		.setGoImage( resources.get(__DIR__('img/gostones.png')), [0,0,128,128] )
