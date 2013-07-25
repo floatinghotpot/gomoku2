@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Gomoku</title>
+<meta charset='UTF-8'>
+<meta http-equiv='Expires' CONTENT='0'>
+<meta http-equiv='Cache-Control' CONTENT='no-cache'>
+<meta http-equiv='Pragma' CONTENT='no-cache'>
+<link rel='apple-touch-icon' href='img/icon.png' />
+<link rel='icon' type='image/png' href='img/icon.png' />
+<meta name='viewport'
+	content='user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width' />
+<script src='lib/jquery-1.9.js'></script>
+<script src='lib/hotjs-mini.js'></script>
+<!-- <script src='../../dev/hotjs/hotjs.js'></script> -->
+<!-- <script src='../../dev/hotjs/resource.js'></script> -->
+<!-- <script src='../../dev/hotjs/math.js'></script> -->
+<!-- <script src='../../dev/hotjs/canvas.js'></script> -->
+<!-- <script src='../../dev/hotjs/domui.js'></script> -->
+<!-- <script src='../../dev/hotjs/i18n.js'></script> -->
+<!-- <script src='../../dev/hotjs/ai.js'></script> -->
+<!-- <script src='../../dev/hotjs/social.js'></script> -->
+<!-- <script src='../../dev/hotjs/animation.js'></script> -->
+</head>
+<body>
+
+<div id='pagemain' class='page full' style='display:block;'>
+</div>
+
+<script>
+$(document).ready(function(){
+	resources.runAppFromJs('gomoku/game.js');
+});
+</script>
+
+</body>
+</html>
