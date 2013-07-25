@@ -504,8 +504,7 @@ var res = [
  __DIR__('lang/ja.lang.js'), 
  __DIR__('goboard.js'),
  __DIR__('net_go.js'),
- __DIR__('img/woodfloor.jpg'),
- __DIR__('img/wood.jpg'),
+ __DIR__('img/yard.jpg'),
  __DIR__('img/gostones.png'),
  __DIR__('img/whitego.png'),
  __DIR__('img/blackgo.png'),
@@ -548,9 +547,8 @@ function game_resize(w, h) {
 
 	$('div.full').css({width:w+'px', height:h+'px'});
 	
-	var m = Math.min(w, h);
 	if(!! gameView) gameView.setSize(w,h);
-	if(!! board) board.setSize(w,h).setArea( (w-m)/2, (h-m)/2, m, m );
+	if(!! board) board.setSize(w,h);
 
 	var pgset = $('div#pageopt');
 	var sw = pgset.width(), sh = pgset.height();
@@ -567,6 +565,9 @@ function game_resize(w, h) {
 			'bottom':''
 		});
 		$('div#controlbottom').css({'display':'none'});
+		
+		var m = Math.min(w, h);
+		board.setArea( (w-m)/2, (h-m)/2, m, m );
 	} else {
 		$('div#controlright').css({'display':'none'});
 		$('div#controlbottom').css({ // bottom
@@ -578,6 +579,12 @@ function game_resize(w, h) {
 			'top':'',
 			'bottom': (mh+2) + 'px'
 		});
+		
+		var h_info = $('div#user1').height();
+		var h_ctrl = $('div#controlbottom').height();
+		var h_in = h - h_info - h_ctrl;
+		var m = Math.min(w, h_in);
+		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }
 
@@ -681,7 +688,7 @@ function game_main() {
 	gameView = (new hotjs.View())
 		.setContainer('gameView')
 		.setSize(w,h)
-		.setBgImage( true, resources.get(__DIR__('img/woodfloor.jpg')) )
+		.setBgImage( false, resources.get(__DIR__('img/yard.jpg')) )
 		.setMaxFps(25)
 		.showFPS(false);
 
@@ -699,7 +706,7 @@ function game_main() {
 		.setSize(w, h)
 		.setColor("black").showGrid(false)
 		.setDraggable(true).setMoveable(true).setZoomable(true)
-		.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) )
+		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
 		.setGoImage( resources.get(__DIR__('img/gostones.png')), [0,0,128,128] )
 		.showImg(true)
 		.setPeerPlayer( ai_player )
