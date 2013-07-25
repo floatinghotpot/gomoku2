@@ -419,6 +419,15 @@ function init_events() {
 				);
 	});
 	
+	$('img#my-img').on('click', function(){
+		var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get( 'yourinfo' ), 
+				'<p>' + hotjs.i18n.get('win') + app_data.my.win + '/' + app_data.my.total + ' ( ' 
+				+ hotjs.i18n.get('winrate') + Math.round(my_winrate * 100) + '% )</p>'
+				);
+	});
+
 	$('img.btn-char').on('click', function(){
 		var char_id = $(this).attr('v');
 		var peer = app_data.ais[ 'peer' + char_id ];
@@ -599,30 +608,30 @@ function init_UI() {
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = 
 "<div id='gameView' class='full' style='display:block;'></div>\
-<div id='user2' class='userinfo round'>\
-<table class='m'>\
-<tr>\
-<td><img id='peer-img' class='icon clickable' src='" + __DIR__('img/user1.png') + "'><br/><span class='I18N' i18n='peer' id='peer-name'>Peer</span></td>\
-<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='peer-gold'>1500</span></td>\
-<td><img width=32 id='peer-gocolor' src='" + __DIR__('img/whitego.png') + "'/></td>\
-</tr>\
-</table>\
-<table class='userinfo m'>\
-<tr><td align='left'><span class='I18N' i18n='win'>Win:</span></td><td><span id='peer-win'>0</span> (<span id='peer-rate'>54%</span>)</td></tr>\
-<tr><td align='left'><span class='I18N' i18n='rank'>Rank:</span></td><td><span id='peer-rank'>5</span></td></tr>\
-</table>\
-</div>\
 <div id='user1' class='userinfo round'>\
 <table class='m'>\
 <tr>\
-<td><img width=32 id='my-gocolor' src='" + __DIR__('img/blackgo.png') + "'/></td>\
+<td><img id='my-img' class='icon48 clickable' src='" + __DIR__('img/user2.png') + "'><br/><span class='I18N' i18n='player' id='my-name'>Player</span></td>\
 <td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='my-gold'>1800</span></td>\
-<td><img id='my-img' class='icon clickable' src='" + __DIR__('img/user2.png') + "'><br/><span class='I18N' i18n='player' id='my-name'>Player</span></td>\
+<td><img width=32 id='my-gocolor' src='" + __DIR__('img/blackgo.png') + "'/></td>\
 </tr>\
 </table>\
 <table class='userinfo m'>\
 <tr><td align='left'><span class='I18N' i18n='win'>Win:</span></td><td><span id='my-win'>0</span> ( <span id='my-rate'>64%</span>)</td></tr>\
 <tr><td align='left'><span class='I18N' i18n='rank'>Rank:</span></td><td><span id='my-rank'>6</span></td></tr>\
+</table>\
+</div>\
+<div id='user2' class='userinfo round'>\
+<table class='m'>\
+<tr>\
+<td><img width=32 id='peer-gocolor' src='" + __DIR__('img/whitego.png') + "'/></td>\
+<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='peer-gold'>1500</span></td>\
+<td><img id='peer-img' class='icon48 clickable' src='" + __DIR__('img/user1.png') + "'><br/><span class='I18N' i18n='peer' id='peer-name'>Peer</span></td>\
+</tr>\
+</table>\
+<table class='userinfo m'>\
+<tr><td align='left'><span class='I18N' i18n='win'>Win:</span></td><td><span id='peer-win'>0</span> (<span id='peer-rate'>54%</span>)</td></tr>\
+<tr><td align='left'><span class='I18N' i18n='rank'>Rank:</span></td><td><span id='peer-rank'>5</span></td></tr>\
 </table>\
 </div>\
 <div id='controlright' class='control'>\

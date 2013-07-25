@@ -58,6 +58,7 @@ hotjs.i18n.put('zh', {
 	'gold':'金币:',
 	'win':'胜局：',
 	'winrate':'胜率:',
+	'yourinfo':'您的资料',
 	'player':'玩家',
 	'peer':'对方',
 	'menu':'菜单',

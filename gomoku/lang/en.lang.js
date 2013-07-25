@@ -57,6 +57,7 @@ hotjs.i18n.put('en', {
 	'rank':'Rank:',
 	'gold':'Gold:',
 	'winrate':'Win Rate:',
+	'yourinfo':'Your Info',
 	'player':'Player',
 	'peer':'Peer',
 	'menu':'Menu',

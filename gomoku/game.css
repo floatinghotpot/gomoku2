@@ -82,10 +82,10 @@ div.userinfo {
 	-webkit-box-shadow:5px 5px 10px black;
 	-moz-box-shadow:5px 5px 10px black;
 }
-div#user2 {
+div#user1 {
 	left: 2px;
 }
-div#user1 {
+div#user2 {
 	right: 7px;
 }
 div#controlright {
