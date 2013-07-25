@@ -561,13 +561,16 @@ function game_resize(w, h) {
 			'height':'',
 			'left':'',
 			'right':'5px',
-			'top': ($('div#user1').height() +20) + 'px',
-			'bottom':''
+			'top':'',
+			'bottom': (mh+2) + 'px'
 		});
 		$('div#controlbottom').css({'display':'none'});
 		
 		var m = Math.min(w, h);
-		board.setArea( (w-m)/2, (h-m)/2, m, m );
+		var h_info = Math.max($('div#user1').height(), h*220/960);
+		var h_in = h - h_info;
+		var m = Math.min(w, h_in);
+		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	} else {
 		$('div#controlright').css({'display':'none'});
 		$('div#controlbottom').css({ // bottom
@@ -580,7 +583,7 @@ function game_resize(w, h) {
 			'bottom': (mh+2) + 'px'
 		});
 		
-		var h_info = $('div#user1').height();
+		var h_info = Math.max($('div#user1').height(), h*220/960);
 		var h_ctrl = $('div#controlbottom').height();
 		var h_in = h - h_info - h_ctrl;
 		var m = Math.min(w, h_in);
@@ -625,18 +628,18 @@ function init_UI() {
 <div id='controlright' class='control'>\
 <table class='controlright'>\
 <tr>\
-<tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N' i18n='tips'>Tips</span></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N' i18n='undo'>Undo</span></td></tr>\
-<tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N' i18n='new'>New</span></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N' i18n='options'>Options</span></td></tr>\
+<tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N icon' i18n='tips'>Tips</span></td>\
+<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td></tr>\
+<tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
+<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td></tr>\
 </table></div>\
 <div id='controlbottom' class='control'>\
 <table>\
 <tr>\
-<td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N' i18n='tips'>Tips</span></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N' i18n='undo'>Undo</span></td>\
-<td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N' i18n='new'>New</span></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N' i18n='options'>Options</span></td>\
+<td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N icon' i18n='tips'>Tips</span></td>\
+<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td>\
+<td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
+<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td>\
 </table></div>\
 <div id='pageopt' class='page round' popup='true' style='display:none;'>\
 <table class='m'>\
