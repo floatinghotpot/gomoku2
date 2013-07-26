@@ -721,8 +721,8 @@ function game_main() {
 	}
 	
 	board = (new GoBoard( app_data.opt.size ))
-		.setSize(w, h)
-		.setColor("white").showGrid(false)
+		.setSize(w, h).showGrid(false)
+		.setColor("white").setGridStyle(false)
 		.setDraggable(true).setMoveable(true).setZoomable(true)
 		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
 		.setGoImage( resources.get(__DIR__('img/gostones.png')), [0,0,128,128] )

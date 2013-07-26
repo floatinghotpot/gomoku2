@@ -4,6 +4,8 @@ var GoBoard = function( rows ){
 	
 	if(! rows) rows = 15;
 	
+	this.gridStyle = true;
+	
 	this.rows = rows;
 	this.matrix = [];
 	this.undos = [];
@@ -24,6 +26,10 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		var m = Math.min(w, h);
 		this.setArea( (w-m)/2, (h-m)/2, m, m );
 		
+		return this;
+	},
+	setGridStyle : function( g ) {
+		this.gridStyle = g;
 		return this;
 	},
 	setGoImage : function( img, r ) {
@@ -226,7 +232,11 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 	draw : function(c) {
 		GoBoard.supClass.draw.call(this, c);
 		
-		this.drawGoGrid(c);
+		if( this.gridStyle ) {
+			this.drawGoGrid(c);
+		} else {
+			this.drawGoCell(c);
+		}
 		
 		this.drawTip(c);
 
@@ -383,6 +393,30 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		c.strokeRect( a.l + 0.5*ux -2, a.t + 0.5*uy -2, 
 				ux * (this.rows-1) +4, uy * (this.rows-1) +4 );
 		
+		c.restore();
+	},
+	drawGoCell : function( c ) {
+		c.save();
+		var a = this.getArea();
+		var ux = a.w / this.rows, uy = a.h / this.rows;
+		
+		c.lineWidth = 0.5;
+		c.strokeStyle = this.color;
+		c.beginPath();
+		for( var i=0; i<this.rows+1; i++ ) {
+			c.moveTo( a.l +(i +0) * ux, a.t + 0 * uy );
+			c.lineTo( a.l +(i +0) * ux, a.t + (this.rows-0) * uy );
+		}
+		for( var j=0; j<this.rows+1; j++ ) {
+			c.moveTo( a.l +0 * ux, a.t + (j+0.5) * uy );
+			c.lineTo( a.l +(this.rows-0) * ux, a.t + (j+0) * uy );
+		}
+		c.stroke();
+		
+		c.lineWidth = 1;
+		c.strokeRect( a.l + 0*ux -2, a.t + 0*uy -2, 
+				ux * (this.rows) +4, uy * (this.rows) +4 );
+
 		c.restore();
 	}
 });
