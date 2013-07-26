@@ -337,15 +337,15 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		// draw last move mark
 		if(this.undos.length > 0) {
 			var m = this.undos[ this.undos.length -1 ];
+			var x = Math.floor(a.l + m[0] * ux);
+			var y = Math.floor(a.t + m[1] * uy);
 
 			c.save();
 			c.strokeStyle = 'red';
-			c.lineWidth = 3;
-			
-			var x = Math.floor(a.l + m[0] * ux);
-			var y = Math.floor(a.t + m[1] * uy);
+			c.lineWidth = 1;
 			c.strokeRect( x+ux/3, y+uy/3, ux/3, uy/3 );
 			
+			//c.lineWidth = 3;
 			//c.beginPath();
 			//c.moveTo( x+ux/3, y+uy/2 ); c.lineTo( x+ux*2/3, y+uy/2 );
 			//c.moveTo( x+ux/2, y+uy/3 ); c.lineTo( x+ux/2, y+uy*2/3 );
