@@ -1,0 +1,3 @@
+# ignore following files
+.DS_Store
+.settings
