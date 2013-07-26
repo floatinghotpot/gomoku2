@@ -1,5 +1,10 @@
 
-@import url(http://fonts.googleapis.com/css?family=Joti+One);
+@font-face {
+  font-family: 'Joti One';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Joti One'), local('JotiOne-Regular'), url(./jotione.woff) format('woff');
+}
 
 html, body, iframe {
 	width: 100%;
