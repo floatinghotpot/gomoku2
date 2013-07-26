@@ -408,7 +408,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 			c.lineTo( a.l +(i +0) * ux, a.t + (this.rows-0) * uy );
 		}
 		for( var j=0; j<this.rows+1; j++ ) {
-			c.moveTo( a.l +0 * ux, a.t + (j+0.5) * uy );
+			c.moveTo( a.l +0 * ux, a.t + (j+0) * uy );
 			c.lineTo( a.l +(this.rows-0) * ux, a.t + (j+0) * uy );
 		}
 		c.stroke();
