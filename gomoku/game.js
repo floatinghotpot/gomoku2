@@ -103,7 +103,7 @@ function worker_onmessage(evt) {
 			window.setTimeout(function() {
 				dialog = hotjs.domUI.popupDialog( 
 						hotjs.i18n.get('youlost'), 
-						"<img src='"+ __DIR__('img/lost.png') + "'><p>" 
+						"<img src='"+ __DIR__('img/peer' + app_data.opt.level + '-128.png') + "'><p>" 
 						+ hotjs.i18n.get('youlost10gold').replace('10', peer.per) + '</p>',
 						{
 							'playagain':function(){
