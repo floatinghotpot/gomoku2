@@ -575,7 +575,7 @@ function game_resize(w, h) {
 		});
 		$('div#controlbottom').css({'display':'none'});
 		
-		var m = Math.min(w, h);
+		var m = Math.min(w, h) - 10;
 		var h_info = Math.max($('div#user1').height(), h*220/960);
 		var h_in = h - h_info;
 		var m = Math.min(w, h_in);
@@ -595,7 +595,7 @@ function game_resize(w, h) {
 		var h_info = Math.max($('div#user1').height(), h*220/960);
 		var h_ctrl = $('div#controlbottom').height();
 		var h_in = h - h_info - h_ctrl;
-		var m = Math.min(w, h_in);
+		var m = Math.min(w, h_in) - 10;
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }
