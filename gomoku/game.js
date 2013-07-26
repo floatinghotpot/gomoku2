@@ -766,7 +766,7 @@ function game_main() {
 function game_init() {
 	// show logo
 	hotjs.domUI.showSplash( true, 
-			"<h1>GOMOKU</h1><img class='logo' src='" + __DIR__('img/icon.png') + "'/><h3>&copy; RNJSOFT</h3>",
+			"<h1>GOMOKU<br/>KINGDOM</h1><img class='logo' src='" + __DIR__('img/icon.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 	
 	resources.load( res, { ready: 
