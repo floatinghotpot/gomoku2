@@ -16,7 +16,6 @@ var GoBoard = function( rows ){
 	this.judge = null;
 	
 	this.tip = null;
-	this.lastMove = null;
 	this.gameOver = false;
 };
 
@@ -58,7 +57,6 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		this.player = 1;
 		
 		this.tip = null;
-		this.lastMove = null;
 		this.gameOver = false;
 		
 		if( this.player != this.hostColor ) {
@@ -154,7 +152,6 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 			// record for undo
 			var lastMove = [x, y, this.player];
 			this.undos.push( lastMove );
-			this.lastMove = lastMove;
 
 			// change turn to another player 
 			if( this.player == 1 ) this.player = 2;
@@ -189,10 +186,6 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 
 			lastMove = this.undos.pop();
 			this.matrix[ lastMove[1] ][ lastMove[0] ] = 0;
-			
-			if(this.undos.length > 0) {
-				this.lastMove = this.undos[ this.undos.length -1 ];
-			}
 			
 			if( this.player != this.hostColor ) {
 				this.peerPlayer.go( lastMove, hotjs.Matrix.toString(this.matrix) );
@@ -342,18 +335,21 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		}
 		
 		// draw last move mark
-		if(!! this.lastMove ) {
-			var m = this.lastMove;
+		if(this.undos.length > 0) {
+			var m = this.undos[ this.undos.length -1 ];
+
 			c.save();
 			c.strokeStyle = 'red';
 			c.lineWidth = 3;
 			
 			var x = Math.floor(a.l + m[0] * ux);
 			var y = Math.floor(a.t + m[1] * uy);
-			c.beginPath();
-			c.moveTo( x+ux/3, y+uy/2 ); c.lineTo( x+ux*2/3, y+uy/2 );
-			c.moveTo( x+ux/2, y+uy/3 ); c.lineTo( x+ux/2, y+uy*2/3 );
-			c.stroke();
+			c.strokeRect( x+ux/3, y+uy/3, ux/3, uy/3 );
+			
+			//c.beginPath();
+			//c.moveTo( x+ux/3, y+uy/2 ); c.lineTo( x+ux*2/3, y+uy/2 );
+			//c.moveTo( x+ux/2, y+uy/3 ); c.lineTo( x+ux/2, y+uy*2/3 );
+			//c.stroke();
 			
 			c.restore();
 		}
