@@ -592,7 +592,7 @@ function game_resize(w, h) {
 		var h_info = Math.max($('div#user1').height(), h*220/960);
 		var h_ctrl = $('div#controlbottom').height();
 		var h_in = h - h_info - h_ctrl;
-		var m = Math.min(w, h_in) - 10;
+		var m = Math.min(w, h_in) - 20;
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }
@@ -766,9 +766,16 @@ function game_init() {
 			"<h1>GOMOKU<br/>KINGDOM</h1><img class='logo' src='" + __DIR__('img/icon.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 	
+	var tLoadingStart = Date.now();
 	resources.load( res, { ready: 
 		function(){
-			window.setTimeout( game_main, 1000 );
+			var tLoadingDone = Date.now();
+			var tUsed = tLoadingDone - tLoadingStart;
+			if( tUsed > 3000 ) {
+				game_main();
+			} else {
+				window.setTimeout( game_main, 3000 - tUsed );
+			} 
 		} 
 	});
 }
