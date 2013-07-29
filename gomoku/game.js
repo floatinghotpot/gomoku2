@@ -576,10 +576,7 @@ function game_resize(w, h) {
 		$('div#controlbottom').css({'display':'none'});
 		
 		var m = Math.min(w, h) - 10;
-		var h_info = Math.max($('div#user1').height(), h*220/960);
-		var h_in = h - h_info;
-		var m = Math.min(w, h_in);
-		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
+		board.setArea( (w-m)/2, (h-m)/2, m, m );
 	} else {
 		$('div#controlright').css({'display':'none'});
 		$('div#controlbottom').css({ // bottom
