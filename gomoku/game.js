@@ -416,13 +416,21 @@ function init_events() {
 		hotjs.domUI.toggle( $('div#pageopt')[0] );
 	});
 	
+	$('img.icon-buy').on('click', function(){
+		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+	});
+	
+	$('img.icon-info').on('click', function(){
+		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+	});
+	
 	function genBriefInfo( char_id ) {
 		var peer = app_data.ais[ 'peer' + char_id ];
 		var peer_winrate = ((peer.total > 0) ? (peer.win / peer.total) : 0);
 		return "<img src='" + __DIR__('img/peer' + char_id + '-128.png') + "'><p>" 
-			+ hotjs.i18n.get('peer' + char_id + 'desc') + '<br/>'
+			+ hotjs.i18n.get('peer' + char_id + 'desc') + '</p><p>'
 			+ hotjs.i18n.get('win') + peer.win + '/' + peer.total + ' ( ' 
-			+ hotjs.i18n.get('winrate') + Math.round(peer_winrate * 100) + '% )<br/>'
+			+ hotjs.i18n.get('winrate') + Math.round(peer_winrate * 100) + '% )</p><p>'
 			+ hotjs.i18n.get('winlost10gold').replace('10', peer.per) + '</p>';
 	}
 
@@ -539,6 +547,7 @@ var res = [
  __DIR__('img/tipoff.png'),
  __DIR__('img/tipon.png'),
  __DIR__('img/options.png'),
+ __DIR__('img/info.png'),
  __DIR__('img/peer1-64.png'),
  __DIR__('img/peer2-64.png'),
  __DIR__('img/peer3-64.png'),
@@ -553,6 +562,8 @@ var res = [
  __DIR__('img/lost.png'),
  __DIR__('img/shrug.png'),
  __DIR__('img/gold.png'),
+ __DIR__('img/coinbag.png'),
+ __DIR__('img/coinbox.png'),
  __DIR__('img/reset.png'),
  __DIR__('img/audio.png'),
  __DIR__('img/audiomute.png')
@@ -582,10 +593,18 @@ function game_resize(w, h) {
 	if(!! gameView) gameView.setSize(w,h);
 	if(!! board) board.setSize(w,h);
 
-	var pgset = $('div#pageopt');
-	var sw = pgset.width(), sh = pgset.height();
-	pgset.css({'top': ((h-sh)/2 - 10) +'px', 'left': (w-sw)/2 + 'px'});
+	var pg = $('div#pageopt');
+	var sw = pg.width(), sh = pg.height();
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
 	
+	pg = $('div#pagebuy');
+	sw = pg.width(), sh = pg.height();
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
+
+	pg = $('div#pageinfo');
+	sw = pg.width(), sh = pg.height();
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
+
 	if( w>h ) {
 		$('div#controlright').css({ // right
 			'display':'inline-block',
@@ -661,6 +680,8 @@ function init_UI() {
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td></tr>\
 <tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
 <td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td></tr>\
+<tr><td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/><br><span class='I18N icon' i18n='buy'>Buy</span></td>\
+<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/><br><span class='I18N icon' i18n='info'>Info</span></td></tr>\
 </table></div>\
 <div id='controlbottom' class='control'>\
 <table>\
@@ -669,8 +690,10 @@ function init_UI() {
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td>\
 <td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
 <td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td>\
+<td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/><br><span class='I18N icon' i18n='buy'>Buy</span></td>\
+<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/><br><span class='I18N icon' i18n='info'>Info</span></td>\
 </table></div>\
-<div id='pageopt' class='page round' popup='true' style='display:none;'>\
+<div id='pageopt' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
 <tr>\
 <td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'><img class='icon-opt' src='" + __DIR__('img/x.png') + "'></td>\
@@ -699,6 +722,30 @@ function init_UI() {
 <td colspan=2 style='text-align:right'><span  class='I18N' i18n='resetdata'>Reset Data</span></td>\
 <td><img id='icon-reset' class='icon clickable' src='" + __DIR__('img/reset.png') + "' width='32'></td>\
 </tr>\
+</table>\
+</div>\
+<div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
+<table class='m'>\
+<tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r' width=32><img class='icon-buy' src='" + __DIR__('img/x.png') + "'></td></tr>\
+<tr><td><img class='btn-buy icon32' src='" + __DIR__('img/gold.png') +"'/></td><td><span class='I18N' i18n='pkg0'>5 golds</span></td><td><button class='I18N' i18n='pkg0price'>Watch Ad</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg1'>500 golds</span></td><td><button class='I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg2'>2000 golds</span></td><td><button class='I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbox.png') +"'/></td><td><span class='I18N' i18n='pkg3'>10000 golds</span></td><td><button class='I18N' i18n='pkg3price'>$ 4</button></td><td></td></tr>\
+</table>\
+</div>\
+<div id='pageinfo' class='dialog round' popup='true' style='display:none;'>\
+<table class='m'>\
+<tr><td></td><td colspan=2><span class='I18N' i18n='gamerule'>Game Rule</span></td><td class='r'><img class='icon-info' src='" + __DIR__('img/x.png') + "'></td></tr>\
+<tr><td></td><td class='l'>\
+<ol><li><span class='I18N' i18n='blackfirst'>Black goes first.</span></li>\
+<li><span class='I18N' i18n='connect5win'>The one who connect 5 in a row wins.</span></li>\
+<li><span class='I18N' i18n='tipcost1gold'>Tip costs 1 gold.</span></li>\
+<li><span class='I18N' i18n='undocost3gold'>Undo costs 3 gold.</span></li></ol></td></tr>\
+<tr><td colspan=4 style='text-align:left'><span  class='I18N' i18n='doyouknow'>Do you know?</span></td></tr>\
+<tr><td></td><td class='l'><ul><li><span class='I18N' i18n='watchad'>Watching Ad may get surprise.</span></li>\
+<li><span class='I18N' i18n='canzoom'>You can zoom the grid with fingers.</span></li></ul></td></tr>\
+<tr><td></td><td class='m'><span class='I18N' i18n='presented'>Product of RnJSoft</span></td></tr>\
+<tr><td></td><td class='m'><span class='I18N' i18n='twitter'>Twitter: @rnjsoft</span></td></tr>\
 </table>\
 </div>";
 }

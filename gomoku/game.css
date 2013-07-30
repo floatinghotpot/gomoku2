@@ -47,13 +47,14 @@ html, body, iframe {
 	text-align: center;
 }
 div.dialog {
+	position: absolute;
 	-moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
     border-radius: 10px;
 	padding:5px;
 	color: #333333;
-	background: #ffeecc;
+	background: #dddddd;
 	border: solid 2px gray;
 	-webkit-box-shadow:5px 5px 10px black;
 	-moz-box-shadow:5px 5px 10px black;
@@ -116,15 +117,6 @@ div#controlbottom {
 }
 div.icon {
 	width:32px;
-}
-div#pageopt {
-	position:absolute;
-	padding:5px;
-	color: #333333;
-	background: #dddddd;
-	border: solid 2px gray;
-	-webkit-box-shadow:5px 5px 10px black;
-	-moz-box-shadow:5px 5px 10px black;
 }
 p {
 	padding: 0px;

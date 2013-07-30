@@ -394,24 +394,25 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 	drawGoCell : function( c ) {
 		c.save();
 		var a = this.getArea();
-		var ux = a.w / this.rows, uy = a.h / this.rows;
+		var r = this.rows;
+		var ux = a.w / r, uy = a.h / r;
 		
 		c.lineWidth = 0.5;
 		c.strokeStyle = this.color;
 		c.beginPath();
-		for( var i=0; i<this.rows+1; i++ ) {
-			c.moveTo( a.l +(i +0) * ux, a.t + 0 * uy );
-			c.lineTo( a.l +(i +0) * ux, a.t + (this.rows-0) * uy );
+		for( var i=0; i<= r; i++ ) {
+			c.moveTo( a.l + i * ux, a.t + 0 * uy );
+			c.lineTo( a.l + i * ux, a.t + r * uy );
 		}
-		for( var j=0; j<this.rows+1; j++ ) {
-			c.moveTo( a.l +0 * ux, a.t + (j+0) * uy );
-			c.lineTo( a.l +(this.rows-0) * ux, a.t + (j+0) * uy );
+		for( var j=0; j<= r; j++ ) {
+			c.moveTo( a.l + 0 * ux, a.t + j * uy );
+			c.lineTo( a.l + r * ux, a.t + j * uy );
 		}
 		c.stroke();
 		
 		c.lineWidth = 1;
 		c.strokeRect( a.l + 0*ux -2, a.t + 0*uy -2, 
-				ux * (this.rows) +4, uy * (this.rows) +4 );
+				ux * (r) +4, uy * (r) +4 );
 
 		c.restore();
 	}
