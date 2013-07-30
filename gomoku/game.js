@@ -57,7 +57,8 @@ function load_data() {
 		data.opt = {
 				level : 2,
 				size : 15,
-				mute : false				
+				mute : false,
+				info : true
 			};
 	}
 	if( data.opt.level < 1 || data.opt.level > 5 ) {
@@ -368,7 +369,14 @@ function init_events() {
 				dialog = hotjs.domUI.popupDialog( 
 						hotjs.i18n.get('nogold'), 
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-						+ hotjs.i18n.get('nogoldcannotdo') + '</p>' );
+						+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
+							'buycoin':function(){
+								return true;
+							},
+							'watchad':function(){
+								return true;
+							}
+						} );
 			}
 		}
 	});
@@ -393,7 +401,14 @@ function init_events() {
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('nogold'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('nogoldcannotdo') + '</p>' );
+					+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
+						'buycoin':function(){
+							return true;
+						},
+						'watchad':function(){
+							return true;
+						}
+					} );
 		}
 	});
 	
@@ -544,11 +559,19 @@ var res = [
 ];
 
 function game_resize(w, h) {
-	var iw = ( /(ipad)/i.test(navigator.userAgent) ) ? 64 : 32;
-	$('img.icon').css({
-		'width': iw + 'px',
-		'height': iw + 'px'
-	});
+	if( /(ipad)/i.test(navigator.userAgent) ) {
+	    $('table.userinfo').css({'display':'block'});
+		$('img.icon').css({
+			'width': 64 + 'px',
+			'height': 64 + 'px'
+		});
+	} else {
+	    $('table.userinfo').css({'display':'none'});
+		$('img.icon').css({
+			'width': 32 + 'px',
+			'height': 32 + 'px'
+		});
+	}
 	
 	var w = window.innerWidth, h = window.innerHeight;
 	var mh = $("div#bottom-menu").height();
@@ -600,7 +623,7 @@ function game_resize(w, h) {
 function init_UI() {
 	if( /(iphone|ipod)/i.test(navigator.userAgent) ) {
 	    $(document.body).css({'font-size':'14px'});
-	}	
+	}
 	
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = 
