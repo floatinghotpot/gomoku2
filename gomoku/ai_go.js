@@ -53,7 +53,7 @@ function(evt) {
 	case 'go':
 		var think_start = Date.now();
 		var mtx_str = msg.matrix_str.replace(/0/g, '.');
-		var solution = robot.solve( mtx_str );
+		var solution = robot.solveDeep( mtx_str );
 		var used_time = Date.now() - think_start;
 		var data = {
 				api: msg.api,
@@ -73,7 +73,7 @@ function(evt) {
 		break;
 	case 'undo':
 		var mtx_str = msg.matrix_str.replace(/0/g, '.');
-		var solution = robot.solveDeep( mtx_str );
+		var solution = robot.solve( mtx_str );
 		var data = {
 				api: msg.api,
 				done: true,
