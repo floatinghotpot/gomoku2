@@ -321,8 +321,8 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		// draw all go stones on board
 		for( var i=0; i<this.rows; i++ ) {
 			for( var j=0; j<this.rows; j++ ) {
-				var x = Math.floor(a.l + j * ux);
-				var y = Math.floor(a.t + i * uy);
+				var x = a.l + j * ux;
+				var y = a.t + i * uy;
 				var g = this.matrix[i][j];
 				if( g > 0 ) {
 					var idx = (g == 1) ? 0 : 1;
