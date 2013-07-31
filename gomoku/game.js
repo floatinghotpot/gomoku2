@@ -504,16 +504,14 @@ function init_events() {
  				{
 					'ok' : function() {
 
-						app_data = {};
-						save_data();
-						app_data = load_data();
-						
-//						app_data.my.total = 0;
-//						app_data.my.win = 0;
-//						app_data.ai.total = 0;
-//						app_data.ai.win = 0;
-//						app_data.my.gold -= 100;
+//						app_data = {};
 //						save_data();
+//						app_data = load_data();
+						
+						app_data.my.total = 0;
+						app_data.my.win = 0;
+						app_data.my.gold -= 100;
+						save_data();
 						
 						updateDataShow();
 						
@@ -727,10 +725,10 @@ function init_UI() {
 <div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
 <tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r' width=32><img class='icon-buy' src='" + __DIR__('img/x.png') + "'></td></tr>\
-<tr><td><img class='btn-buy icon32' src='" + __DIR__('img/gold.png') +"'/></td><td><span class='I18N' i18n='pkg0'>5 golds</span></td><td><button class='I18N' i18n='pkg0price'>Watch Ad</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg1'>500 golds</span></td><td><button class='I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg2'>2000 golds</span></td><td><button class='I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbox.png') +"'/></td><td><span class='I18N' i18n='pkg3'>10000 golds</span></td><td><button class='I18N' i18n='pkg3price'>$ 4</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon32' src='" + __DIR__('img/gold.png') +"'/></td><td><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button class='I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button class='I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button class='I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
+<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbox.png') +"'/></td><td><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button class='I18N' i18n='pkg3price'>$ 4</button></td><td></td></tr>\
 </table>\
 </div>\
 <div id='pageinfo' class='dialog round' popup='true' style='display:none;'>\
