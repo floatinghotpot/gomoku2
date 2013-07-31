@@ -32,8 +32,8 @@ hotjs.i18n.put('zh', {
 	'pkg3':'10000金币',
 	'pkg0info':'天天免费送',
 	'pkg1info':'仅需5元',
-	'pkg2info':'5折',
-	'pkg3info':'3折',
+	'pkg2info':'5折优惠',
+	'pkg3info':'3折超低价',
 	'pkg0price':'领取',
 	'pkg1price':'5元',
 	'pkg2price':'10元',
@@ -91,8 +91,8 @@ hotjs.i18n.put('zh', {
 	'blackfirst':'黑棋先走。每下一局，双方交换。',
 	'connect5win':'最先把 5 个同色棋子连成一线，即可获胜。没有禁手。',
 	'doyouknow':'小窍门:',
-	'watchad':'看广告，有好礼惊喜。',
-	'canzoom':'手机太小，容易点错？试试看，用手指缩放和移动网格。',
+	'watchad':'看广告，有惊喜好礼。',
+	'canzoom':'屏幕太小，容易点错？试试看，用手指缩放和移动网格。',
 	'presented':'安杰科技（RnJSoft）为您精彩呈献',
 	'twitter':'官方微博: @rnjsoft'
 });
