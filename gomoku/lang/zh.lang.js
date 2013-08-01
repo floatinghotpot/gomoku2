@@ -33,7 +33,7 @@ hotjs.i18n.put('zh', {
 	'pkg0info':'天天免费送',
 	'pkg1info':'仅需5元',
 	'pkg2info':'5折优惠',
-	'pkg3info':'3折超低价',
+	'pkg3info':'超低3折',
 	'pkg0price':'领取',
 	'pkg1price':'5元',
 	'pkg2price':'10元',
