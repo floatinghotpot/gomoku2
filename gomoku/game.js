@@ -312,7 +312,7 @@ function toggleTip( b ) {
 		if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('tipon'), 
-				'<p>' + hotjs.i18n.get('tiponcost1gold') + '</p>',
+				'<p>' + hotjs.i18n.get('tipcost1gold') + '</p>',
 				{},
 				{'top':'5px'} );
 		
@@ -370,7 +370,7 @@ function init_events() {
 						hotjs.i18n.get('nogold'), 
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 						+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-							'buycoin':function(){
+							'buy':function(){
 								return true;
 							},
 							'watchad':function(){
@@ -402,7 +402,7 @@ function init_events() {
 					hotjs.i18n.get('nogold'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 					+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-						'buycoin':function(){
+						'buy':function(){
 							return true;
 						},
 						'watchad':function(){
@@ -535,9 +535,9 @@ var res = [
  __DIR__('goboard.js'),
  __DIR__('net_go.js'),
  __DIR__('img/yard.jpg'),
- __DIR__('img/gostones.png'),
- __DIR__('img/whitego.png'),
  __DIR__('img/blackgo.png'),
+ __DIR__('img/whitego.png'),
+ __DIR__('img/greengo.png'),
  __DIR__('img/user1.png'),
  __DIR__('img/user2.png'),
  __DIR__('img/restart.png'),
@@ -788,10 +788,14 @@ function game_main() {
 	board = (new GoBoard( app_data.opt.size ))
 		.setSize(w, h).showGrid(false)
 		.setColor("white").setGridStyle(false)
-		.setDraggable(true).setMoveable(true).setZoomable(true)
 		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
-		.setGoImage( resources.get(__DIR__('img/gostones.png')), [0,0,128,128] )
+		.setGoImages( [ 
+		               resources.get(__DIR__('img/blackgo.png')),
+		               resources.get(__DIR__('img/whitego.png')),
+		               resources.get(__DIR__('img/greengo.png'))
+		                ])
 		.showImg(true)
+		.setDraggable(true).setMoveable(true).setZoomable(true)
 		.setPeerPlayer( ai_player )
 		.setJudge( ai_player )
 		.onGo( playMoveSound )

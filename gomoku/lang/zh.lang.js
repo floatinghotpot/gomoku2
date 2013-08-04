@@ -22,7 +22,7 @@ hotjs.i18n.put('zh', {
 	'notstarted':'还没开始',
 	'notstartedcannotdo':'不需要这样做。',
 	'nogold':'金币不够',
-	'nogoldcannotdo':'需要足够金币才行呢。',
+	'nogoldcannotdo':'需要金币才行呢。',
 	'buy':'充值',
 	'watchad':'看广告送好礼',
 	'buyhappy':'轻松充值，欢乐游戏',
@@ -91,8 +91,7 @@ hotjs.i18n.put('zh', {
 	'blackfirst':'黑棋先走。每下一局，双方交换。',
 	'connect5win':'最先把 5 个同色棋子连成一线，即可获胜。没有禁手。',
 	'doyouknow':'小窍门:',
-	'watchad':'看广告，有惊喜好礼。',
-	'canzoom':'屏幕太小，容易点错？试试看，用手指缩放和移动网格。',
+	'canzoom':'屏幕太小，容易点错？试试看，用手指缩放和移动网格',
 	'presented':'安杰科技（RnJSoft）为您精彩呈献',
 	'twitter':'官方微博: @rnjsoft'
 });

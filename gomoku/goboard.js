@@ -17,6 +17,8 @@ var GoBoard = function( rows ){
 	
 	this.tip = null;
 	this.gameOver = false;
+	
+	this.goimgs = [];
 };
 
 hotjs.inherit( GoBoard, hotjs.Scene, {
@@ -31,7 +33,17 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		this.gridStyle = g;
 		return this;
 	},
-	setGoImage : function( img, r ) {
+	setGoImages : function( imgs ) {
+		if( imgs.length < 3 ) {
+			console.log( 'go images need at least 3 for black, white and tip.');
+		}
+		this.goimgs = [];
+		for( var i=0; i<imgs.length; i++ ) {
+			this.goimgs.push( imgs[i] );
+		}
+		return this;
+	},
+	setGoImage : function( img, r ) {		
 		this.goimg = img;
 		this.goimgrect = [ r[0], r[1], r[2], r[3] ];
 		
@@ -284,6 +296,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 				var hitMax = bestMove[2];
 
 				var hitRating = this.tip.hitRating;
+				var img = this.goimgs[2];
 				for( var i=0; i<this.rows; i++ ) {
 					for( var j=0; j<this.rows; j++ ) {
 						var x = Math.floor(a.l + j * ux);
@@ -291,22 +304,14 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 						var g = hitRating[i][j];
 						if( g > 0 ) {
 							c.globalAlpha = (g / hitMax) * 0.8;
-							var idx = 2;
-							c.drawImage( this.goimg, 
-									this.goimgrect[0] + idx * this.goimgrect[2], 0, 
-									this.goimgrect[2], this.goimgrect[3],
-									x, y, ux, uy );
+							c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
 						}
 					}
 				}
 				c.globalAlpha = 1;
 				var x = Math.floor(a.l + bestMove[0] * ux);
 				var y = Math.floor(a.t + bestMove[1] * uy);
-				var idx = 2;
-				c.drawImage( this.goimg, 
-						this.goimgrect[0] + idx * this.goimgrect[2], 0, 
-						this.goimgrect[2], this.goimgrect[3],
-						x, y, ux, uy );
+				c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
 				
 				c.restore();
 			}
@@ -317,19 +322,18 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 	drawGo : function(c) {
 		var a = this.getArea();
 		var ux = a.w / this.rows, uy = a.h / this.rows;
-		
+	
 		// draw all go stones on board
+		var blackgoimg = this.goimgs[0];
+		var whitegoimg = this.goimgs[1];
 		for( var i=0; i<this.rows; i++ ) {
 			for( var j=0; j<this.rows; j++ ) {
 				var x = a.l + j * ux;
 				var y = a.t + i * uy;
 				var g = this.matrix[i][j];
 				if( g > 0 ) {
-					var idx = (g == 1) ? 0 : 1;
-					c.drawImage( this.goimg, 
-							this.goimgrect[0] + idx * this.goimgrect[2], 0, 
-							this.goimgrect[2], this.goimgrect[3],
-							x+1, y+1, ux-2, uy-2 );
+					var img = (g == 1) ? blackgoimg : whitegoimg;
+					c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
 				}
 			}
 		}
@@ -342,7 +346,11 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 
 			c.save();
 			c.strokeStyle = 'red';
+			//c.fillStyle = 'red';
 			c.lineWidth = 1;
+			//c.beginPath();
+			//c.arc( x+ux/2, y+uy/2, ux/4, uy/4, 2*Math.PI);
+			//c.stroke();
 			c.strokeRect( x+ux/3, y+uy/3, ux/3, uy/3 );
 			
 			//c.lineWidth = 3;
