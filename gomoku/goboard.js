@@ -346,19 +346,11 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 
 			c.save();
 			c.strokeStyle = 'red';
-			//c.fillStyle = 'red';
 			c.lineWidth = 1;
-			//c.beginPath();
-			//c.arc( x+ux/2, y+uy/2, ux/4, uy/4, 2*Math.PI);
-			//c.stroke();
-			c.strokeRect( x+ux/3, y+uy/3, ux/3, uy/3 );
-			
-			//c.lineWidth = 3;
-			//c.beginPath();
-			//c.moveTo( x+ux/3, y+uy/2 ); c.lineTo( x+ux*2/3, y+uy/2 );
-			//c.moveTo( x+ux/2, y+uy/3 ); c.lineTo( x+ux/2, y+uy*2/3 );
-			//c.stroke();
-			
+			//c.strokeRect( x, y, ux, uy );
+			c.globalAlpha = 0.8;
+			var img = this.goimgs[3];
+			c.drawImage( img, 0, 0, img.width, img.height, x, y, ux, uy );
 			c.restore();
 		}
 		

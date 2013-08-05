@@ -333,6 +333,125 @@ function toggleTip( b ) {
 	}
 }
 
+function buy( pkgid, payment_method ) {
+	if( payment_method == 'paypal' ) {
+		payWithPaypal( pkgid );
+	} else if ( payment_method === 'iap' ) {
+		payWithIAP( pkgid );
+	} else {
+		// TODO: suppport more, like AliPay, TenPay, etc.
+	}
+}
+
+function payWithPaypal( pkgid ) {
+	var ppm = window.plugins.PayPalMPL;
+    if(! ppm) return;
+    
+	var n = Number( hotjs.i18n.get( pkgid ) );
+	var name = n + hotjs.i18n.get( 'golds' );
+	var price = hotjs.i18n.get( pkgid + '_price' );
+	var currency = hotjs.i18n.get( 'currency' );
+	
+	ppm.setPaymentInfo({
+       'paymentCurrency' : currency,
+       'subTotal' : price,
+       'recipient' : 'rnjsoft.mobile@gmail.com',
+       'description' : 'game coins (' + name + ')',
+       'merchantName' : 'rnjsoft'
+       }, 
+       function() {
+    	   ppm.pay({}, function() {
+    		   app_data.my.gold += n;
+    		   save_data();
+    		   updateDataShow();
+    		   dialog = hotjs.domUI.popupDialog( 
+   					hotjs.i18n.get('paydone'), 
+   					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+   					+ hotjs.i18n.get('paydone_happy') + '</p>' );
+           }, function() {
+    		   dialog = hotjs.domUI.popupDialog( 
+      					hotjs.i18n.get('payfailed'), 
+      					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+      					+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
+           });
+       }, function() {
+		   dialog = hotjs.domUI.popupDialog( 
+ 					hotjs.i18n.get('payfailed'), 
+ 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+ 					+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
+       });
+}
+
+function payWithIAP( pkgid ) {
+	var iap = window.plugins.InAppPurchaseManager;
+	if(! iap) return;
+	
+	var productId = hotjs.i18n.get( pkgid + '_id' );
+	iap.makePurchase( productId, 1, function(){
+	   app_data.my.gold += n;
+	   save_data();
+	   updateDataShow();
+	   dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('paydone'), 
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+				+ hotjs.i18n.get('paydone_happy') + '</p>' );
+	}, function() {
+	   dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('payfailed'), 
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+				+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
+	});
+}
+
+function initIAP() {
+	var iap = window.plugins.InAppPurchaseManager;
+	if(! iap) return;
+	iap.setup();
+	iap.requestProductData(
+		[
+			 'com.rnjsoft.GomokuKingdom.pkg1',
+			 'com.rnjsoft.GomokuKingdom.pkg2',
+			 'com.rnjsoft.GomokuKingdom.pkg3'
+		 ], function( data ) {
+			var validProducts = data.validProducts;
+			var invalidIds = data.invalidIds;
+		}, function() {
+		});
+}
+
+function initPayPal() {
+    var ppm = window.plugins.PayPalMPL;
+    if(! ppm) return;
+        
+    ppm.construct( {
+	      'appId': 'APP-80W284485P519543T',
+	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
+	      }, function(){
+	    	  ppm.prepare( ppm.PaymentType.GOODS, function(){}, function(){} );	      
+	      }, function(){
+	    	  //alert( 'paypal init failed' );
+	      });
+}
+
+function initAdMob(){
+    var am = window.plugins.AdMob;
+    if(! am) return;
+    
+    var adIdiOS = 'a151e6d43c5a28f';
+    var adIdAndroid = 'a151e6d65b12438';
+    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
+    am.createBannerView( 
+    		{
+	            'publisherId': adId,
+	            'adSize': am.AD_SIZE.BANNER,
+	            'bannerAtTop': false
+            }, function() {
+            	am.requestAd({ 'isTesting':false }, function(){}, function(){});
+            }, function(){
+            	//alert( 'Error create Ad Banner' );
+            });
+}
+
 function init_events() {
 	$(window).resize( game_resize );
 	
@@ -418,6 +537,43 @@ function init_events() {
 	
 	$('img.icon-buy').on('click', function(){
 		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+	});
+	
+	$('button.btn-buy').on('click', function(){
+		var productId = $(this).attr('id');
+		if( productId == 'pkg0' ) {
+			var msg = hotjs.i18n.get('free_once_per_day');
+			var now = Date.now();
+			if(! app_data.my.free_time) app_data.my.free_time = 0;
+			if( now > app_data.my.free_time + 1000*3600*8 ) {
+				app_data.my.gold += 20;
+				app_data.my.free_time = now;
+				save_data();
+				updateDataShow();
+				msg = hotjs.i18n.get('free_picked');
+			}
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('pkg0info'), 
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+					+ msg + '</p>' );
+		} else {
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('buy'), 
+					hotjs.i18n.get('payment_method_supported') + '<p>' +
+					"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
+					"<img src='" + __DIR__('img/iap.png') + "'><p>" +
+					hotjs.i18n.get('select_payment_method') + '<p>',
+					{
+						'paypal' : function(){
+							buy( productId, 'paypal' );
+							return true;
+						},
+						'iap' : function(){
+							buy( productId, 'iap' );
+							return true;
+						}
+					});			
+		}
 	});
 	
 	$('img.icon-info').on('click', function(){
@@ -525,47 +681,6 @@ function init_events() {
 		
 	});
 }
-
-var res = [
- __DIR__('../lib/color-buttons.css'),
- __DIR__('game.css'),
- __DIR__('lang/en.lang.js'),
- __DIR__('lang/zh.lang.js'),
- __DIR__('lang/ja.lang.js'), 
- __DIR__('goboard.js'),
- __DIR__('net_go.js'),
- __DIR__('img/yard.jpg'),
- __DIR__('img/blackgo.png'),
- __DIR__('img/whitego.png'),
- __DIR__('img/greengo.png'),
- __DIR__('img/user1.png'),
- __DIR__('img/user2.png'),
- __DIR__('img/restart.png'),
- __DIR__('img/undo.png'),
- __DIR__('img/tipoff.png'),
- __DIR__('img/tipon.png'),
- __DIR__('img/options.png'),
- __DIR__('img/info.png'),
- __DIR__('img/peer1-64.png'),
- __DIR__('img/peer2-64.png'),
- __DIR__('img/peer3-64.png'),
- __DIR__('img/peer4-64.png'),
- __DIR__('img/peer5-64.png'),
- __DIR__('img/peer1-128.png'),
- __DIR__('img/peer2-128.png'),
- __DIR__('img/peer3-128.png'),
- __DIR__('img/peer4-128.png'),
- __DIR__('img/peer5-128.png'),
- __DIR__('img/win.png'),
- __DIR__('img/lost.png'),
- __DIR__('img/shrug.png'),
- __DIR__('img/gold.png'),
- __DIR__('img/coinbag.png'),
- __DIR__('img/coinbox.png'),
- __DIR__('img/reset.png'),
- __DIR__('img/audio.png'),
- __DIR__('img/audiomute.png')
-];
 
 function game_resize(w, h) {
 	if( /(ipad)/i.test(navigator.userAgent) ) {
@@ -725,10 +840,10 @@ function init_UI() {
 <div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
 <tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r'><img class='icon-buy' src='" + __DIR__('img/x.png') + "'></td></tr>\
-<tr><td><img class='btn-buy icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button class='I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button class='I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbag.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button class='I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
-<tr><td><img class='btn-buy icon48' src='" + __DIR__('img/coinbox.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button class='I18N' i18n='pkg3price'>$ 4</button></td><td></td></tr>\
+<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td><td></td></tr>\
 </table>\
 </div>\
 <div id='pageinfo' class='dialog round' popup='true' style='display:none;'>\
@@ -747,12 +862,6 @@ function init_UI() {
 </table>\
 </div>";
 }
-
-//<tr>\
-//<td colspan=2><button class='I18N' i18n='welcome'>Welcome</button></td>\
-//<td></td>\
-//<td colspan=2><button class='I18N' i18n='about'>About</button></td>\
-//</tr>\
 
 var app = new hotjs.App();
 
@@ -792,7 +901,8 @@ function game_main() {
 		.setGoImages( [ 
 		               resources.get(__DIR__('img/blackgo.png')),
 		               resources.get(__DIR__('img/whitego.png')),
-		               resources.get(__DIR__('img/greengo.png'))
+		               resources.get(__DIR__('img/greengo.png')),
+		               resources.get(__DIR__('img/highlight.png'))		               
 		                ])
 		.showImg(true)
 		.setDraggable(true).setMoveable(true).setZoomable(true)
@@ -831,6 +941,52 @@ function game_main() {
 		
 	}
 }
+
+var res = 
+[
+   __DIR__('../lib/color-buttons.css'),
+   __DIR__('game.css'),
+   __DIR__('lang/en.lang.js'),
+   __DIR__('lang/zh.lang.js'),
+   __DIR__('lang/ja.lang.js'), 
+   __DIR__('goboard.js'),
+   __DIR__('net_go.js'),
+   __DIR__('img/yard.jpg'),
+   __DIR__('img/blackgo.png'),
+   __DIR__('img/whitego.png'),
+   __DIR__('img/greengo.png'),
+   __DIR__('img/highlight.png'),
+   __DIR__('img/user1.png'),
+   __DIR__('img/user2.png'),
+   __DIR__('img/restart.png'),
+   __DIR__('img/undo.png'),
+   __DIR__('img/tipoff.png'),
+   __DIR__('img/tipon.png'),
+   __DIR__('img/options.png'),
+   __DIR__('img/info.png'),
+   __DIR__('img/peer1-64.png'),
+   __DIR__('img/peer2-64.png'),
+   __DIR__('img/peer3-64.png'),
+   __DIR__('img/peer4-64.png'),
+   __DIR__('img/peer5-64.png'),
+   __DIR__('img/peer1-128.png'),
+   __DIR__('img/peer2-128.png'),
+   __DIR__('img/peer3-128.png'),
+   __DIR__('img/peer4-128.png'),
+   __DIR__('img/peer5-128.png'),
+   __DIR__('img/win.png'),
+   __DIR__('img/lost.png'),
+   __DIR__('img/shrug.png'),
+   __DIR__('img/gold.png'),
+   __DIR__('img/coinbag.png'),
+   __DIR__('img/coinbox.png'),
+   __DIR__('img/reset.png'),
+   __DIR__('img/audio.png'),
+   __DIR__('img/audiomute.png'),
+   __DIR__('img/paypal.png'),
+   __DIR__('img/iap.png')
+   
+  ];
 
 function game_init() {
 	// show logo
