@@ -278,25 +278,17 @@ function updateDataShow() {
 		peer.attr('src', __DIR__('img/blackgo.png') );
 	}
 	
-	var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
 	$('#my-gold').text( app_data.my.gold );
-	$('#my-win').text( app_data.my.win );
-	$('#my-rate').text( Math.round(my_winrate * 100) + '%' );
-	$('#my-rank').text( hotjs.i18n.get( 'level' + rankLevel( app_data.my.win, app_data.my.total ) ) );
 
 	$('#peer-img')[0].src = __DIR__('img/peer' + app_data.opt.level + '-64.png');
 	$('#peer-name').text( hotjs.i18n.get( 'peer' + app_data.opt.level ) );
 	
 	var peer = app_data.ais[ 'peer' + app_data.opt.level ];
-	var peer_winrate = ((peer.total > 0) ? (peer.win / peer.total) : 0);
 	$('#peer-gold').text( peer.gold );
-	$('#peer-win').text( peer.win );
-	$('#peer-rate').text( Math.round(peer_winrate * 100) + '%' );
-	$('#peer-rank').text( hotjs.i18n.get( 'level' + rankLevel( peer.win, peer.total ) ) );
 }
 
-function muteAudio( mute ){
-	if( mute ) {
+function toggleAudio(){
+	if( app_data.opt.mute ) {
 		resources.muteAudio(true);
 		$('img#icon-audio').attr('src', __DIR__('img/audiomute.png') );
 	} else {
@@ -304,6 +296,31 @@ function muteAudio( mute ){
 		$('img#icon-audio').attr('src', __DIR__('img/audio.png') );
 	}
 };
+
+function toggleAd() {
+	if(window.plugins && window.plugins.AdMob) {
+		var am = window.plugins.AdMob;
+		if( app_data.opt.ad ) {
+			am.showAd( true );
+		} else {
+			am.showAd( false );
+		}
+	}
+	
+	if( app_data.opt.ad ) {
+		$('img#icon-ad').attr('src', __DIR__('img/ad.png') );
+	} else {
+		$('img#icon-ad').attr('src', __DIR__('img/adoff.png') );
+	}		
+}
+
+function toggleMusic() {
+	if( app_data.opt.music ) {
+		$('img#icon-music').attr('src', __DIR__('img/music.png') );
+	} else {
+		$('img#icon-music').attr('src', __DIR__('img/musicoff.png') );
+	}
+}
 
 function toggleTip( b ) {
 	if( b ) {
@@ -403,53 +420,22 @@ function payWithIAP( pkgid ) {
 	});
 }
 
-function initIAP() {
-	var iap = window.plugins.InAppPurchaseManager;
-	if(! iap) return;
-	iap.setup();
-	iap.requestProductData(
-		[
-			 'com.rnjsoft.GomokuKingdom.pkg1',
-			 'com.rnjsoft.GomokuKingdom.pkg2',
-			 'com.rnjsoft.GomokuKingdom.pkg3'
-		 ], function( data ) {
-			var validProducts = data.validProducts;
-			var invalidIds = data.invalidIds;
-		}, function() {
-		});
-}
-
-function initPayPal() {
-    var ppm = window.plugins.PayPalMPL;
-    if(! ppm) return;
-        
-    ppm.construct( {
-	      'appId': 'APP-80W284485P519543T',
-	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
-	      }, function(){
-	    	  ppm.prepare( ppm.PaymentType.GOODS, function(){}, function(){} );	      
-	      }, function(){
-	    	  //alert( 'paypal init failed' );
-	      });
-}
-
-function initAdMob(){
-    var am = window.plugins.AdMob;
-    if(! am) return;
-    
-    var adIdiOS = 'a151e6d43c5a28f';
-    var adIdAndroid = 'a151e6d65b12438';
-    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
-    am.createBannerView( 
-    		{
-	            'publisherId': adId,
-	            'adSize': am.AD_SIZE.BANNER,
-	            'bannerAtTop': false
-            }, function() {
-            	am.requestAd({ 'isTesting':false }, function(){}, function(){});
-            }, function(){
-            	//alert( 'Error create Ad Banner' );
-            });
+function popupNeedGoldDlg() {
+	if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+	dialog = hotjs.domUI.popupDialog( 
+			hotjs.i18n.get('nogold'), 
+			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+			+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
+				'buy':function(){
+					hotjs.domUI.toggle( $('div#pagebuy')[0] );
+					return true;
+				},
+				'watchad':function(){
+					app_data.opt.ad = true;
+					toggleAd();
+					return true;
+				}
+			} );	
 }
 
 function init_events() {
@@ -484,18 +470,7 @@ function init_events() {
 				save_data();
 				updateDataShow();
 			} else {
-				if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
-				dialog = hotjs.domUI.popupDialog( 
-						hotjs.i18n.get('nogold'), 
-						"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-						+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-							'buy':function(){
-								return true;
-							},
-							'watchad':function(){
-								return true;
-							}
-						} );
+				popupNeedGoldDlg();
 			}
 		}
 	});
@@ -516,18 +491,7 @@ function init_events() {
 		} else if ( app_data.my.gold >= 1 ) {
 			toggleTip(! board.getTipStatus() );
 		} else {
-			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('nogold'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-						'buy':function(){
-							return true;
-						},
-						'watchad':function(){
-							return true;
-						}
-					} );
+			popupNeedGoldDlg();
 		}
 	});
 	
@@ -645,11 +609,24 @@ function init_events() {
 	});
 	
 	$('img#icon-audio').on('click', function(){
-		console.log( 'img#icon-audio' );
 		app_data.opt.mute = ! app_data.opt.mute;
 		save_data();
 		
-		muteAudio( app_data.opt.mute );
+		toggleAudio();
+	});
+	
+	$('img#icon-music').on('click', function(){
+		app_data.opt.music = ! app_data.opt.music;
+		save_data();
+		
+		toggleMusic();
+	});
+	
+	$('img#icon-ad').on('click', function(){
+		app_data.opt.ad = ! app_data.opt.ad;
+		save_data();
+		
+		toggleAd();
 	});
 
 	$('img#icon-reset').on('click', function(){
@@ -683,20 +660,6 @@ function init_events() {
 }
 
 function game_resize(w, h) {
-	if( /(ipad)/i.test(navigator.userAgent) ) {
-	    $('table.userinfo').css({'display':'block'});
-		$('img.icon').css({
-			'width': 64 + 'px',
-			'height': 64 + 'px'
-		});
-	} else {
-	    $('table.userinfo').css({'display':'none'});
-		$('img.icon').css({
-			'width': 32 + 'px',
-			'height': 32 + 'px'
-		});
-	}
-	
 	var w = window.innerWidth, h = window.innerHeight;
 	var mh = $("div#bottom-menu").height();
 	h -= mh;
@@ -730,7 +693,7 @@ function game_resize(w, h) {
 		});
 		$('div#controlbottom').css({'display':'none'});
 		
-		var m = Math.min(w, h) - 10;
+		var m = Math.min(w, h) - 2;
 		board.setArea( (w-m)/2, (h-m)/2, m, m );
 	} else {
 		$('div#controlright').css({'display':'none'});
@@ -754,7 +717,10 @@ function game_resize(w, h) {
 
 function init_UI() {
 	if( /(iphone|ipod)/i.test(navigator.userAgent) ) {
-	    $(document.body).css({'font-size':'14px'});
+		$(document.body).css({
+			'font-size' : '9px',
+			'line-height' : '11px'
+		});
 	}
 	
 	var pagemain = document.getElementById('pagemain');
@@ -763,48 +729,39 @@ function init_UI() {
 <div id='user1' class='userinfo round'>\
 <table class='m'>\
 <tr>\
-<td><img id='my-img' class='icon48 clickable' src='" + __DIR__('img/user2.png') + "'><br/><span class='I18N' i18n='player' id='my-name'>Player</span></td>\
-<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='my-gold'>1800</span></td>\
+<td><img id='my-img' class='icon32 clickable' src='" + __DIR__('img/user2.png') + "'></td>\
+<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='my-gold'>1800</span></td>\
 <td><img width=32 id='my-gocolor' src='" + __DIR__('img/blackgo.png') + "'/></td>\
 </tr>\
-</table>\
-<table class='userinfo m'>\
-<tr><td align='left'><span class='I18N' i18n='win'>Win:</span></td><td><span id='my-win'>0</span> ( <span id='my-rate'>64%</span>)</td></tr>\
-<tr><td align='left'><span class='I18N' i18n='rank'>Rank:</span></td><td><span id='my-rank'>6</span></td></tr>\
-</table>\
-</div>\
+</table></div>\
 <div id='user2' class='userinfo round'>\
 <table class='m'>\
 <tr>\
 <td><img width=32 id='peer-gocolor' src='" + __DIR__('img/whitego.png') + "'/></td>\
-<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='peer-gold'>1500</span></td>\
-<td><img id='peer-img' class='icon48 clickable' src='" + __DIR__('img/user1.png') + "'><br/><span class='I18N' i18n='peer' id='peer-name'>Peer</span></td>\
+<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='peer-gold'>1500</span></td>\
+<td><img id='peer-img' class='icon32 clickable' src='" + __DIR__('img/user1.png') + "'></td>\
 </tr>\
-</table>\
-<table class='userinfo m'>\
-<tr><td align='left'><span class='I18N' i18n='win'>Win:</span></td><td><span id='peer-win'>0</span> (<span id='peer-rate'>54%</span>)</td></tr>\
-<tr><td align='left'><span class='I18N' i18n='rank'>Rank:</span></td><td><span id='peer-rank'>5</span></td></tr>\
 </table>\
 </div>\
 <div id='controlright' class='control'>\
-<table class='controlright'>\
+<table class='control'>\
 <tr>\
-<tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N icon' i18n='tips'>Tips</span></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td></tr>\
-<tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td></tr>\
-<tr><td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/><br><span class='I18N icon' i18n='buy'>Buy</span></td>\
-<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/><br><span class='I18N icon' i18n='info'>Info</span></td></tr>\
+<tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
+<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td></tr>\
+<tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
+<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/></td></tr>\
+<tr><td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td></tr>\
 </table></div>\
 <div id='controlbottom' class='control'>\
-<table>\
+<table class='control'>\
 <tr>\
-<td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/><br><span class='I18N icon' i18n='tips'>Tips</span></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/><br><span class='I18N icon' i18n='undo'>Undo</span></td>\
-<td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/><br><span class='I18N icon' i18n='new'>New</span></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/><br><span class='I18N icon' i18n='options'>Options</span></td>\
-<td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/><br><span class='I18N icon' i18n='buy'>Buy</span></td>\
-<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/><br><span class='I18N icon' i18n='info'>Info</span></td>\
+<td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
+<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td>\
+<td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
+<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/></td>\
+<td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td>\
 </table></div>\
 <div id='pageopt' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
@@ -819,7 +776,6 @@ function init_UI() {
 <td><img class='btn-char icon48 clickable' v='4' src='" + __DIR__('img/peer4-64.png') +"'/><br/><span class='I18N' i18n='peer4'>Uncle</span></td>\
 <td><img class='btn-char icon48 clickable' v='5' src='" + __DIR__('img/peer5-64.png') +"'/><br/><span class='I18N' i18n='peer5'>Grandpa</span></td>\
 </tr>\
-<tr><td colspan=4 style='text-align:left'>&nbsp;</td></tr>\
 <tr><td colspan=4 style='text-align:left'><span  class='I18N' i18n='boardsize'>Board Size</span></td></tr>\
 <tr>\
 <td><button class='btn-size set button rosy' v='11'>11</button></td>\
@@ -828,7 +784,12 @@ function init_UI() {
 <td><button class='btn-size set button cyan' v='17'>17</button></td>\
 <td><button class='btn-size set button blue' v='19'>19</button></td>\
 </tr>\
-<tr><td colspan=4 style='text-align:left'>&nbsp;</td></tr>\
+<tr>\
+<td style='text-align:right'><span  class='I18N' i18n='music'>Music</span></td>\
+<td><img id='icon-music' class='icon clickable' src='" + __DIR__('img/music.png') + "' width='32'></td>\
+<td colspan=2 style='text-align:right'><span  class='I18N' i18n='ad'>Ad</span></td>\
+<td><img id='icon-ad' class='icon clickable' src='" + __DIR__('img/ad.png') + "' width='32'></td>\
+</tr>\
 <tr>\
 <td style='text-align:right'><span  class='I18N' i18n='audio'>Audio</span></td>\
 <td><img id='icon-audio' class='icon clickable' src='" + __DIR__('img/audio.png') + "' width='32'></td>\
@@ -861,6 +822,7 @@ function init_UI() {
 <tr><td></td><td class='m'><span class='I18N' i18n='twitter'>Twitter: @rnjsoft</span></td></tr>\
 </table>\
 </div>";
+	
 }
 
 var app = new hotjs.App();
@@ -912,13 +874,24 @@ function game_main() {
 		.addTo( gameView )
 		.resetGame();
 	
-	game_resize();
-	updateDataShow();
-	muteAudio( app_data.opt.mute );
 	hotjs.i18n.translate();
-	resources.playAudio( __DIR__('audio/hello.mp3') );
 	
+	game_resize();
+
+	updateDataShow();
+
 	hotjs.domUI.showSplash( false );
+	
+	if( window.plugins && window.plugins.AdMob ) {
+		var am = window.plugins.AdMob;
+		am.requestAd({ 'isTesting':false }, function(){}, function(){});
+	}
+
+	toggleAudio();
+	toggleMusic();
+	toggleAd();
+	
+	resources.playAudio( __DIR__('audio/hello.mp3') );
 
 	app.addNode(gameView).start();
 	
@@ -983,6 +956,10 @@ var res =
    __DIR__('img/reset.png'),
    __DIR__('img/audio.png'),
    __DIR__('img/audiomute.png'),
+   __DIR__('img/music.png'),
+   __DIR__('img/musicoff.png'),
+   __DIR__('img/ad.png'),
+   __DIR__('img/adoff.png'),
    __DIR__('img/paypal.png'),
    __DIR__('img/iap.png')
    

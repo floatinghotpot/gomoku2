@@ -85,6 +85,7 @@ hotjs.i18n.put('zh', {
 	'resetdatalosthistory':'注意！将清除您的胜负记录！<br/><br/>并且要花费您 100 个金币。<br/><br/>您确定、一定，以及肯定吗？',
 	'music':'音乐',
 	'sound':'音效',
+	'ad' : '显示广告',
 	'rank':'评价:',
 	'gold':'金币:',
 	'win':'胜局：',

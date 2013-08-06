@@ -105,8 +105,10 @@ div#controlright {
 	margin: 0px;
 	padding: 0px;
 }
-table.controlright {
-	border-spacing: 10px;
+table.control {
+	padding: 0px;
+	margin: 0px;
+	border-spacing: 2px;
 }
 div#controlbottom {
 	position: absolute;
@@ -168,6 +170,7 @@ span.icon {
 img {
 	v-space: 0px;
 	padding-bottom: 0px;
+	margin: 0px;
 }
 img.icon {
 	width: 32px;
