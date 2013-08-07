@@ -457,6 +457,15 @@ function showWelcomeDlg() {
 		});
 }
 
+function showPlayerInfoDlg() {
+	var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
+	dialog = hotjs.domUI.popupDialog( 
+			hotjs.i18n.get( 'yourinfo' ), 
+			'<p>' + hotjs.i18n.get('win') + app_data.my.win + '/' + app_data.my.total + ' ( ' 
+			+ hotjs.i18n.get('winrate') + Math.round(my_winrate * 100) + '% )</p>'
+			);	
+}
+
 function init_events() {
 	$(window).resize( game_resize );
 	
@@ -562,10 +571,14 @@ function init_events() {
 	$('img.icon-info').on('click', function(){
 		dialog = hotjs.domUI.popupDialog( 
 				" ", 
-				"<table><tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
+				"<table>" + 
+				"<tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr></table>" );
+				"<tr><td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('yourinfo') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+				"</table>" );
 		
 		$('button#btn_gamerule').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
@@ -581,6 +594,19 @@ function init_events() {
 		});
 		$('button#btn_welcome').on('click', function(){
 			showWelcomeDlg();
+		});
+		$('button#btn_yourinfo').on('click', function(){
+			showPlayerInfoDlg();
+		});
+		$('button#btn_toplist').on('click', function(){
+			dialog = hotjs.domUI.popupDialog( 
+					" ", 
+					"<table>" + 
+					"<td><button id='btn_topgold'>" + hotjs.i18n.get('topgold') + "</button></td>" +
+					"<tr><td><button id='btn_topwin'>" + hotjs.i18n.get('topwin') + "</button></td>" +
+					"<td><button id='btn_toprate'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
+					"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
+					"</table>" );
 		});
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
@@ -609,12 +635,7 @@ function init_events() {
 	});
 	
 	$('img#my-img').on('click', function(){
-		var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get( 'yourinfo' ), 
-				'<p>' + hotjs.i18n.get('win') + app_data.my.win + '/' + app_data.my.total + ' ( ' 
-				+ hotjs.i18n.get('winrate') + Math.round(my_winrate * 100) + '% )</p>'
-				);
+		showPlayerInfoDlg();
 	});
 
 	$('img.btn-char').on('click', function(){
