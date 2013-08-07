@@ -561,7 +561,7 @@ function init_events() {
 	
 	$('img.icon-info').on('click', function(){
 		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('info'), 
+				"", 
 				"<table><tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td><tr>" +
