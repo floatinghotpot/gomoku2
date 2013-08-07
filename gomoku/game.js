@@ -541,7 +541,27 @@ function init_events() {
 	});
 	
 	$('img.icon-info').on('click', function(){
-		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('info'), 
+				"<table><tr><td><button id='btn_gamerule'>" + hotjs.i19n.get('gamerule') + "</button></td><tr>" +
+				"<tr><td><button id='btn_gametip'>" + hotjs.i19n.get('gametip') + "</button></td><tr>" +
+				"<tr><td><button id='btn_about'>" + hotjs.i19n.get('about') + "</button></td><tr></table>" );
+		
+		$('button#btn_gamerule').on('click', function(){
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('gamerule'), 
+					hotjs.i18n.get('gamerule_text') );
+		});
+		$('button#btn_gametip').on('click', function(){
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('gametip'), 
+					hotjs.i18n.get('gametip_text') );
+		});
+		$('button#btn_about').on('click', function(){
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('about'), 
+					hotjs.i18n.get('about_text') );
+		});
 	});
 	
 	function genBriefInfo( char_id ) {
@@ -805,21 +825,6 @@ function init_UI() {
 <tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td><td></td></tr>\
-</table>\
-</div>\
-<div id='pageinfo' class='dialog round' popup='true' style='display:none;'>\
-<table class='m'>\
-<tr><td></td><td colspan=2><span class='I18N' i18n='gamerule'>Game Rule</span></td><td class='r'><img class='icon-info' src='" + __DIR__('img/x.png') + "'></td></tr>\
-<tr><td></td><td class='l'>\
-<ol><li><span class='I18N' i18n='blackfirst'>Black goes first.</span></li>\
-<li><span class='I18N' i18n='connect5win'>The one who connect 5 in a row wins.</span></li>\
-<li><span class='I18N' i18n='tipcost1gold'>Tip costs 1 gold.</span></li>\
-<li><span class='I18N' i18n='undocost3gold'>Undo costs 3 gold.</span></li></ol></td></tr>\
-<tr><td colspan=4 style='text-align:left'><span  class='I18N' i18n='doyouknow'>Do you know?</span></td></tr>\
-<tr><td></td><td class='l'><ul><li><span class='I18N' i18n='watchad'>Watching Ad may get surprise.</span></li>\
-<li><span class='I18N' i18n='canzoom'>You can zoom the grid with fingers.</span></li></ul></td></tr>\
-<tr><td></td><td class='m'><span class='I18N' i18n='presented'>Product of RnJSoft</span></td></tr>\
-<tr><td></td><td class='m'><span class='I18N' i18n='twitter'>Twitter: @rnjsoft</span></td></tr>\
 </table>\
 </div>";
 	

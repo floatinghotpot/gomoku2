@@ -104,10 +104,9 @@ hotjs.i18n.put('zh', {
 	'moregames':'更多精彩',
 	'quit':'退出游戏',
 	'gamerule':'游戏规则',
-	'blackfirst':'黑棋先走。每下一局，双方交换先手。',
-	'connect5win':'5个同色棋子连成一线即获胜。没有禁手。',
-	'doyouknow':'小窍门:',
-	'canzoom':'屏幕小容易点错？试试看手指缩放和移动网格',
-	'presented':'安杰科技，智造乐趣',
-	'twitter':'官方微博: @rnjsoft'
+	'gametip':'小窍门',
+	'about' : '关于',
+	'gamerule_text':'<ul><li>黑棋先走。</li><li>每下一局，双方交换先手。</li><li>5个同色棋子连成一线即获胜。</li><li>没有禁手。</li><li>可以提示，每次花费 1 个金币。</li><li>可以悔棋，每次花费 3 个金币。</li><ul>',
+	'gametip_text' : '<ul><li>手指可以缩放和移动网格。</li><li>点广告，有惊喜。</li></ul>',
+	'about_text' : '<p>安杰科技，智造乐趣</p><p>官方微博: @rnjsoft</p><p>邮箱: rnjsoft.mobile@gmail.com</p>'
 });
