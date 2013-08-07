@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Gomoku Kingdom</title>
+<title>Gomoku Mist</title>
 <meta charset='UTF-8'>
 <meta http-equiv='Expires' CONTENT='0'>
 <meta http-equiv='Cache-Control' CONTENT='no-cache'>
@@ -21,12 +21,14 @@
 window.plugins = window.plugins || {};
 
 function initAdMob(){
-    var am = window.plugins.AdMob;
-    if(! am) return;
-    
+	if(! window.plugins) return;
+	if(! window.plugins.AdMob) return;
+	
     var adIdiOS = 'a151e6d43c5a28f';
     var adIdAndroid = 'a151e6d65b12438';
     var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
+    
+    var am = window.plugins.AdMob;
     am.createBannerView( 
     		{
 	            'publisherId': adId,
@@ -40,9 +42,10 @@ function initAdMob(){
 }
 
 function initPayPal() {
+	if(! window.plugins) return;
+	if(! window.plugins.PayPalMPL) return;
+	
     var ppm = window.plugins.PayPalMPL;
-    if(! ppm) return;
-    
     ppm.construct( {
 	      'appId': 'APP-80W284485P519543T',
 	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
@@ -54,15 +57,16 @@ function initPayPal() {
 }
 
 function initInAppPurchase() {
-	var iap = window.plugins.InAppPurchaseManager;
-	if(! iap) return;
+	if(! window.plugins) return;
+	if(! window.plugins.InAppPurchaseManager) return;
 	
+	var iap = window.plugins.InAppPurchaseManager;
 	iap.setup();
 	iap.requestProductData(
 		[
-			 'com.rnjsoft.GomokuKingdom.pkg1',
-			 'com.rnjsoft.GomokuKingdom.pkg2',
-			 'com.rnjsoft.GomokuKingdom.pkg3'
+			 'com.rnjsoft.GomokuMist.pkg1',
+			 'com.rnjsoft.GomokuMist.pkg2',
+			 'com.rnjsoft.GomokuMist.pkg3'
 		 ], function( data ) {
 			var validProducts = data.validProducts;
 			var invalidIds = data.invalidIds;

@@ -361,8 +361,10 @@ function buy( pkgid, payment_method ) {
 }
 
 function payWithPaypal( pkgid ) {
+	if(! window.plugins) return;
+	if(! window.plugins.PayPalMPL) return;	
+	
 	var ppm = window.plugins.PayPalMPL;
-    if(! ppm) return;
     
 	var n = Number( hotjs.i18n.get( pkgid ) );
 	var name = n + hotjs.i18n.get( 'golds' );
@@ -400,8 +402,10 @@ function payWithPaypal( pkgid ) {
 }
 
 function payWithIAP( pkgid ) {
+	if(! window.plugins) return;
+	if(! window.plugins.InAppPurchaseManager) return;	
+	
 	var iap = window.plugins.InAppPurchaseManager;
-	if(! iap) return;
 	
 	var productId = hotjs.i18n.get( pkgid + '_id' );
 	iap.makePurchase( productId, 1, function(){
