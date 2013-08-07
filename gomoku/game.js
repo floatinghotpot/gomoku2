@@ -461,7 +461,7 @@ function showWelcomeDlg() {
 function showPlayerInfoDlg() {
 	var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
 	dialog = hotjs.domUI.popupDialog( 
-			hotjs.i18n.get( 'yourinfo' ), 
+			hotjs.i18n.get( 'myinfo' ), 
 			"<table>" + 
 			"<tr><td>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
 			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
@@ -592,7 +592,7 @@ function init_events() {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('info'), 
 				"<table>" + 
-				"<tr><td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('yourinfo') + "</button></td>" +
+				"<tr><td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
 				"<td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
 				"<tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
 				"<td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
