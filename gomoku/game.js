@@ -41,7 +41,10 @@ function load_data() {
 				name : 'player',
 				gold : 0,
 				total : 0,
-				win : 0
+				win : 0,
+				email : '',
+				twitter : '',
+				facebook : '',
 			};
 	}
 	if(! data.ais) {
@@ -350,17 +353,7 @@ function toggleTip( b ) {
 	}
 }
 
-function buy( pkgid, payment_method ) {
-	if( payment_method == 'paypal' ) {
-		payWithPaypal( pkgid );
-	} else if ( payment_method === 'iap' ) {
-		payWithIAP( pkgid );
-	} else {
-		// TODO: suppport more, like AliPay, TenPay, etc.
-	}
-}
-
-function payWithPaypal( pkgid ) {
+function payWithPaypalMPL( pkgid ) {
 	if(! window.plugins) return;
 	if(! window.plugins.PayPalMPL) return;	
 	
@@ -463,7 +456,7 @@ function showPlayerInfoDlg() {
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get( 'myinfo' ), 
 			"<table>" + 
-			"<tr><td>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
+			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
 			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
 			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l'><input class='round' id='myname' value='"+ app_data.my.name + "'/></td>" + 
 			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l'><input class='round' id='myemail' value='"+ app_data.my.email + "'/></td>" + 
@@ -511,11 +504,11 @@ function buyProduct( productId ) {
 				hotjs.i18n.get('select_payment_method') + '<p>',
 				{
 					'paypal' : function(){
-						buy( productId, 'paypal' );
+						payWithPaypalMPL( productId );
 						return true;
 					},
 					'iap' : function(){
-						buy( productId, 'iap' );
+						payWithIAP( productId );
 						return true;
 					}
 				});			
@@ -621,12 +614,12 @@ function init_events() {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('info'), 
 				"<table>" + 
-				"<tr><td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
-				"<td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
-				"<tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
-				"<td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
-				"<td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+				"<tr><td><button class='menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
+				"<td><button class='menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
+				"<tr><td><button class='menu button yellow' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
+				"<td><button class='menu button green' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
+				"<tr><td><button class='menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
+				"<td><button class='menu button blue' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
 				"</table>" );
 		
 		$('button#btn_gamerule').on('click', function(){
@@ -660,7 +653,7 @@ function init_events() {
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('about'), 
-					"<table><tr><td class='m'><img class='logo' src='" + __DIR__('img/icon.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+					"<table><tr><td class='m'><img class='icon64' src='" + __DIR__('img/icon.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
 					);
 		});
 	});
@@ -831,13 +824,6 @@ function game_resize(w, h) {
 }
 
 function init_UI() {
-	if( /(iphone|ipod)/i.test(navigator.userAgent) ) {
-		$(document.body).css({
-			'font-size' : '9px',
-			'line-height' : '11px'
-		});
-	}
-	
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = 
 "<div id='gameView' class='full' style='display:block;'></div>\

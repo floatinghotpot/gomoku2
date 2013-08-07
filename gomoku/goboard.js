@@ -333,7 +333,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 				var g = this.matrix[i][j];
 				if( g > 0 ) {
 					var img = (g == 1) ? blackgoimg : whitegoimg;
-					c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
+					c.drawImage( img, 0, 0, img.width, img.height, x+2, y+2, ux-4, uy-4);
 				}
 			}
 		}
@@ -350,7 +350,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 			//c.strokeRect( x, y, ux, uy );
 			c.globalAlpha = 0.8;
 			var img = this.goimgs[3];
-			c.drawImage( img, 0, 0, img.width, img.height, x, y, ux, uy );
+			c.drawImage( img, 0, 0, img.width, img.height, x-1, y-1, ux+2, uy+2 );
 			c.restore();
 		}
 		

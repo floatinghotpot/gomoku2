@@ -41,7 +41,7 @@ function initAdMob(){
             });
 }
 
-function initPayPal() {
+function initPayPalMPL() {
 	if(! window.plugins) return;
 	if(! window.plugins.PayPalMPL) return;
 	
@@ -76,7 +76,7 @@ function initInAppPurchase() {
 
 document.addEventListener('deviceready', function(){
 	initAdMob();
-	//initPayPalMPL();
+	initPayPalMPL();
 	//initInAppPurchase();
 	
 	//alert( navigator.userAgent );

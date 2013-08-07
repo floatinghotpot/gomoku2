@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.rnjsoft.GomokuMist" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Gomoku Mist</name>
+<widget id="com.rnjsoft.cdvfun" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>cdvfun</name>
     <description>
-        A Gomoku game, playing with people in mist kingdom.
+        A Gomoku game, playing with gomoku masters in mist kingdom.
     </description>
     <author email="rnjsoft.mobile@gmail.com" href="http://www.rnjsoft.com">
         RNJSOFT
