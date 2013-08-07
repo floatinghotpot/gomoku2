@@ -106,6 +106,7 @@ hotjs.i18n.put('en', {
 	'twitter' : 'Twitter',
 	'facebook' : 'Facebook',
 	'device' : 'Device',
+	'save' : 'Save',
 	'gamerule_text':'<ul><li>Win by connecting 5 go stones in a line.</li><li>Black go first.</li><li>Exchange turn after each play.</li><li>No forbidden step.</li><li>Tip costs 1 gold.</li><li>Undo costs 3 golds.</li><ul>',
 	'gametip_text' : '<ul><li>Watching Ad, suprising gift.</li><li>Zoom or move grid with finger.</li><li>15x15 is standard size.</li><li>The 5 opponents have different styles.</li><li>Prize for each play varies from 10~50 golds.</li></ul>',
 	'about_text' : '<p>RNJSOFT, Create Fun.</p><p>Gomoku Mist, v2.0</p><p><br/></p><p>Twitter: @rnjsoft</p><p>Email: rnjsoft.mobile@gmail.com</p>'

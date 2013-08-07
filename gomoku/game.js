@@ -474,11 +474,11 @@ function showPlayerInfoDlg() {
 			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l'><input id='myfacebook' valule='"+ app_data.my.facebook + "'/></td>" + 
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
-				'update' : function() {
-					app_data.my.name = $('input#myname').value();
-					app_data.my.email = $('input#myemail').value();
-					app_data.my.twitter = $('input#mytwitter').value();
-					app_data.my.facebook = $('input#myfacebook').value();
+				'save' : function() {
+					app_data.my.name = $('input#myname').val();
+					app_data.my.email = $('input#myemail').val();
+					app_data.my.twitter = $('input#mytwitter').val();
+					app_data.my.facebook = $('input#myfacebook').val();
 					save_data();
 					return true;
 				},
