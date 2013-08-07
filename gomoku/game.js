@@ -611,7 +611,7 @@ function init_events() {
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('about'), 
-					"<table><tr><td class='m'><img src='" + __DIR__('img/icon.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+					"<table><tr><td class='m'><img class='logo' src='" + __DIR__('img/icon.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
 					);
 		});
 	});
