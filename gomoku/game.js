@@ -367,38 +367,35 @@ function payWithPaypal( pkgid ) {
 	var ppm = window.plugins.PayPalMPL;
     
 	var n = Number( hotjs.i18n.get( pkgid ) );
-	var name = n + hotjs.i18n.get( 'golds' );
+	var name = n + ' ' + hotjs.i18n.get( 'golds' );
 	var price = hotjs.i18n.get( pkgid + '_price' );
 	var currency = hotjs.i18n.get( 'currency' );
 	
 	ppm.setPaymentInfo({
-       'paymentCurrency' : currency,
-       'subTotal' : price,
-       'recipient' : 'rnjsoft.mobile@gmail.com',
-       'description' : 'game coins (' + name + ')',
-       'merchantName' : 'rnjsoft'
-       }, 
-       function() {
-    	   ppm.pay({}, function() {
-    		   app_data.my.gold += n;
-    		   save_data();
-    		   updateDataShow();
-    		   dialog = hotjs.domUI.popupDialog( 
-   					hotjs.i18n.get('paydone'), 
-   					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-   					+ hotjs.i18n.get('paydone_happy') + '</p>' );
-           }, function() {
-    		   dialog = hotjs.domUI.popupDialog( 
-      					hotjs.i18n.get('payfailed'), 
-      					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-      					+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
-           });
-       }, function() {
-		   dialog = hotjs.domUI.popupDialog( 
- 					hotjs.i18n.get('payfailed'), 
- 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
- 					+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
-       });
+			'paymentCurrency' : currency,
+			'subTotal' : price,
+			'recipient' : 'rnjsoft.mobile@gmail.com',
+			'description' : 'game coins (' + name + ')',
+			'merchantName' : 'rnjsoft'
+		}, function() {
+			ppm.pay({}, function() {
+				app_data.my.gold += n;
+				save_data();
+				updateDataShow();
+				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
+						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
+								+ hotjs.i18n.get('paydone_happy') + '</p>');
+			}, function() {
+				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
+						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
+								+ hotjs.i18n.get('payfailed_retrylater')
+								+ '</p>');
+			});
+		}, function() {
+			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
+							+ hotjs.i18n.get('payfailed_retrylater') + '</p>');
+		});
 }
 
 function payWithIAP( pkgid ) {
@@ -475,12 +472,12 @@ function showPlayerInfoDlg() {
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
-					alert( $('input#myname').val() );
 					app_data.my.name = $('input#myname').val();
 					app_data.my.email = $('input#myemail').val();
 					app_data.my.twitter = $('input#mytwitter').val();
 					app_data.my.facebook = $('input#myfacebook').val();
 					save_data();
+					alert( JSON.stringify( app_data ) );
 					return true;
 				},
 				'cancel' : function() {
