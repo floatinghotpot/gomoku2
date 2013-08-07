@@ -20,66 +20,7 @@
 <script>
 window.plugins = window.plugins || {};
 
-function initAdMob(){
-	if(! window.plugins) return;
-	if(! window.plugins.AdMob) return;
-	
-    var adIdiOS = 'a151e6d43c5a28f';
-    var adIdAndroid = 'a151e6d65b12438';
-    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
-    
-    var am = window.plugins.AdMob;
-    am.createBannerView( 
-    		{
-	            'publisherId': adId,
-	            'adSize': am.AD_SIZE.BANNER,
-	            'bannerAtTop': false
-            }, function() {
-            	
-            }, function(){
-            	//alert( 'Error create Ad Banner' );
-            });
-}
-
-function initPayPalMPL() {
-	if(! window.plugins) return;
-	if(! window.plugins.PayPalMPL) return;
-	
-    var ppm = window.plugins.PayPalMPL;
-    ppm.construct( {
-	      'appId': 'APP-80W284485P519543T',
-	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
-	      }, function(){
-	    	  ppm.prepare( ppm.PaymentType.GOODS, function(){}, function(){} );	      
-	      }, function(){
-	    	  alert( 'paypal init failed' );
-	      });
-}
-
-function initInAppPurchase() {
-	if(! window.plugins) return;
-	if(! window.plugins.InAppPurchaseManager) return;
-	
-	var iap = window.plugins.InAppPurchaseManager;
-	iap.setup();
-	iap.requestProductData(
-		[
-			 'com.rnjsoft.GomokuMist.pkg1',
-			 'com.rnjsoft.GomokuMist.pkg2',
-			 'com.rnjsoft.GomokuMist.pkg3'
-		 ], function( data ) {
-			var validProducts = data.validProducts;
-			var invalidIds = data.invalidIds;
-		}, function() {
-		});
-}
-
 document.addEventListener('deviceready', function(){
-	initAdMob();
-	initPayPalMPL();
-	//initInAppPurchase();
-	
-	//alert( navigator.userAgent );
 	resources.runAppFromJs('gomoku/game.js');
 }, false);
 

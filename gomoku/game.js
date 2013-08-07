@@ -15,6 +15,82 @@ var __DIR__ = function(f) {
 
 var app_key = 'com.rnjsoft.GomokuMist';
 
+var admob_inited = false;
+var paypalmpl_inited = false;
+var iap_inited = false;
+
+function prepareAdMobFor( func ){
+	if(! window.plugins) return;
+	if(! window.plugins.AdMob) return;
+	if(admob_inited) {
+		func();
+		return;
+	}
+	
+    var adIdiOS = 'a151e6d43c5a28f';
+    var adIdAndroid = 'a151e6d65b12438';
+    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
+    
+    var am = window.plugins.AdMob;
+    am.createBannerView( 
+    		{
+	            'publisherId': adId,
+	            'adSize': am.AD_SIZE.BANNER,
+	            'bannerAtTop': false
+            }, function() {
+            	admob_inited = true;
+            	func();
+            }, function(){
+            	//alert( 'Error create Ad Banner' );
+            });
+}
+
+function preparePayPalMPLFor( func ) {
+	if(! window.plugins) return;
+	if(! window.plugins.PayPalMPL) return;
+	if(paypalmpl_inited) {
+		func();
+		return;
+	}
+	
+    var ppm = window.plugins.PayPalMPL;
+    ppm.construct( {
+	      'appId': 'APP-80W284485P519543T',
+	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
+	      }, function(){
+	    	  ppm.prepare( ppm.PaymentType.GOODS, function(){
+	    		  paypalmpl_inited = true;
+	    		  func();
+	    	  }, function(){} );	      
+	      }, function(){
+	    	  alert( 'paypal init failed' );
+	      });
+}
+
+function prepareIAPFor( func ) {
+	if(! window.plugins) return;
+	if(! window.plugins.InAppPurchaseManager) return;
+	if(iap_inited) {
+		func();
+		return;
+	}
+	
+	var iap = window.plugins.InAppPurchaseManager;
+	iap.setup();
+	iap.requestProductData(
+		[
+			 'com.rnjsoft.GomokuMist.pkg1',
+			 'com.rnjsoft.GomokuMist.pkg2',
+			 'com.rnjsoft.GomokuMist.pkg3'
+		 ], function( data ) {
+			var validProducts = data.validProducts;
+			var invalidIds = data.invalidIds;
+			iap_inited = true;
+			func();
+		}, function() {
+		});
+}
+
 var gameView;
 var board;
 var ai_player;
@@ -301,14 +377,10 @@ function toggleAudio(){
 };
 
 function toggleAd() {
-	if(window.plugins && window.plugins.AdMob) {
+	prepareAdMobFor(function(){
 		var am = window.plugins.AdMob;
-		if( app_data.opt.ad ) {
-			am.showAd( true );
-		} else {
-			am.showAd( false );
-		}
-	}
+		am.showAd( !! app_data.opt.ad );
+	});
 	
 	if( app_data.opt.ad ) {
 		$('img#icon-ad').attr('src', __DIR__('img/ad.png') );
@@ -504,11 +576,15 @@ function buyProduct( productId ) {
 				hotjs.i18n.get('select_payment_method') + '<p>',
 				{
 					'paypal' : function(){
-						payWithPaypalMPL( productId );
+						preparePayPalMPLFor(function(){
+							payWithPaypalMPL( productId );
+						});
 						return true;
 					},
 					'iap' : function(){
-						payWithIAP( productId );
+						prepareIAPFor(function(){
+							payWithIAP( productId );
+						});
 						return true;
 					}
 				});			
@@ -974,10 +1050,10 @@ function game_main() {
 
 	hotjs.domUI.showSplash( false );
 	
-	if( window.plugins && window.plugins.AdMob ) {
+	prepareAdMobFor(function(){
 		var am = window.plugins.AdMob;
 		am.requestAd({ 'isTesting':false }, function(){}, function(){});
-	}
+	});
 
 	toggleAudio();
 	toggleMusic();

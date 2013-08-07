@@ -34,7 +34,7 @@ hotjs.i18n.put('en', {
 	'pkg1':'500',
 	'pkg2':'2000',
 	'pkg3':'10000',
-	'pkg0info':'Free gift everyday',
+	'pkg0info':'Free everyday',
 	'pkg1info':'Only $1',
 	'pkg2info':'50% OFF!',
 	'pkg3info':'70% OFF!!',
