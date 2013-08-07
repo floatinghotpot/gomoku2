@@ -5,8 +5,9 @@ hotjs.i18n.put('zh', {
 	'options': '选项',
 	'more':	'更多',
 	'welcome':'欢迎',
+	'gift_picked' : '见面礼物 100 个金币，您已经领取过了！',
 	'info':'关于',
-	'welcometogomoku':'哈罗！欢迎光临五子棋王国！<br/><br/>您将遇到忍者、卫兵、骑士、贵族与国王。<br/>您知道吗？他们的棋艺各有千秋哦！<br/><br/>开始您的奇幻之旅吧？<br/>您将获得 100 个金币作为见面礼！<br/>',
+	'welcometogomoku':'哈罗！欢迎光临五子迷城！<br/><br/>您将遇到忍者、卫兵、骑士、贵族与国王。<br/>您知道吗？他们的棋艺各有千秋哦！<br/><br/>开始您的奇幻之旅吧？<br/>您将获得 100 个金币作为见面礼！<br/>',
 	'getgift':'领取 100 个金币',
 	'tipon': '提示开启',
 	'tipcost1gold':'提示每次花费 1 个金币。',
@@ -108,5 +109,5 @@ hotjs.i18n.put('zh', {
 	'about' : '关于',
 	'gamerule_text':'<ul><li>黑棋先走。</li><li>每下一局，双方交换先手。</li><li>5个同色棋子连成一线即获胜。</li><li>没有禁手。</li><li>可以提示，每次花费 1 个金币。</li><li>可以悔棋，每次花费 3 个金币。</li><ul>',
 	'gametip_text' : '<ul><li>手指可以缩放和移动网格。</li><li>点广告，有惊喜。</li></ul>',
-	'about_text' : '<p>安杰科技，智造乐趣</p><p>官方微博: @rnjsoft</p><p>邮箱: rnjsoft.mobile@gmail.com</p>'
+	'about_text' : '<p>五子迷城, v2.0</p><p>安杰科技，智造乐趣</p><p><br/></p><p>官方微博: @rnjsoft</p><p>邮箱: rnjsoft.mobile@gmail.com</p>'
 });

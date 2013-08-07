@@ -438,6 +438,25 @@ function popupNeedGoldDlg() {
 			} );	
 }
 
+function showWelcomeDlg() {
+	dialog = hotjs.domUI.popupDialog( 
+		hotjs.i18n.get('welcome'),
+		"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('welcometogomoku') + '</p>', 
+		{
+			'getgift' : function() {
+				if (app_data.opt.get_gift) {
+					hotjs.domUI.popupDialog(hotjs.i18n.get('welcome'), hotjs.i18n.get('gift_picked'));
+				} else {
+					app_data.my.gold += 100;
+					app_data.opt.get_gift = 1;
+					save_data();
+					updateDataShow();
+				}
+				return true;
+			}
+		});
+}
+
 function init_events() {
 	$(window).resize( game_resize );
 	
@@ -545,6 +564,7 @@ function init_events() {
 				hotjs.i18n.get('info'), 
 				"<table><tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td><tr>" +
 				"<tr><td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr></table>" );
 		
 		$('button#btn_gamerule').on('click', function(){
@@ -558,6 +578,9 @@ function init_events() {
 					hotjs.i18n.get('gametip'), 
 					"<table><tr><td class='l'>" + hotjs.i18n.get('gametip_text') + "</td></tr></table>"
 					);
+		});
+		$('button#btn_welcome').on('click', function(){
+			showWelcomeDlg();
 		});
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
@@ -904,22 +927,7 @@ function game_main() {
 	app.addNode(gameView).start();
 	
 	if( ! app_data.opt.get_gift ) {
-		dialog = hotjs.domUI.popupDialog( 
-			hotjs.i18n.get('welcome'), 
-			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-			+ hotjs.i18n.get('welcometogomoku') + '</p>',
-			{
-				'getgift' : function() {
-					app_data.my.gold += 100;
-					app_data.opt.get_gift = 1;
-					save_data();
-					
-					updateDataShow();
-					
-					return true;
-				}
-			});
-		
+		showWelcomeDlg();		
 	}
 }
 
