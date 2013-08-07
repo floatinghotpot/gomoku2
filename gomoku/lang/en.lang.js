@@ -47,7 +47,7 @@ hotjs.i18n.put('en', {
 	'ok':'OK',
 	'cancel':'Cancel',
 	'payment_method_supported' : 'Available Payments:',
-	'select_payment_method' : 'Select:',
+	'select_payment_method' : 'Your choice:',
 	'paypal' : 'PayPal',
 	'iap' : 'Apple IAP',
 	'paydone' : 'Purchased',
