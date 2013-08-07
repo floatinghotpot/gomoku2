@@ -475,6 +475,7 @@ function showPlayerInfoDlg() {
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
+					alert( $('input#myname').val() );
 					app_data.my.name = $('input#myname').val();
 					app_data.my.email = $('input#myemail').val();
 					app_data.my.twitter = $('input#mytwitter').val();
