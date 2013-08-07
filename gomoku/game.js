@@ -572,12 +572,12 @@ function init_events() {
 		dialog = hotjs.domUI.popupDialog( 
 				" ", 
 				"<table>" + 
-				"<tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('yourinfo') + "</button></td><tr>" +
-				"<tr><td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+				"<tr><td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td>" +
+				"<td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('yourinfo') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
+				"<td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
+				"<td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
 				"</table>" );
 		
 		$('button#btn_gamerule').on('click', function(){
