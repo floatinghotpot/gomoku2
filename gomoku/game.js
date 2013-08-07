@@ -602,8 +602,8 @@ function init_events() {
 			dialog = hotjs.domUI.popupDialog( 
 					" ", 
 					"<table>" + 
-					"<td><button id='btn_topgold'>" + hotjs.i18n.get('topgold') + "</button></td>" +
-					"<tr><td><button id='btn_topwin'>" + hotjs.i18n.get('topwin') + "</button></td>" +
+					"<tr><td><button id='btn_topgold'>" + hotjs.i18n.get('topgold') + "</button></td>" +
+					"<td><button id='btn_topwin'>" + hotjs.i18n.get('topwin') + "</button></td>" +
 					"<td><button id='btn_toprate'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
 					"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
 					"</table>" );
