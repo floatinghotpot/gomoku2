@@ -21,7 +21,7 @@ html, body, iframe {
 	padding: 0;
 	font-family: 'Combo', cursive;
 }
-table, td, p, span, button, div {
+div, table, td, p, span, button, input, textarea {
 	font-family: 'Combo', cursive;
 }
 .round {
