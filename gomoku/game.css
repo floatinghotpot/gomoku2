@@ -3,14 +3,14 @@
   font-family: 'Joti One';
   font-style: normal;
   font-weight: 400;
-  src: local('Joti One'), local('JotiOne-Regular'), url(./jotione.woff) format('woff');
+  src: local('Joti One'), local('JotiOne-Regular'), url(../lib/jotione.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Combo';
   font-style: normal;
   font-weight: 400;
-  src: local('Combo'), local('Combo-Regular'), url(./combov1.woff) format('woff');
+  src: local('Combo'), local('Combo-Regular'), url(../lib/combov1.woff) format('woff');
 }
 
 html, body, iframe {
