@@ -465,10 +465,27 @@ function showPlayerInfoDlg() {
 	var my_winrate = ((app_data.my.total > 0) ? (app_data.my.win / app_data.my.total) : 0);
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get( 'yourinfo' ), 
-			'<p>' + hotjs.i18n.get('win') + app_data.my.win + '/' + app_data.my.total + 
-			' ( ' + hotjs.i18n.get('winrate') + Math.round(my_winrate * 100) + '% )</p><p>' +
-			navigator.userAgent + '</p>'
-			);	
+			"<table>" + 
+			"<tr><td>" + hotjs.i18n.get('win') + "</td><td>" + + app_data.my.win + '/' + app_data.my.total + "</td>" +
+			"<tr><td>" + hotjs.i18n.get('winrate') + "</td><td>" + Math.round(my_winrate * 100) + "% </td>" + 
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td><input id='myname' valule='"+ app_data.my.name + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td><input id='myemail' valule='"+ app_data.my.email + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td><input id='mytwitter' valule='"+ app_data.my.twitter + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td><input id='myfacebook' valule='"+ app_data.my.facebook + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('device') + "</td><td>" + navigator.userAgent + "</td>" + 
+			"</table>", {
+				'update' : function() {
+					app_data.my.name = $('input#myname').value();
+					app_data.my.email = $('input#myemail').value();
+					app_data.my.twitter = $('input#mytwitter').value();
+					app_data.my.facebook = $('input#myfacebook').value();
+					save_data();
+					return true;
+				},
+				'cancel' : function() {
+					return true;
+				}
+			} );
 }
 
 function init_events() {
