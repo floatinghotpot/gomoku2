@@ -543,24 +543,27 @@ function init_events() {
 	$('img.icon-info').on('click', function(){
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('info'), 
-				"<table><tr><td><button id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
-				"<tr><td><button id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-				"<tr><td><button id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr></table>" );
+				"<table><tr><td><button class='menu' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
+				"<tr><td><button class='menu' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr></table>" );
 		
 		$('button#btn_gamerule').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gamerule'), 
-					hotjs.i18n.get('gamerule_text') );
+					"<table><tr><td class='l'>" + hotjs.i18n.get('gamerule_text') + "</td></tr></table>"
+					);
 		});
 		$('button#btn_gametip').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gametip'), 
-					hotjs.i18n.get('gametip_text') );
+					"<table><tr><td class='l'>" + hotjs.i18n.get('gametip_text') + "</td></tr></table>"
+					);
 		});
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('about'), 
-					hotjs.i18n.get('about_text') );
+					"<table><tr><td class='l'>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+					);
 		});
 	});
 	
