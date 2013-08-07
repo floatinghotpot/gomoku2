@@ -13,7 +13,7 @@ var __DIR__ = function(f) {
 	return hotjs.getAbsPath(f, __FILE__);
 };
 
-var app_key = 'com.rnjsoft.gomoku';
+var app_key = 'com.rnjsoft.GomokuMist';
 
 var gameView;
 var board;
@@ -702,13 +702,12 @@ function init_events() {
 	});
 
 	$('img#icon-reset').on('click', function(){
-		console.log( 'img#icon-reset' );		
+	
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('resetdata'), 
 				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('resetdatalosthistory') + '</p>',
  				{
 					'ok' : function() {
-
 //						app_data = {};
 //						save_data();
 //						app_data = load_data();
@@ -814,8 +813,10 @@ function init_UI() {
 <td><img id='peer-img' class='icon32 clickable' src='" + __DIR__('img/user1.png') + "'></td>\
 </tr>\
 </table>\
-</div>\
-<div id='controlright' class='control'>\
+</div>";
+	
+	pagemain.innerHTML += 
+"<div id='controlright' class='control'>\
 <table class='control'>\
 <tr>\
 <tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
@@ -834,8 +835,10 @@ function init_UI() {
 <td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/></td>\
 <td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/></td>\
 <td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td>\
-</table></div>\
-<div id='pageopt' class='dialog round' popup='true' style='display:none;'>\
+</table></div>";
+	
+	pagemain.innerHTML += 
+"<div id='pageopt' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
 <tr>\
 <td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'><img class='icon-opt' src='" + __DIR__('img/x.png') + "'></td>\
@@ -869,8 +872,10 @@ function init_UI() {
 <td><img id='icon-reset' class='icon clickable' src='" + __DIR__('img/reset.png') + "' width='32'></td>\
 </tr>\
 </table>\
-</div>\
-<div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
+</div>";
+	
+	pagemain.innerHTML += 
+"<div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
 <table class='m'>\
 <tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r'><img class='icon-buy' src='" + __DIR__('img/x.png') + "'></td></tr>\
 <tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
