@@ -463,12 +463,12 @@ function showPlayerInfoDlg() {
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get( 'yourinfo' ), 
 			"<table>" + 
-			"<tr><td>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + "</td>" +
-			"<tr><td>" + hotjs.i18n.get('winrate') + "</td><td class='l'>" + Math.round(my_winrate * 100) + "% </td>" + 
-			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l'><input id='myname' value='"+ app_data.my.name + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l'><input id='myemail' value='"+ app_data.my.email + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='l'><input id='mytwitter' value='"+ app_data.my.twitter + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l'><input id='myfacebook' value='"+ app_data.my.facebook + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
+			" ( " + Math.round(my_winrate * 100) + " )</td>" +
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l round'><input id='myname' value='"+ app_data.my.name + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l round'><input id='myemail' value='"+ app_data.my.email + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='l round'><input id='mytwitter' value='"+ app_data.my.twitter + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l round'><input id='myfacebook' value='"+ app_data.my.facebook + "'/></td>" + 
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
