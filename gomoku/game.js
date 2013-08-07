@@ -486,25 +486,88 @@ function showPlayerInfoDlg() {
 			} );
 }
 
+function buyProduct( productId ) {
+	if( productId == 'pkg0' ) {
+		var msg = hotjs.i18n.get('free_once_per_day');
+		var now = Date.now();
+		if(! app_data.my.free_time) app_data.my.free_time = 0;
+		if( now > app_data.my.free_time + 1000*3600*8 ) {
+			app_data.my.gold += 20;
+			app_data.my.free_time = now;
+			save_data();
+			updateDataShow();
+			msg = hotjs.i18n.get('free_picked');
+		}
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('pkg0info'), 
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+				+ msg + '</p>' );
+	} else {
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('buy'), 
+				hotjs.i18n.get('payment_method_supported') + '<p>' +
+				"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
+				"<img src='" + __DIR__('img/iap.png') + "'><p>" +
+				hotjs.i18n.get('select_payment_method') + '<p>',
+				{
+					'paypal' : function(){
+						buy( productId, 'paypal' );
+						return true;
+					},
+					'iap' : function(){
+						buy( productId, 'iap' );
+						return true;
+					}
+				});			
+	}
+}
+
 function init_events() {
 	$(window).resize( game_resize );
 	
 	$('button#btn-quick').on('click', restartGame );
-	$('img.icon-start').on('click', restartGame );
+	
+	$('img.icon-start').on('click', function(){
+		if( board.gameOver ){
+			restartGame();
+		} else {
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('giveup'),
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('confirmgiveup') + "</p>",
+	 				{
+						'ok' : function() {
+							var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+							
+							app_data.my.gold -= peer.per;
+							app_data.my.total ++;
+
+							peer.total ++;
+							peer.win ++;
+							peer.gold += peer.per;
+							save_data();
+							
+							restartGame();
+							
+							return true;
+						},
+						'cancel' : function() {
+							return true;
+						}
+					});			
+		}
+	});
 	
 	$('img.icon-undo').on('click', function(){
 		if( ! board.canUndo() ) {
 			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('notstartedcannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
 		} else if( board.gameOver ) {
 			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('gameovercannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
 		} else if( board.canUndo() ) {
 			if( app_data.my.gold >= 3 ) {
 				board.undo();
@@ -528,14 +591,12 @@ function init_events() {
 			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('notstartedcannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
 		} else if( board.gameOver ) {
 			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ hotjs.i18n.get('gameovercannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
 		} else if ( app_data.my.gold >= 1 ) {
 			toggleTip(! board.getTipStatus() );
 		} else {
@@ -553,39 +614,7 @@ function init_events() {
 	
 	$('button.btn-buy').on('click', function(){
 		var productId = $(this).attr('id');
-		if( productId == 'pkg0' ) {
-			var msg = hotjs.i18n.get('free_once_per_day');
-			var now = Date.now();
-			if(! app_data.my.free_time) app_data.my.free_time = 0;
-			if( now > app_data.my.free_time + 1000*3600*8 ) {
-				app_data.my.gold += 20;
-				app_data.my.free_time = now;
-				save_data();
-				updateDataShow();
-				msg = hotjs.i18n.get('free_picked');
-			}
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('pkg0info'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-					+ msg + '</p>' );
-		} else {
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('buy'), 
-					hotjs.i18n.get('payment_method_supported') + '<p>' +
-					"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
-					"<img src='" + __DIR__('img/iap.png') + "'><p>" +
-					hotjs.i18n.get('select_payment_method') + '<p>',
-					{
-						'paypal' : function(){
-							buy( productId, 'paypal' );
-							return true;
-						},
-						'iap' : function(){
-							buy( productId, 'iap' );
-							return true;
-						}
-					});			
-		}
+		buyProduct( productId );
 	});
 	
 	$('img.icon-info').on('click', function(){

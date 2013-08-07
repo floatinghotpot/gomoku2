@@ -16,6 +16,8 @@ hotjs.i18n.put('zh', {
 	'youwin': '您赢了!',
 	'youwin10gold':'恭喜！您从对方赢得 10 个金币！',
 	'playagain':'再来一局',
+	'giveup' : '认输',
+	'confirmgiveup' : '您要放弃这局，重新开始一局吗？',	
 	'undook': '悔棋成功',
 	'undocost3gold':'悔棋每次花费 3 个金币。',
 	'gameover':'游戏结束',

@@ -16,6 +16,8 @@ hotjs.i18n.put('en', {
 	'youwin': 'You win!',
 	'youwin10gold':'Congratulations! You win 10 golds!',
 	'playagain':'Play Again',
+	'giveup' : 'Give Up',
+	'confirmgiveup' : 'Give up and start a new round?',
 	'undook': 'Undo',
 	'undocost3gold':'Undo costs 3 golds.',
 	'gameover':'Game Over',
