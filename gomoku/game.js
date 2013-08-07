@@ -463,7 +463,7 @@ function showPlayerInfoDlg() {
 			hotjs.i18n.get( 'yourinfo' ), 
 			'<p>' + hotjs.i18n.get('win') + app_data.my.win + '/' + app_data.my.total + 
 			' ( ' + hotjs.i18n.get('winrate') + Math.round(my_winrate * 100) + '% )</p><p>' +
-			+ navigator.userAgent + '</p>'
+			navigator.userAgent + '</p>'
 			);	
 }
 
