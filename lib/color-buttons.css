@@ -5,6 +5,7 @@
 	border-radius: 4px;
 }
 .button {
+	font-family: 'Combo', cursive;
 	white-space: nowrap;
 	line-height:1em;
 	position:relative;
