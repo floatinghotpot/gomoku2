@@ -570,7 +570,7 @@ function init_events() {
 	
 	$('img.icon-info').on('click', function(){
 		dialog = hotjs.domUI.popupDialog( 
-				" ", 
+				hotjs.i18n.get('info'), 
 				"<table>" + 
 				"<tr><td><button class='menu' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td>" +
 				"<td><button class='menu' id='btn_yourinfo'>" + hotjs.i18n.get('yourinfo') + "</button></td><tr>" +
@@ -600,7 +600,7 @@ function init_events() {
 		});
 		$('button#btn_toplist').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
-					" ", 
+					hotjs.i18n.get('toplist'), 
 					"<table>" + 
 					"<tr><td><button id='btn_topgold'>" + hotjs.i18n.get('topgold') + "</button></td>" +
 					"<td><button id='btn_topwin'>" + hotjs.i18n.get('topwin') + "</button></td>" +
