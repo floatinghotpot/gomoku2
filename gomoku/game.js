@@ -307,13 +307,19 @@ function toggleAd() {
 		$('img#icon-ad').attr('src', __DIR__('img/ad.png') );
 	} else {
 		$('img#icon-ad').attr('src', __DIR__('img/adoff.png') );
-	}		
+	}
 
 	if( window.plugins ) {
-		if( window.plugins.AdMob ) {
+		if ( window.plugins.iAd && window.plugins.iAd.inUse ) {
+			window.plugins.iAd.showAd( app_data.opt.ad ); 
+		}
+		if( window.plugins.AdMob && window.plugins.AdMob.inUse ) {
+			if(! window.plugins.AdMob.requested) {
+				window.plugins.AdMob.requestAd({ 'isTesting':true }, function(){
+					window.plugins.AdMob.requested = true;
+				}, function(){});
+			}
 			window.plugins.AdMob.showAd( app_data.opt.ad );
-		} else if ( window.plugins.iAd ) {
-			window.plugins.iAd.showAd( true ); 
 		}
 	}	
 }
@@ -504,16 +510,16 @@ function buyProduct( productId ) {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('buy'), 
 				hotjs.i18n.get('payment_method_supported') + '<p>' +
-				"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
 				"<img src='" + __DIR__('img/iap.png') + "'><p>" +
+				"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
 				hotjs.i18n.get('select_payment_method') + '<p>',
 				{
-					'paypal' : function(){
-						payWithPaypalMPL( productId );
-						return true;
-					},
 					'iap' : function(){
 						payWithIAP( productId );
+						return true;
+					},
+					'paypal' : function(){
+						payWithPaypalMPL( productId );
 						return true;
 					}
 				});			
@@ -1004,10 +1010,6 @@ function game_main() {
 
 	hotjs.domUI.showSplash( false );
 	
-	if( window.plugins && window.plugins.AdMob ) {
-		window.plugins.AdMob.requestAd({ 'isTesting':true }, function(){}, function(){});
-	}
-
 	toggleAudio();
 	toggleMusic();
 	toggleAd();

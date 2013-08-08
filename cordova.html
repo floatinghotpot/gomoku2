@@ -25,9 +25,12 @@ var paypalmpl_inited = false;
 var iap_inited = false;
 
 function initAd() {
-	if( window.plugins.iAd) {
+	var useiAd = false;
+	
+	if( useiAd && window.plugins.iAd) {
 		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
-	    	ad_inited = true;    	
+	    	ad_inited = true;
+	    	window.plugins.iAd.inUse = true;
 	    },function(){
 	    });
 	} else if ( window.plugins.AdMob ) {
@@ -43,9 +46,7 @@ function initAd() {
 		            'bannerAtTop': false
 	            }, function() {
 	            	ad_inited = true;
-	            	window.setTimeout(function(){
-	            		window.plugins.AdMob.requestAd({ 'isTesting':true }, function(){}, function(){});
-	            	}, 30000);
+	            	window.plugins.AdMob.inUse = true;
 	            }, function(){
 	            });
 	}
