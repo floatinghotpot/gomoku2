@@ -20,7 +20,75 @@
 <script>
 window.plugins = window.plugins || {};
 
+var ad_inited = false;
+var paypalmpl_inited = false;
+var iap_inited = false;
+
+function initAd() {
+	if( window.plugins.iAd) {
+		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
+	    	ad_inited = true;    	
+	    },function(){
+	    });
+	} else if ( window.plugins.AdMob ) {
+	    var adIdiOS = 'a151e6d43c5a28f';
+	    var adIdAndroid = 'a151e6d65b12438';
+	    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
+	    
+	    var am = window.plugins.AdMob;
+	    am.createBannerView( 
+	    		{
+		            'publisherId': adId,
+		            'adSize': am.AD_SIZE.BANNER,
+		            'bannerAtTop': false
+	            }, function() {
+	            	ad_inited = true;
+	            	window.setTimeout(function(){
+	            		window.plugins.AdMob.requestAd({ 'isTesting':true }, function(){}, function(){});
+	            	}, 30000);
+	            }, function(){
+	            });
+	}
+}
+
+function initPayPalMPL() {
+	if(! window.plugins.PayPalMPL) return;
+	
+    var ppm = window.plugins.PayPalMPL;
+    ppm.construct( {
+	      'appId': 'APP-80W284485P519543T',
+	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
+	      }, function(){
+			  paypalmpl_inited = true;
+	      }, function(){
+	      });
+}
+
+function initIAP() {
+	if(! window.plugins.InAppPurchaseManager) return;
+	
+	var iap = window.plugins.InAppPurchaseManager;
+	iap.setup();
+	iap.requestProductData(
+		[
+			 'com.rnjsoft.GomokuMist.pkg1',
+			 'com.rnjsoft.GomokuMist.pkg2',
+			 'com.rnjsoft.GomokuMist.pkg3'
+		 ], function( data ) {
+			var validProducts = data.validProducts;
+			var invalidIds = data.invalidIds;
+			iap_inited = true;
+		}, function() {
+		});
+}
+
 document.addEventListener('deviceready', function(){
+	if( window.plugins ) {
+		initAd();
+		initPayPalMPL();
+		initIAP();
+	}
+	
 	resources.runAppFromJs('gomoku/game.js');
 }, false);
 
