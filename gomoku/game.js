@@ -1076,7 +1076,7 @@ var res =
 function game_init() {
 	// show logo
 	hotjs.domUI.showSplash( true, 
-			"<h1>GOMOKU<br/>MIST</h1><img class='logo' src='" + __DIR__('img/icon.png') + "'/><h3>&copy; RNJSOFT</h3>",
+			"<h1>GOMOKU<br/>MIST</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 	
 	var tLoadingStart = Date.now();
