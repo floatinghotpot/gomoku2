@@ -402,27 +402,51 @@ function payWithPaypalMPL( pkgid ) {
 		});
 }
 
+document.addEventListener('onInAppPurchaseSuccess', function(e){
+	hotjs.domUI.popupDialog('onInAppPurchaseSuccess', e);
+	return;
+	
+	if(data) {
+		var golds = 0;
+		if( data.productId == 'com.rnjsoft.GomokuMist.pkg1' ) {
+			golds = 500;
+		} else if( data.productId == 'com.rnjsoft.GomokuMist.pkg2' ) {
+			golds = 2000;
+		} else if( data.productId == 'com.rnjsoft.GomokuMist.pkg3' ) {
+			golds = 10000;
+		} else {
+			return;
+		}		
+
+		app_data.my.gold += n;
+		save_data();
+		updateDataShow();
+		dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>"
+						+ hotjs.i18n.get('paydone_happy') + '</p>');
+	}
+});
+
+document.addEventListener('onInAppPurchaseFailed', function(event){
+	hotjs.domUI.popupDialog('onInAppPurchaseFailed', JSON.stringify(event));
+	return;
+
+});
+
+document.addEventListener('onInAppPurchaseRestored', function(event){
+	hotjs.domUI.popupDialog('onInAppPurchaseRestored', JSON.stringify(event));
+	return;
+
+});
+
 function payWithIAP( pkgid ) {
 	if(! window.plugins) return;
 	if(! window.plugins.InAppPurchaseManager) return;	
 	
 	var iap = window.plugins.InAppPurchaseManager;
 	
-	var productId = hotjs.i18n.get( pkgid + '_id' );
-	iap.makePurchase( productId, 1, function(){
-	   app_data.my.gold += n;
-	   save_data();
-	   updateDataShow();
-	   dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('paydone'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-				+ hotjs.i18n.get('paydone_happy') + '</p>' );
-	}, function() {
-	   dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('payfailed'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-				+ hotjs.i18n.get('payfailed_retrylater') + '</p>' );
-	});
+	var productId = 'com.rnjsoft.GomokuMist.' + pkgid;
+	iap.makePurchase( productId, 1, function(){}, function(){} );
 }
 
 function popupNeedGoldDlg() {
