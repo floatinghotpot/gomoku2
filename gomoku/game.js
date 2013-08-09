@@ -991,11 +991,11 @@ function init_UI() {
 	
 	pagemain.innerHTML += packDialogHTML( 'pagebuy', 'icon-buy',
 "<table class='m'>\
-<tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r'></td></tr>\
-<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td><td></td></tr>\
+<tr><td colspan=4 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
+<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
 </table>" );
 	
 }
