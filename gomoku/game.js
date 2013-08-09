@@ -5,9 +5,26 @@ var ai_go = ai_go || {};
 
 (function(){
 
-var __FILE__ = ( (hotjs.agentType == 'Safari') || /(iphone|ipad|ipod)/i.test(navigator.userAgent) ) ?
-	function() { try { throw new Error(); } catch (e) { return e.sourceURL; } }() :
-	hotjs.this_file();
+var __FILE__;
+
+// Method 1: get path using the last loaded script, 
+// remember, we must append script in resource preloading.
+var scripts = document.getElementsByTagName("script");
+__FILE__ = scripts[scripts.length - 1].src;
+if( ! __FILE__ ) __FILE__ = scripts[scripts.length - 2].src;
+
+// Method 2: get with error exception
+try {
+    throw Error("get js path");
+}catch(ex){
+    if(ex.fileName) { //Firefox
+        __FILE__ = ex.fileName;
+    } else if(ex.sourceURL) { //Safari
+        __FILE__ = ex.sourceURL;
+    } else if(ex.stack) { //Chrome or IE10+
+        __FILE__ = (ex.stack.match(/at\s+(.*?):\d+:\d+/)||['',''])[1];
+    }
+}
 
 var __DIR__ = function(f) {
 	return hotjs.getAbsPath(f, __FILE__);
@@ -533,10 +550,10 @@ function buyProduct( productId ) {
 	} else {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('buy'), 
-				hotjs.i18n.get('payment_method_supported') + '<p>' +
+				hotjs.i18n.get('payment_supported') + '<p>' +
 				"<img src='" + __DIR__('img/iap.png') + "'><p>" +
 				"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
-				hotjs.i18n.get('select_payment_method') + '<p>',
+				hotjs.i18n.get('select_payment') + '<p>',
 				{
 					'iap' : function(){
 						payWithIAP( productId );
@@ -883,6 +900,18 @@ function game_resize(w, h) {
 	}
 }
 
+function packDialogHTML( dlg_id, x_id, content ) {
+	var ret = 
+"<div id='" + dlg_id + "' class='dialog round' popup='true' style='display:none;'>\
+<table class='dialog' cellspacing='0' cellpadding='0'>\
+<tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='" + x_id + "' src='" + __DIR__('img/x.png') + "'></td></tr>\
+<tr><td class='dlg10'></td><td class='dlg11 m'>" + content + "</td><td class='dlg12'></td></tr>\
+<tr><td class='dlg20'></td><td class='dlg21'></td><td class='dlg22'></td></tr>\
+</table></div>";
+	console.log( ret );
+	return ret;
+}
+
 function init_UI() {
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = 
@@ -927,12 +956,9 @@ function init_UI() {
 <td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td>\
 </table></div>";
 	
-	pagemain.innerHTML += 
-"<div id='pageopt' class='dialog round' popup='true' style='display:none;'>\
-<table class='m'>\
-<tr>\
-<td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'><img class='icon-opt' src='" + __DIR__('img/x.png') + "'></td>\
-</tr>\
+	pagemain.innerHTML += packDialogHTML( 'pageopt', 'icon-opt', 
+"<table class='m'>\
+<tr><td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'></td></tr>\
 <tr><td colspan=5 style='text-align:left'><span class='I18N' i18n='selectpeer'>Select</span></td></tr>\
 <tr>\
 <td><img class='btn-char icon48 clickable' v='1' src='" + __DIR__('img/peer1-64.png') +"'/><br/><span class='I18N' i18n='peer1'>Kid</span></td>\
@@ -961,19 +987,16 @@ function init_UI() {
 <td colspan=2 style='text-align:right'><span  class='I18N' i18n='resetdata'>Reset Data</span></td>\
 <td><img id='icon-reset' class='icon clickable' src='" + __DIR__('img/reset.png') + "' width='32'></td>\
 </tr>\
-</table>\
-</div>";
+</table>" );
 	
-	pagemain.innerHTML += 
-"<div id='pagebuy' class='dialog round' popup='true' style='display:none;'>\
-<table class='m'>\
-<tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r'><img class='icon-buy' src='" + __DIR__('img/x.png') + "'></td></tr>\
+	pagemain.innerHTML += packDialogHTML( 'pagebuy', 'icon-buy',
+"<table class='m'>\
+<tr><td></td><td colspan=2><span class='I18N' i18n='buyhappy'>Buy Happy</span></td><td class='r'></td></tr>\
 <tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td><td></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td><td></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td><td></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td><td></td></tr>\
-</table>\
-</div>";
+</table>" );
 	
 }
 
@@ -1049,7 +1072,6 @@ function game_main() {
 
 var res = 
 [
-   __DIR__('../lib/color-buttons.css'),
    __DIR__('game.css'),
    __DIR__('lang/en.lang.js'),
    __DIR__('lang/zh.lang.js'),
@@ -1079,6 +1101,15 @@ var res =
    __DIR__('img/peer3-128.png'),
    __DIR__('img/peer4-128.png'),
    __DIR__('img/peer5-128.png'),
+   __DIR__('img/dlg00.png'),
+   __DIR__('img/dlg01.png'),
+   __DIR__('img/dlg02.png'),
+   __DIR__('img/dlg10.png'),
+   __DIR__('img/dlg11.png'),
+   __DIR__('img/dlg12.png'),
+   __DIR__('img/dlg20.png'),
+   __DIR__('img/dlg21.png'),
+   __DIR__('img/dlg22.png'),
    __DIR__('img/win.png'),
    __DIR__('img/lost.png'),
    __DIR__('img/shrug.png'),
@@ -1093,8 +1124,7 @@ var res =
    __DIR__('img/ad.png'),
    __DIR__('img/adoff.png'),
    __DIR__('img/paypal.png'),
-   __DIR__('img/iap.png')
-   
+   __DIR__('img/iap.png')  
   ];
 
 function game_init() {
