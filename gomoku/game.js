@@ -419,42 +419,77 @@ function payWithPaypalMPL( pkgid ) {
 		});
 }
 
-document.addEventListener('onInAppPurchaseSuccess', function(e){
-	hotjs.domUI.popupDialog('onInAppPurchaseSuccess', e);
-	return;
+var productsOnSale = {
+		'com.rnjsoft.GomokuMist.pkg1' : {
+			golds: 500,
+			ready: true
+		},
+		'com.rnjsoft.GomokuMist.pkg2' : {
+			golds: 2000,
+			ready: true
+		},
+		'com.rnjsoft.GomokuMist.pkg3' : {
+			golds: 10000,
+			ready: true
+		}
+};
+
+function initIAP() {
+	if(! window.plugins) return;
+	if(! window.plugins.InAppPurchaseManager) return;
 	
-	if(data) {
-		var golds = 0;
-		if( data.productId == 'com.rnjsoft.GomokuMist.pkg1' ) {
-			golds = 500;
-		} else if( data.productId == 'com.rnjsoft.GomokuMist.pkg2' ) {
-			golds = 2000;
-		} else if( data.productId == 'com.rnjsoft.GomokuMist.pkg3' ) {
-			golds = 10000;
-		} else {
-			return;
-		}		
+	document.addEventListener('onInAppPurchaseSuccess', function(event){
+		// event.productId
+		// event.transactionId
+		// event.transactionReceipt
+		if(event) {
+			var boughtGolds = 0;
+			for( var k in productsOnSale ) {
+				if( event.productId == k ) {
+					boughtGolds = productsOnScale[k].golds;
+					break;
+				}
+			}
 
-		app_data.my.gold += n;
-		save_data();
-		updateDataShow();
-		dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>"
-						+ hotjs.i18n.get('paydone_happy') + '</p>');
-	}
-});
+			app_data.my.gold += boughtGolds;
+			save_data();
+			updateDataShow();
+			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
+							+ hotjs.i18n.get('paydone_happy') + '</p>');
+			
+		}
+	});
 
-document.addEventListener('onInAppPurchaseFailed', function(event){
-	hotjs.domUI.popupDialog('onInAppPurchaseFailed', JSON.stringify(event));
-	return;
+	document.addEventListener('onInAppPurchaseFailed', function(event){
+		// event.errorCode
+		// event.errorMsg
+		hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), event.errorMsg);
+	});
 
-});
+	document.addEventListener('onInAppPurchaseRestored', function(event){
+		// event.productId
+		// event.transactionId
+		// event.transactionReceipt
+	});
+	
+	var iap = window.plugins.InAppPurchaseManager;
+	iap.setup();
+	iap.requestProductData(
+		[
+			 'com.rnjsoft.GomokuMist.pkg1',
+			 'com.rnjsoft.GomokuMist.pkg2',
+			 'com.rnjsoft.GomokuMist.pkg3'
+		 ], function( data ) {
+			var validProducts = data.validProducts;
+			//alert( JSON.stringify(data.validProducts) );
+			var invalidIds = data.invalidIds;
+			iap_inited = true;
+		}, function() {
+		});
+}
 
-document.addEventListener('onInAppPurchaseRestored', function(event){
-	hotjs.domUI.popupDialog('onInAppPurchaseRestored', JSON.stringify(event));
-	return;
-
-});
+initIAP();
 
 function payWithIAP( pkgid ) {
 	if(! window.plugins) return;
@@ -510,11 +545,11 @@ function showPlayerInfoDlg() {
 			"<table>" + 
 			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
 			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
-			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l'><input class='round' id='myname' value='"+ app_data.my.name + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l'><input class='round' id='myemail' value='"+ app_data.my.email + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='l'><input class='round' id='mytwitter' value='"+ app_data.my.twitter + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l'><input class='round' id='myfacebook' value='"+ app_data.my.facebook + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l'>" + navigator.userAgent + "</td>" + 
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l'><input class='round m' id='myname' value='"+ app_data.my.name + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l'><input class='round m' id='myemail' value='"+ app_data.my.email + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='l'><input class='round m' id='mytwitter' value='"+ app_data.my.twitter + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l'><input class='round m' id='myfacebook' value='"+ app_data.my.facebook + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l' style='width:192px;'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
 					app_data.my.name = $('input#myname').val();
@@ -548,22 +583,28 @@ function buyProduct( productId ) {
 				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 				+ msg + '</p>' );
 	} else {
+		var imgs = {
+				'pkg1' : __DIR__('img/gold2.png'),
+				'pkg2' : __DIR__('img/gold3.png'),
+				'pkg3' : __DIR__('img/gold4.png')
+		};
 		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('buy'), 
-				hotjs.i18n.get('payment_supported') + '<p>' +
-				"<img src='" + __DIR__('img/iap.png') + "'><p>" +
-				"<img src='" + __DIR__('img/paypal.png') + "'><p>" +
-				hotjs.i18n.get('select_payment') + '<p>',
-				{
-					'iap' : function(){
-						payWithIAP( productId );
-						return true;
-					},
-					'paypal' : function(){
-						payWithPaypalMPL( productId );
-						return true;
-					}
-				});			
+				"<img class='icon48' src='" + imgs[productId] +  "'><br/>" + 
+				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
+				hotjs.i18n.get( productId + 'price' ), 
+				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
+				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/>" +
+				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
+				);
+		
+		$('button#btn-iap').on('click', function(){
+			hotjs.domUI.dismiss(dialog);
+			payWithIAP( productId );
+		});
+		$('button#btn-paypal').on('click', function(){
+			hotjs.domUI.dismiss(dialog);
+			payWithPaypalMPL( productId );
+		});		
 	}
 }
 
@@ -905,10 +946,9 @@ function packDialogHTML( dlg_id, content ) {
 "<div id='" + dlg_id + "' class='dialog round' popup='true' style='display:none;'>\
 <table class='dialog' cellspacing='0' cellpadding='0'>\
 <tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='dlgx " + dlg_id + "' src='" + __DIR__('img/x.png') + "'></td></tr>\
-<tr><td class='dlg10'></td><td class='dlg11 m'>" + content + "</td><td class='dlg12'></td></tr>\
+<tr><td class='dlg10'></td><td class='dlg11 m'><div class='dlg11'>" + content + "</div></td><td class='dlg12'></td></tr>\
 <tr><td class='dlg20'></td><td class='dlg21'></td><td class='dlg22'></td></tr>\
 </table></div>";
-	console.log( ret );
 	return ret;
 }
 
@@ -991,11 +1031,11 @@ function init_UI() {
 	
 	pagemain.innerHTML += packDialogHTML( 'pagebuy', 
 "<table>\
-<tr><td colspan=4 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
-<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg2'>2000 golds</span></td><td class='r'><span class='I18N' i18n='pkg2info'>50% OFF</span></td><td><button id='pkg2' class='btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg3'>10000 golds</span></td><td class='r'><span class='I18N' i18n='pkg3info'>70% OFF</span></td><td><button id='pkg3' class='btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
+<tr><td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
+<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l I18N' i18n='pkg0'>5 golds</td><td><button id='pkg0' class='button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l I18N' i18n='pkg1'>500 golds</td><td><button id='pkg1' class='button green btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l I18N' i18n='pkg2'>2000 golds</td><td><button id='pkg2' class='button yellow btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l I18N' i18n='pkg3'>10000 golds</td><td><button id='pkg3' class='button gold btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
 </table>" );
 	
 }

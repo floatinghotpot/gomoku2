@@ -22,7 +22,6 @@ window.plugins = window.plugins || {};
 
 var ad_inited = false;
 var paypalmpl_inited = false;
-var iap_inited = false;
 
 function initAd() {
 	var useiAd = false;
@@ -65,30 +64,10 @@ function initPayPalMPL() {
 	      });
 }
 
-function initIAP() {
-	if(! window.plugins.InAppPurchaseManager) return;
-	
-	var iap = window.plugins.InAppPurchaseManager;
-	iap.setup();
-	iap.requestProductData(
-		[
-			 'com.rnjsoft.GomokuMist.pkg1',
-			 'com.rnjsoft.GomokuMist.pkg2',
-			 'com.rnjsoft.GomokuMist.pkg3'
-		 ], function( data ) {
-			var validProducts = data.validProducts;
-			//alert( JSON.stringify(data.validProducts) );
-			var invalidIds = data.invalidIds;
-			iap_inited = true;
-		}, function() {
-		});
-}
-
 document.addEventListener('deviceready', function(){
 	if( window.plugins ) {
 		initAd();
 		initPayPalMPL();
-		initIAP();
 	}
 	
 	resources.runAppFromJs('gomoku/game.js');

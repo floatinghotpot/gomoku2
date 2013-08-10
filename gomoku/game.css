@@ -157,6 +157,17 @@ button.set {
 	width: 48px;
 	height: 48px;
 }
+.btn-buy {
+	width: 96px;
+	height: 48px;
+	padding: 0px;
+	margin: 0px;
+	display: block;
+}
+button.menu {
+	width: 96px;
+	height: 48px;
+}
 button.menu {
 	width: 96px;
 	height: 48px;
@@ -164,8 +175,7 @@ button.menu {
 span.icon {
 }
 img {
-	v-space: 0px;
-	padding-bottom: 0px;
+	padding: 0px;
 	margin: 0px;
 }
 img.icon {
@@ -239,7 +249,9 @@ td.dlg11 {
 	background: url('img/dlg11.png') left;
 	padding: 4px;
 }
-
+div.dlg11 {
+	overflow: auto;
+}
 td.dlg12 {
 	background: url('img/dlg12.png') right;
 }

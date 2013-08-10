@@ -38,7 +38,7 @@ hotjs.i18n.put('en', {
 	'pkg1info':'Only $0.99',
 	'pkg2info':'50% OFF!',
 	'pkg3info':'70% OFF!!',
-	'pkg0price':'Pick',
+	'pkg0price':'Pick Free',
 	'pkg1price':'US$ 0.99',
 	'pkg2price':'US$ 1.99',
 	'pkg3price':'US$ 5.99',
