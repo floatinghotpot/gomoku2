@@ -78,11 +78,15 @@ function load_data() {
 				level : 2,
 				size : 15,
 				mute : false,
-				info : true
+				info : true,
+				ad : true
 			};
 	}
 	if( data.opt.level < 1 || data.opt.level > 5 ) {
 		data.opt.level = 2;
+	}
+	if( data.my.gold <= 0 ) {
+		data.opt.ad = true;
 	}
 	return data;
 }
@@ -153,7 +157,7 @@ function worker_onmessage(evt) {
 			window.setTimeout( function(){
 				dialog = hotjs.domUI.popupDialog( 
 						hotjs.i18n.get('youwin'), 
-						"<img src='"+ __DIR__('img/win.png') + "'><p>" 
+						"<img class='icon192' src='"+ __DIR__('img/win.png') + "'><p>" 
 						+ hotjs.i18n.get('youwin10gold').replace('10',peer.per) + '</p>',
 						{
 							'playagain':function(){
@@ -377,6 +381,21 @@ function toggleTip( b ) {
 	}
 }
 
+var productsOnSale = {
+		'com.rnjsoft.GomokuMist.pkg1' : {
+			golds: 500,
+			valid: true
+		},
+		'com.rnjsoft.GomokuMist.pkg2' : {
+			golds: 2000,
+			valid: true
+		},
+		'com.rnjsoft.GomokuMist.pkg3' : {
+			golds: 10000,
+			valid: true
+		}
+};
+
 function payWithPaypalMPL( pkgid ) {
 	if(! window.plugins) return;
 	if(! window.plugins.PayPalMPL) return;	
@@ -387,52 +406,44 @@ function payWithPaypalMPL( pkgid ) {
 	}, function(){
 	});	 
 	
-	var n = Number( hotjs.i18n.get( pkgid ) );
-	var name = n + ' ' + hotjs.i18n.get( 'golds' );
-	var price = hotjs.i18n.get( pkgid + '_price' );
+	var name = hotjs.i18n.get( pkgid ) + ' ' + hotjs.i18n.get( 'golds' );
+	var subTotal = hotjs.i18n.get( pkgid + '_subTotal' );
 	var currency = hotjs.i18n.get( 'currency' );
 
 	ppm.setPaymentInfo({
 			'paymentCurrency' : currency,
-			'subTotal' : price,
+			'subTotal' : subTotal,
 			'recipient' : 'rnjsoft.mobile@gmail.com',
-			'description' : 'game coins (' + name + ')',
+			'description' : 'game coin (' + name + ')',
 			'merchantName' : 'GomokuMist'
 		}, function() {
 			ppm.pay({}, function() {
+				var n = productsOnSale[ 'com.rnjsoft.GomokuMist.' + pkgid ].golds;
 				app_data.my.gold += n;
 				save_data();
 				updateDataShow();
+				
+				hotjs.domUI.dismiss(dialog);
+
 				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
-						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
-								+ hotjs.i18n.get('paydone_happy') + '</p>');
+						"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
+						hotjs.i18n.get('get500happy').replace('500', n) + '</p>');
 			}, function() {
+				hotjs.domUI.dismiss(dialog);
+
 				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
 								+ hotjs.i18n.get('payfailed_retrylater')
 								+ '</p>');
 			});
 		}, function() {
+			hotjs.domUI.dismiss(dialog);
+
 			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
 							+ hotjs.i18n.get('payfailed_retrylater') + '</p>');
 		});
 }
-
-var productsOnSale = {
-		'com.rnjsoft.GomokuMist.pkg1' : {
-			golds: 500,
-			ready: true
-		},
-		'com.rnjsoft.GomokuMist.pkg2' : {
-			golds: 2000,
-			ready: true
-		},
-		'com.rnjsoft.GomokuMist.pkg3' : {
-			golds: 10000,
-			ready: true
-		}
-};
 
 function initIAP() {
 	if(! window.plugins) return;
@@ -442,29 +453,27 @@ function initIAP() {
 		// event.productId
 		// event.transactionId
 		// event.transactionReceipt
-		if(event) {
-			var boughtGolds = 0;
-			for( var k in productsOnSale ) {
-				if( event.productId == k ) {
-					boughtGolds = productsOnScale[k].golds;
-					break;
-				}
-			}
+		
+		var product = productsOnSale[ event.productId ];
+		if(! product) return;
+		
+		app_data.my.gold += product.golds;
+		save_data();
+		updateDataShow();
 
-			app_data.my.gold += boughtGolds;
-			save_data();
-			updateDataShow();
-			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
-							+ hotjs.i18n.get('paydone_happy') + '</p>');
-			
-		}
+		hotjs.domUI.dismiss(dialog);
+
+		dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
+					hotjs.i18n.get('get500happy').replace('500', product.golds) + '</p>');
 	});
 
 	document.addEventListener('onInAppPurchaseFailed', function(event){
 		// event.errorCode
 		// event.errorMsg
-		hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), event.errorMsg);
+		hotjs.domUI.dismiss(dialog);
+		
+		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), event.errorMsg);
 	});
 
 	document.addEventListener('onInAppPurchaseRestored', function(event){
@@ -475,21 +484,33 @@ function initIAP() {
 	
 	var iap = window.plugins.InAppPurchaseManager;
 	iap.setup();
+	
+	var productIds = [];
+	for( var k in productsOnSale ) {
+		productIds.push( k );
+	}
 	iap.requestProductData(
-		[
-			 'com.rnjsoft.GomokuMist.pkg1',
-			 'com.rnjsoft.GomokuMist.pkg2',
-			 'com.rnjsoft.GomokuMist.pkg3'
-		 ], function( data ) {
+		productIds, function( data ) {
+			window.plugins.InAppPurchaseManager.inUse = true;
+			
 			var validProducts = data.validProducts;
-			//alert( JSON.stringify(data.validProducts) );
+			if( Array.isArray(validProducts) && (validProducts.length > 0) ) {
+				$('button#btn-iap').removeAttr('disabled');
+			} else {
+				$('button#btn-iap').attr('disabled', 'disabled');
+			}
+			
 			var invalidIds = data.invalidIds;
-			iap_inited = true;
+			if( Array.isArray(invalidIds) ) {
+				for( var k in invalidIds ) {
+					productsOnSale[ k ].valid = false;
+				}
+			}
+			
 		}, function() {
+			$('button#btn-iap').attr('disabled', 'disabled');
 		});
 }
-
-initIAP();
 
 function payWithIAP( pkgid ) {
 	if(! window.plugins) return;
@@ -501,6 +522,87 @@ function payWithIAP( pkgid ) {
 	iap.makePurchase( productId, 1, function(){}, function(){} );
 }
 
+function buyProduct( productId ) {
+	if( productId == 'pkg0' ) {
+		var msg = hotjs.i18n.get('free_once_per_day');
+		var now = Date.now();
+		if(! app_data.my.free_time) app_data.my.free_time = 0;
+		if( now > app_data.my.free_time + 1000*3600*8 ) {
+			app_data.my.gold += 20;
+			app_data.my.free_time = now;
+			save_data();
+			updateDataShow();
+			msg = hotjs.i18n.get('free_picked');
+		}
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('pkg0info'), 
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+				+ msg + '</p>' );
+	} else {
+		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+		
+		var imgs = {
+				'pkg1' : __DIR__('img/gold2.png'),
+				'pkg2' : __DIR__('img/gold3.png'),
+				'pkg3' : __DIR__('img/gold4.png')
+		};
+		dialog = hotjs.domUI.popupDialog( 
+				"<img class='icon48' src='" + imgs[productId] +  "'><br/>" + 
+				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
+				hotjs.i18n.get( productId + 'price' ), 
+				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
+				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/>" +
+				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
+				);
+		
+		if( window.plugins && 
+				window.plugins.InAppPurchaseManager &&
+				window.plugins.InAppPurchaseManager.inUse ) {
+			$('button#btn-iap').on('click', function(){
+				$(this).html("<img src='" + resources.getLoadingGif() + "'>");
+				$(this).attr('disabled', 'disabled');
+				payWithIAP( productId );
+			});
+		} else {
+			$('button#btn-iap').css({'display':'none'});
+		}
+		
+		if( window.plugins &&
+				window.plugins.PayPalMPL &&
+				window.plugins.PayPalMPL.inUse ) {
+			$('button#btn-paypal').on('click', function(){
+				$(this).html("<img src='" + resources.getLoadingGif() + "'>");
+				$(this).attr('disabled', 'disabled');
+				payWithPaypalMPL( productId );
+			});
+		} else {
+			$('button#btn-paypal').css({'display':'none'});
+		}
+	}
+}
+
+function watchAdGetGift() {
+	if(! app_data.my.adtime) app_data.my.adtime = 0;
+	if(! app_data.my.adclicks) app_data.my.adclicks = 0;
+	if(! app_data.my.adtotal) app_data.my.adtotal = 0;
+	
+	var now = Date.now();
+	if( now > app_data.my.adtime + 1000 * 3600 ) {
+		app_data.my.adclicks = 0;
+	}
+	
+	if( app_data.my.adclicks < 2 ) {
+		app_data.my.gold += 10;
+		
+		app_data.my.adclicks ++;
+		app_data.my.adtotal ++;
+		app_data.my.adtime = now;
+
+		save_data();
+		updateDataShow();
+	}	
+}
+
 function popupNeedGoldDlg() {
 	if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 	dialog = hotjs.domUI.popupDialog( 
@@ -508,12 +610,14 @@ function popupNeedGoldDlg() {
 			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 			+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
 				'buy':function(){
+					hotjs.domUI.dismiss( dialog );
 					hotjs.domUI.toggle( $('div#pagebuy')[0] );
 					return true;
 				},
 				'watchad':function(){
-					app_data.opt.ad = true;
+					hotjs.domUI.dismiss( dialog );
 					toggleAd();
+					app_data.opt.ad = true;
 					return true;
 				}
 			} );	
@@ -543,12 +647,12 @@ function showPlayerInfoDlg() {
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get( 'myinfo' ), 
 			"<table>" + 
-			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='l'>" + + app_data.my.win + '/' + app_data.my.total + 
+			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='m'>" + + app_data.my.win + '/' + app_data.my.total + 
 			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
-			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='l'><input class='round m' id='myname' value='"+ app_data.my.name + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='l'><input class='round m' id='myemail' value='"+ app_data.my.email + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='l'><input class='round m' id='mytwitter' value='"+ app_data.my.twitter + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='l'><input class='round m' id='myfacebook' value='"+ app_data.my.facebook + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='m'><input class='round m' id='myname' size=32 value='"+ app_data.my.name + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='m'><input class='round m' id='myemail' size=32 value='"+ app_data.my.email + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='m'><input class='round m' id='mytwitter' size=32 value='"+ app_data.my.twitter + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='m'><input class='round m' id='myfacebook' size=32 value='"+ app_data.my.facebook + "'/></td>" + 
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l' style='width:192px;'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
@@ -564,71 +668,6 @@ function showPlayerInfoDlg() {
 					return true;
 				}
 			} );
-}
-
-function buyProduct( productId ) {
-	if( productId == 'pkg0' ) {
-		var msg = hotjs.i18n.get('free_once_per_day');
-		var now = Date.now();
-		if(! app_data.my.free_time) app_data.my.free_time = 0;
-		if( now > app_data.my.free_time + 1000*3600*8 ) {
-			app_data.my.gold += 20;
-			app_data.my.free_time = now;
-			save_data();
-			updateDataShow();
-			msg = hotjs.i18n.get('free_picked');
-		}
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('pkg0info'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-				+ msg + '</p>' );
-	} else {
-		var imgs = {
-				'pkg1' : __DIR__('img/gold2.png'),
-				'pkg2' : __DIR__('img/gold3.png'),
-				'pkg3' : __DIR__('img/gold4.png')
-		};
-		dialog = hotjs.domUI.popupDialog( 
-				"<img class='icon48' src='" + imgs[productId] +  "'><br/>" + 
-				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
-				hotjs.i18n.get( productId + 'price' ), 
-				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
-				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/>" +
-				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
-				);
-		
-		$('button#btn-iap').on('click', function(){
-			hotjs.domUI.dismiss(dialog);
-			payWithIAP( productId );
-		});
-		$('button#btn-paypal').on('click', function(){
-			hotjs.domUI.dismiss(dialog);
-			payWithPaypalMPL( productId );
-		});		
-	}
-}
-
-
-function watchAdGetGift() {
-	if(! app_data.my.adtime) app_data.my.adtime = 0;
-	if(! app_data.my.adclicks) app_data.my.adclicks = 0;
-	if(! app_data.my.adtotal) app_data.my.adtotal = 0;
-	
-	var now = Date.now();
-	if( now > app_data.my.adtime + 1000 * 3600 ) {
-		app_data.my.adclicks = 0;
-	}
-	
-	if( app_data.my.adclicks < 2 ) {
-		app_data.my.gold += 10;
-		
-		app_data.my.adclicks ++;
-		app_data.my.adtotal ++;
-		app_data.my.adtime = now;
-
-		save_data();
-		updateDataShow();
-	}	
 }
 
 function init_events() {
@@ -716,10 +755,12 @@ function init_events() {
 	});
 	
 	$('img.pageopt').on('click', function(){
+		hotjs.domUI.dismiss( dialog );
 		hotjs.domUI.toggle( $('div#pageopt')[0] );
 	});
 	
 	$('img.pagebuy').on('click', function(){
+		hotjs.domUI.dismiss( dialog );
 		hotjs.domUI.toggle( $('div#pagebuy')[0] );
 	});
 	
@@ -729,8 +770,8 @@ function init_events() {
 	});
 	
 	$('img.pageinfo').on('click', function(){
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('info'), 
+		hotjs.domUI.dismiss( dialog );
+		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('info'), 
 				"<table>" + 
 				"<tr><td><button class='menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
 				"<td><button class='menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
@@ -762,16 +803,16 @@ function init_events() {
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('toplist'), 
 					"<table>" + 
-					"<tr><td><button id='btn_topgold'>" + hotjs.i18n.get('topgold') + "</button></td>" +
-					"<td><button id='btn_topwin'>" + hotjs.i18n.get('topwin') + "</button></td>" +
-					"<td><button id='btn_toprate'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
+					"<tr><td><button id='btn_topgold' class='dialog button yellow'>" + hotjs.i18n.get('topgold') + "</button></td>" +
+					"<td><button id='btn_topwin' class='dialog button green'>" + hotjs.i18n.get('topwin') + "</button></td>" +
+					"<td><button id='btn_toprate' class='dialog button cyan'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
 					"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
 					"</table>" );
 		});
 		$('button#btn_about').on('click', function(){
 			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('about'), 
-					"<table><tr><td class='m'><img class='icon64' src='" + __DIR__('img/icon.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+					hotjs.i18n.get('gamename'), 
+					"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
 					);
 		});
 	});
@@ -1039,6 +1080,8 @@ function init_UI() {
 </table>" );
 	
 }
+
+initIAP();
 
 var app = new hotjs.App();
 

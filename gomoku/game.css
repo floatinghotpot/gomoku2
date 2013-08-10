@@ -142,7 +142,6 @@ td.menu {
 	width: 20%;
 }
 button {
-	opacity: 1;
 	-moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     -khtml-border-radius: 8px;
@@ -150,7 +149,7 @@ button {
 	background-color: #91bd09;
 	color: white;
 	text-shadow: 2px 2px 2px #2e7ebd;
-	font-size: 16px;
+	font-size: 14px;
 	cursor:pointer;
 }
 button.set {
@@ -194,7 +193,15 @@ img.icon64 {
 	width: 64px;
 	height: 64px;
 }
-
+img.icon128 {
+	width: 128px;
+}
+img.icon192 {
+	width: 192px;
+}
+img.icon256 {
+	width: 256px;
+}
 /** dialog with img texture ***/
 
 div.dialog {
@@ -285,7 +292,7 @@ td.dlg22 {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 }
-.button {
+.button, button.dialog {
 	white-space: nowrap;
 	line-height:1em;
 	position:relative;
@@ -392,7 +399,7 @@ td.dlg22 {
 .button.pink {
 	background-color: #e22092;
 }
-.button.green {
+.button.green, button.dialog {
 	background-color: #91bd09;
 }
 .button.rosy {

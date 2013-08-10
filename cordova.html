@@ -20,9 +20,6 @@
 <script>
 window.plugins = window.plugins || {};
 
-var ad_inited = false;
-var paypalmpl_inited = false;
-
 function initAd() {
 	var useiAd = false;
 	
@@ -59,7 +56,7 @@ function initPayPalMPL() {
 	      'appId': 'APP-80W284485P519543T',
 	      'appEnv': ppm.PaymentEnv.ENV_SANDBOX,
 	      }, function(){
-			  paypalmpl_inited = true;
+	    	  window.plugins.PayPalMPL.inUse = true;
 	      }, function(){
 	      });
 }
