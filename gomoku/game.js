@@ -674,11 +674,11 @@ function init_events() {
 		}
 	});
 	
-	$('img.icon-opt').on('click', function(){
+	$('img.pageopt').on('click', function(){
 		hotjs.domUI.toggle( $('div#pageopt')[0] );
 	});
 	
-	$('img.icon-buy').on('click', function(){
+	$('img.pagebuy').on('click', function(){
 		hotjs.domUI.toggle( $('div#pagebuy')[0] );
 	});
 	
@@ -687,7 +687,7 @@ function init_events() {
 		buyProduct( productId );
 	});
 	
-	$('img.icon-info').on('click', function(){
+	$('img.pageinfo').on('click', function(){
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('info'), 
 				"<table>" + 
@@ -900,11 +900,11 @@ function game_resize(w, h) {
 	}
 }
 
-function packDialogHTML( dlg_id, x_id, content ) {
+function packDialogHTML( dlg_id, content ) {
 	var ret = 
 "<div id='" + dlg_id + "' class='dialog round' popup='true' style='display:none;'>\
 <table class='dialog' cellspacing='0' cellpadding='0'>\
-<tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='" + x_id + "' src='" + __DIR__('img/x.png') + "'></td></tr>\
+<tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='dlgx " + dlg_id + "' src='" + __DIR__('img/x.png') + "'></td></tr>\
 <tr><td class='dlg10'></td><td class='dlg11 m'>" + content + "</td><td class='dlg12'></td></tr>\
 <tr><td class='dlg20'></td><td class='dlg21'></td><td class='dlg22'></td></tr>\
 </table></div>";
@@ -916,7 +916,7 @@ function init_UI() {
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = 
 "<div id='gameView' class='full' style='display:block;'></div>\
-<div id='user1' class='userinfo round'>\
+<div id='user1' class='userinfo round shadow'>\
 <table class='m'>\
 <tr>\
 <td><img id='my-img' class='icon32 clickable' src='" + __DIR__('img/user2.png') + "'></td>\
@@ -924,7 +924,7 @@ function init_UI() {
 <td><img width=32 id='my-gocolor' src='" + __DIR__('img/blackgo.png') + "'/></td>\
 </tr>\
 </table></div>\
-<div id='user2' class='userinfo round'>\
+<div id='user2' class='userinfo round shadow'>\
 <table class='m'>\
 <tr>\
 <td><img width=32 id='peer-gocolor' src='" + __DIR__('img/whitego.png') + "'/></td>\
@@ -941,9 +941,9 @@ function init_UI() {
 <tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td></tr>\
 <tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/></td></tr>\
-<tr><td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/></td>\
-<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td></tr>\
+<td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td></tr>\
+<tr><td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td></tr>\
 </table></div>\
 <div id='controlbottom' class='control'>\
 <table class='control'>\
@@ -951,12 +951,12 @@ function init_UI() {
 <td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td>\
 <td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
-<td><img class='icon clickable icon-opt' src='" + __DIR__('img/options.png') + "'/></td>\
-<td><img class='icon clickable icon-buy' src='" + __DIR__('img/gold.png') + "'/></td>\
-<td><img class='icon clickable icon-info' src='" + __DIR__('img/info.png') + "'/></td>\
+<td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td>\
+<td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td>\
 </table></div>";
 	
-	pagemain.innerHTML += packDialogHTML( 'pageopt', 'icon-opt', 
+	pagemain.innerHTML += packDialogHTML( 'pageopt', 
 "<table class='m'>\
 <tr><td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'></td></tr>\
 <tr><td colspan=5 style='text-align:left'><span class='I18N' i18n='selectpeer'>Select</span></td></tr>\
@@ -989,8 +989,8 @@ function init_UI() {
 </tr>\
 </table>" );
 	
-	pagemain.innerHTML += packDialogHTML( 'pagebuy', 'icon-buy',
-"<table class='m'>\
+	pagemain.innerHTML += packDialogHTML( 'pagebuy', 
+"<table>\
 <tr><td colspan=4 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
 <tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg0'>5 golds</span></td><td class='r'><span class='I18N' i18n='pkg0info'>FREE everyday</span></td><td><button id='pkg0' class='btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l'><span class='I18N' i18n='pkg1'>500 golds</span></td><td class='r'><span class='I18N' i18n='pkg1info'>&nbsp;</span></td><td><button id='pkg1' class='btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
@@ -1130,7 +1130,7 @@ var res =
 function game_init() {
 	// show logo
 	hotjs.domUI.showSplash( true, 
-			"<h1>GOMOKU<br/>MIST</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
+			"<h1>GOMOKU<br/>MIST</h1><img class='logo round shadow' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 	
 	var tLoadingStart = Date.now();

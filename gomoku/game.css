@@ -30,6 +30,10 @@ div, table, td, p, span, button, input, textarea {
     -khtml-border-radius: 10px;
     border-radius: 10px;
 }
+.shadow {
+	-webkit-box-shadow:5px 5px 10px black;
+	-moz-box-shadow:5px 5px 10px black;	
+}
 .clickable {
 	cursor:pointer;
 }
@@ -79,8 +83,6 @@ div.userinfo {
 	opacity: 1;
 	color: #eeeeee;
 	background: url(img/bg_linen.png) /*#666666*/;
-	-webkit-box-shadow:5px 5px 10px black;
-	-moz-box-shadow:5px 5px 10px black;
 }
 div#user1 {
 	left: 2px;
@@ -191,9 +193,10 @@ div.dialog {
 button.dialog {
 	height: 32px;
 }
-img.x {
+img.dlgx {
 	padding: 0px;
 	margin: 0px;
+	display: block;
 }
 table.dialog {
 	padding: 0px;
@@ -229,16 +232,16 @@ td.dlg02 {
 }
 
 td.dlg10 {
-	background: url('img/dlg10.png') repeat-y left;
+	background: url('img/dlg10.png') left;
 }
 
 td.dlg11 {
-	background: url('img/dlg11.png');
+	background: url('img/dlg11.png') left;
 	padding: 4px;
 }
 
 td.dlg12 {
-	background: url('img/dlg12.png') repeat-y right;
+	background: url('img/dlg12.png') right;
 }
 
 td.dlg20 {
