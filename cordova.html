@@ -25,7 +25,6 @@ function initAd() {
 	
 	if( useiAd && window.plugins.iAd) {
 		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
-	    	ad_inited = true;
 	    	window.plugins.iAd.inUse = true;
 	    },function(){
 	    });
@@ -41,7 +40,8 @@ function initAd() {
 		            'adSize': am.AD_SIZE.BANNER,
 		            'bannerAtTop': false
 	            }, function() {
-	            	ad_inited = true;
+	            	window.plugins.AdMob.isTesting = false; // change it to false later
+	            	
 	            	window.plugins.AdMob.inUse = true;
 	            }, function(){
 	            });

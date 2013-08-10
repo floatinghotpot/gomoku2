@@ -335,8 +335,9 @@ function toggleAd() {
 			window.plugins.iAd.showAd( app_data.opt.ad ); 
 		}
 		if( window.plugins.AdMob && window.plugins.AdMob.inUse ) {
+			var isTesting = window.plugins.AdMob.isTesting;
 			if(! window.plugins.AdMob.requested) {
-				window.plugins.AdMob.requestAd({ 'isTesting':true }, function(){
+				window.plugins.AdMob.requestAd({ 'isTesting':isTesting }, function(){
 					window.plugins.AdMob.requested = true;
 				}, function(){});
 			}
