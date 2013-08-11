@@ -51,7 +51,7 @@ hotjs.i18n.put('en', {
 	'payment_supported' : 'Available Payments:',
 	'select_payment' : 'Select your favorite:',
 	'paypal' : 'PayPal',
-	'iap' : 'Apple IAP',
+	'iap' : 'Apple ID',
 	'paydone' : 'Purchase Success',
 	'get500happy' : 'You get 500 golds.<br/>Enjoy gaming!',
 	'payfailed' : 'Payment Failed',

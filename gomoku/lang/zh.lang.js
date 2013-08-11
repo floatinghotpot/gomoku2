@@ -50,7 +50,7 @@ hotjs.i18n.put('zh', {
 	'cancel':'取消',
 	'select_payment' : '支付方式：',
 	'paypal' : 'PayPal',
-	'iap' : 'Apple IAP',
+	'iap' : 'Apple ID',
 	'paydone' : '充值成功',
 	'get500happy' : '您获得 500 个金币。<br/>祝您游戏愉快！',
 	'payfailed' : '充值失败',
