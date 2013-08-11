@@ -1117,7 +1117,7 @@ function game_main() {
 	
 	board = (new GoBoard( app_data.opt.size ))
 		.setSize(w, h).showGrid(false)
-		.setColor("white").setGridStyle(false)
+		.setColor("white").setGridStyle(true)
 		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
 		.setGoImages( [ 
 		               resources.get(__DIR__('img/blackgo.png')),
