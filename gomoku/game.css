@@ -167,12 +167,6 @@ button.menu {
 	width: 128px;
 	height: 48px;
 }
-button.menu {
-	width: 96px;
-	height: 48px;
-}
-span.icon {
-}
 img {
 	padding: 0px;
 	margin: 0px;
@@ -229,7 +223,6 @@ table.dialog {
 td.dlg00 {
 	background: url('img/dlg00.png') no-repeat top left;
 	width:32px;
-    height:35px;
     margin: 0px;
     padding: 0px;
 }
@@ -240,12 +233,12 @@ td.dlg01 {
 
 td.dlg02 {
 	background: url('img/dlg02.png') no-repeat top right;
-	width:32px;
-    height:35px;
+	width:48px;
+    height:55px;
     margin: 0px;
     padding: 0px;
     text-align: left;
-	vertical-align: bottom;
+	vertical-align: middle;
 }
 
 td.dlg10 {
@@ -265,8 +258,7 @@ td.dlg12 {
 
 td.dlg20 {
 	background: url('img/dlg20.png') no-repeat bottom left ;
-    width:32px;
-    height:27px;
+	height: 27px;
     margin: 0px;
     padding: 0px;    
 }
@@ -277,8 +269,6 @@ td.dlg21 {
 
 td.dlg22 {
 	background: url('img/dlg22.png') no-repeat bottom right ;
-    width:32px;
-    height:27px;
     margin: 0px;
     padding: 0px;    
 }

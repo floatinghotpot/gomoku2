@@ -39,6 +39,13 @@ var dialog;
 
 var app_key = 'com.rnjsoft.GomokuMist';
 
+var touch_event = 'click';
+if( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ) {
+	touch_event = 'touchstart';
+}
+
+var tLoadingStart = Date.now();
+
 function rankLevel( win, total ) {
 	if( total == 0 ) return 0;
 	
@@ -179,7 +186,7 @@ function worker_onmessage(evt) {
 		}
 
 		if( board.gameOver ) {
-			resources.playAudio( __DIR__('audio/magic.mp3') );
+			resources.playAudio( __DIR__('audio/magic.mp3'), true );
 		}
 		break;
 	case 'go':
@@ -346,11 +353,18 @@ function toggleAd() {
 	}	
 }
 
+// loop play: music1.mp3, music2.mp3, music3.mp3
+var music_index = 1;
 function toggleMusic() {
+	var music_file = __DIR__('audio/music' + music_index + '.mp3');
 	if( app_data.opt.music ) {
+		resources.playAudio(music_file, false, true);
 		$('img#icon-music').attr('src', __DIR__('img/music.png') );
 	} else {
+		resources.stopAudio(music_file);
 		$('img#icon-music').attr('src', __DIR__('img/musicoff.png') );
+		music_index ++;
+		if(music_index > 3) music_index = 1;
 	}
 }
 
@@ -552,7 +566,7 @@ function buyProduct( productId ) {
 				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
 				hotjs.i18n.get( productId + 'price' ), 
 				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
-				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/>" +
+				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button> " +
 				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
 				);
 		
@@ -674,9 +688,11 @@ function showPlayerInfoDlg() {
 function init_events() {
 	$(window).resize( game_resize );
 	
-	document.addEventListener( 'onClickAd', watchAdGetGift );
+	$('.clickable').on(touch_event, function(){
+		resources.playAudio( __DIR__('audio/click.mp3'), true );
+	});
 	
-	$('button#btn-quick').on('click', restartGame );
+	document.addEventListener( 'onClickAd', watchAdGetGift );
 	
 	$('img.icon-start').on('click', function(){
 		if( board.gameOver ){
@@ -737,7 +753,7 @@ function init_events() {
 		}
 	});
 
-	$('img.icon-tip').on('click', function(){
+	$('img.icon-tip').on(touch_event, function(){
 		if( ! board.canUndo() ) {
 			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
@@ -755,13 +771,19 @@ function init_events() {
 		}
 	});
 	
-	$('img.pageopt').on('click', function(){
+	$('img.pageopt').on(touch_event, function(){
 		hotjs.domUI.dismiss( dialog );
 		hotjs.domUI.toggle( $('div#pageopt')[0] );
 	});
+	$('img.pageopt_x').on('click', function(){
+		hotjs.domUI.toggle( $('div#pageopt')[0] );
+	});
 	
-	$('img.pagebuy').on('click', function(){
+	$('img.pagebuy').on(touch_event, function(){
 		hotjs.domUI.dismiss( dialog );
+		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+	});
+	$('img.pagebuy_x').on('click', function(){
 		hotjs.domUI.toggle( $('div#pagebuy')[0] );
 	});
 	
@@ -769,53 +791,48 @@ function init_events() {
 		var productId = $(this).attr('id');
 		buyProduct( productId );
 	});
-	
-	$('img.pageinfo').on('click', function(){
+
+	$('img.pageinfo').on(touch_event, function(){
 		hotjs.domUI.dismiss( dialog );
-		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('info'), 
+		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+	});
+	$('img.pageinfo_x').on('click', function(){
+		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+	});
+	
+	$('button#btn_gamerule').on(touch_event, function(){
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('gamerule'), 
+				"<table><tr><td class='l'>" + hotjs.i18n.get('gamerule_text') + "</td></tr></table>"
+				);
+	});
+	$('button#btn_gametip').on(touch_event, function(){
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('gametip'), 
+				"<table><tr><td class='l'>" + hotjs.i18n.get('gametip_text') + "</td></tr></table>"
+				);
+	});
+	$('button#btn_welcome').on(touch_event, function(){
+		showWelcomeDlg();
+	});
+	$('button#btn_yourinfo').on('click', function(){
+		showPlayerInfoDlg();
+	});
+	$('button#btn_toplist').on('click', function(){
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('toplist'), 
 				"<table>" + 
-				"<tr><td><button class='menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
-				"<td><button class='menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
-				"<tr><td><button class='menu button yellow' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
-				"<td><button class='menu button green' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-				"<tr><td><button class='menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
-				"<td><button class='menu button blue' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+				"<tr><td><button id='btn_topgold' class='dialog button yellow'>" + hotjs.i18n.get('topgold') + "</button></td>" +
+				"<td><button id='btn_topwin' class='dialog button green'>" + hotjs.i18n.get('topwin') + "</button></td>" +
+				"<td><button id='btn_toprate' class='dialog button cyan'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
+				"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
 				"</table>" );
-		
-		$('button#btn_gamerule').on('click', function(){
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('gamerule'), 
-					"<table><tr><td class='l'>" + hotjs.i18n.get('gamerule_text') + "</td></tr></table>"
-					);
-		});
-		$('button#btn_gametip').on('click', function(){
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('gametip'), 
-					"<table><tr><td class='l'>" + hotjs.i18n.get('gametip_text') + "</td></tr></table>"
-					);
-		});
-		$('button#btn_welcome').on('click', function(){
-			showWelcomeDlg();
-		});
-		$('button#btn_yourinfo').on('click', function(){
-			showPlayerInfoDlg();
-		});
-		$('button#btn_toplist').on('click', function(){
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('toplist'), 
-					"<table>" + 
-					"<tr><td><button id='btn_topgold' class='dialog button yellow'>" + hotjs.i18n.get('topgold') + "</button></td>" +
-					"<td><button id='btn_topwin' class='dialog button green'>" + hotjs.i18n.get('topwin') + "</button></td>" +
-					"<td><button id='btn_toprate' class='dialog button cyan'>" + hotjs.i18n.get('toprate') + "</button></td><tr>" + 
-					"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
-					"</table>" );
-		});
-		$('button#btn_about').on('click', function(){
-			dialog = hotjs.domUI.popupDialog( 
-					hotjs.i18n.get('gamename'), 
-					"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
-					);
-		});
+	});
+	$('button#btn_about').on(touch_event, function(){
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('gamename'), 
+				"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+				);
 	});
 	
 	function genBriefInfo( char_id ) {
@@ -828,19 +845,25 @@ function init_events() {
 			+ hotjs.i18n.get('winlost10gold').replace('10', peer.per) + '</p>';
 	}
 
-	$('img#peer-img').on('click', function(){
+	$('img#peer-img').on(touch_event, function(){
 		var char_id = app_data.opt.level;
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get( 'peer' + char_id ), 
-				genBriefInfo( char_id )
+				genBriefInfo( char_id ),
+				{
+					'selectpeer' : function() {
+						hotjs.domUI.toggle( $('div#pageopt')[0] );
+						return true;
+					}
+				}
 				);
 	});
 	
-	$('img#my-img').on('click', function(){
+	$('img#my-img').on(touch_event, function(){
 		showPlayerInfoDlg();
 	});
 
-	$('img.btn-char').on('click', function(){
+	$('img.btn-char').on(touch_event, function(){
 		var char_id = $(this).attr('v');
 		var peer = app_data.ais[ 'peer' + char_id ];
 		
@@ -861,6 +884,7 @@ function init_events() {
 
 						updateDataShow();
 						
+						hotjs.domUI.toggle( $('div#pageopt')[0] );
 						return true;
 					},
 					'cancel' : function() {
@@ -873,6 +897,8 @@ function init_events() {
 	$('button.btn-size').on('click', function(){
 		app_data.opt.size = $(this).attr('v');
 		save_data();
+		
+		hotjs.domUI.toggle( $('div#pageopt')[0] );
 		
 		board.resetGame( app_data.opt.size );
 	});
@@ -939,15 +965,15 @@ function game_resize(w, h) {
 
 	var pg = $('div#pageopt');
 	var sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
 	
 	pg = $('div#pagebuy');
 	sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
 
 	pg = $('div#pageinfo');
 	sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2 -10) + 'px'});
+	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
 
 	if( w>h ) {
 		$('div#controlright').css({ // right
@@ -987,7 +1013,7 @@ function packDialogHTML( dlg_id, content ) {
 	var ret = 
 "<div id='" + dlg_id + "' class='dialog round' popup='true' style='display:none;'>\
 <table class='dialog' cellspacing='0' cellpadding='0'>\
-<tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='dlgx " + dlg_id + "' src='" + __DIR__('img/x.png') + "'></td></tr>\
+<tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='dlgx " + dlg_id + "_x' src='" + __DIR__('img/x.png') + "'></td></tr>\
 <tr><td class='dlg10'></td><td class='dlg11 m'><div class='dlg11'>" + content + "</div></td><td class='dlg12'></td></tr>\
 <tr><td class='dlg20'></td><td class='dlg21'></td><td class='dlg22'></td></tr>\
 </table></div>";
@@ -996,20 +1022,33 @@ function packDialogHTML( dlg_id, content ) {
 
 function init_UI() {
 	var pagemain = document.getElementById('pagemain');
-	pagemain.innerHTML = 
+	pagemain.innerHTML = '';
+	
+	if( /(ipad)/i.test(navigator.userAgent) ) {
+		pagemain.innerHTML += 
+"<style TYPE='text/css'>\
+img.icon, img.icon32, img.icon48 { width:64px; height:64px; }\
+img.logo, img.icon128 { width:256px; height:256px; }\
+img.dlgx { width:48px; height:48px; }\
+body, div, td, button, p, span, input { font-size:18px; }\
+button.set { width:64px; height:64px; }\
+</style>";
+	}	
+	
+	pagemain.innerHTML +=
 "<div id='gameView' class='full' style='display:block;'></div>\
 <div id='user1' class='userinfo round shadow'>\
 <table class='m'>\
 <tr>\
 <td><img id='my-img' class='icon32 clickable' src='" + __DIR__('img/user2.png') + "'></td>\
 <td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='my-gold'>1800</span></td>\
-<td><img width=32 id='my-gocolor' src='" + __DIR__('img/blackgo.png') + "'/></td>\
+<td><img id='my-gocolor' class='icon32' src='" + __DIR__('img/blackgo.png') + "'/></td>\
 </tr>\
 </table></div>\
 <div id='user2' class='userinfo round shadow'>\
 <table class='m'>\
 <tr>\
-<td><img width=32 id='peer-gocolor' src='" + __DIR__('img/whitego.png') + "'/></td>\
+<td><img id='peer-gocolor' class='icon32' src='" + __DIR__('img/whitego.png') + "'/></td>\
 <td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='peer-gold'>1500</span></td>\
 <td><img id='peer-img' class='icon32 clickable' src='" + __DIR__('img/user1.png') + "'></td>\
 </tr>\
@@ -1051,11 +1090,11 @@ function init_UI() {
 </tr>\
 <tr><td colspan=4 style='text-align:left'><span  class='I18N' i18n='boardsize'>Board Size</span></td></tr>\
 <tr>\
-<td><button class='btn-size set button rosy' v='11'>11</button></td>\
-<td><button class='btn-size set button yellow' v='13'>13</button></td>\
-<td><button class='btn-size set button green' v='15'>15</button></td>\
-<td><button class='btn-size set button cyan' v='17'>17</button></td>\
-<td><button class='btn-size set button blue' v='19'>19</button></td>\
+<td><button class='btn-size clickable set button rosy' v='11'>11</button></td>\
+<td><button class='btn-size clickable set button yellow' v='13'>13</button></td>\
+<td><button class='btn-size clickable set button green' v='15'>15</button></td>\
+<td><button class='btn-size clickable set button cyan' v='17'>17</button></td>\
+<td><button class='btn-size clickable set button blue' v='19'>19</button></td>\
 </tr>\
 <tr>\
 <td style='text-align:right'><span  class='I18N' i18n='music'>Music</span></td>\
@@ -1074,12 +1113,22 @@ function init_UI() {
 	pagemain.innerHTML += packDialogHTML( 'pagebuy', 
 "<table>\
 <tr><td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
-<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l I18N' i18n='pkg0'>5 golds</td><td><button id='pkg0' class='button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l I18N' i18n='pkg1'>500 golds</td><td><button id='pkg1' class='button green btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l I18N' i18n='pkg2'>2000 golds</td><td><button id='pkg2' class='button yellow btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
-<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l I18N' i18n='pkg3'>10000 golds</td><td><button id='pkg3' class='button gold btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
+<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l I18N' i18n='pkg0'>5 golds</td><td><button id='pkg0' class=' clickable button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l I18N' i18n='pkg1'>500 golds</td><td><button id='pkg1' class=' clickable button green btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l I18N' i18n='pkg2'>2000 golds</td><td><button id='pkg2' class=' clickable button yellow btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
+<tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l I18N' i18n='pkg3'>10000 golds</td><td><button id='pkg3' class=' clickable button gold btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
 </table>" );
 	
+	pagemain.innerHTML += packDialogHTML( 'pageinfo', 
+"<table>" + 
+"<tr><td colspan=2 class='m I18N' i18n='info'>Info</td></tr>" +
+"<tr><td><button class=' clickable menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
+"<td><button class=' clickable menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
+"<tr><td><button class=' clickable menu button yellow' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
+"<td><button class=' clickable menu button green' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
+"<tr><td><button class=' clickable menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
+"<td><button class=' clickable menu button blue' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+"</table>" );
 }
 
 initIAP();
@@ -1102,16 +1151,16 @@ function game_main() {
 		.setContainer('gameView')
 		.setSize(w,h)
 		.setBgImage( false, resources.get(__DIR__('img/yard.jpg')) )
-		.setMaxFps(25)
+		.setMaxFps( 25 )
 		.showFPS(false);
 
 	ai_player = new AIPlayer().init();
 	
 	function playMoveSound( player ){
 		if( player == 1 ) {
-			resources.playAudio( __DIR__('audio/move2.mp3') );
+			resources.playAudio( __DIR__('audio/move2.mp3'), true );
 		} else {
-			resources.playAudio( __DIR__('audio/move.mp3') );
+			resources.playAudio( __DIR__('audio/move.mp3'), true );
 		}
 	}
 	
@@ -1134,24 +1183,23 @@ function game_main() {
 		.resetGame();
 	
 	hotjs.i18n.translate();
-	
 	game_resize();
-
 	updateDataShow();
-
-	hotjs.domUI.showSplash( false );
-	
 	toggleAudio();
 	toggleMusic();
-	toggleAd();
-	
-	resources.playAudio( __DIR__('audio/hello.mp3') );
-
 	app.addNode(gameView).start();
-	
-	if( ! app_data.opt.get_gift ) {
-		showWelcomeDlg();		
-	}
+
+	var tLoadingDone = Date.now();
+	var tUsed = tLoadingDone - tLoadingStart;
+	var tWait = ( tUsed < 3000 ) ? (3000 - tUsed) : 10; 
+	window.setTimeout( function() {
+		hotjs.domUI.showSplash( false );
+		resources.playAudio( __DIR__('audio/hello.mp3'), true );
+		toggleAd();
+		if( ! app_data.opt.get_gift ) {
+			showWelcomeDlg();		
+		}
+	}, tWait );
 }
 
 var res = 
@@ -1217,18 +1265,7 @@ function game_init() {
 			"<h1>GOMOKU<br/>MIST</h1><img class='logo round shadow' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 	
-	var tLoadingStart = Date.now();
-	resources.load( res, { ready: 
-		function(){
-			var tLoadingDone = Date.now();
-			var tUsed = tLoadingDone - tLoadingStart;
-			if( tUsed > 3000 ) {
-				game_main();
-			} else {
-				window.setTimeout( game_main, 3000 - tUsed );
-			} 
-		} 
-	});
+	resources.load( res, { ready: game_main } );
 }
 
 function game_exit() {
