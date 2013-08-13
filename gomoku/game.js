@@ -200,11 +200,11 @@ function worker_onmessage(evt) {
 		var bestMove = s.bestMove;
 
 		if( ! board.gameOver ) {
-			var char = app_data.ais[ 'peer' + app_data.opt.level ];
-			if( msg.used_time < char.think_time ) {
+			var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			if( msg.used_time < peer.think_time ) {
 				window.setTimeout( function(){
 					board.go( bestMove[0], bestMove[1] );
-				}, (char.think_time - msg.used_time) );				
+				}, (peer.think_time - msg.used_time) );				
 			} else {
 				board.go( bestMove[0], bestMove[1] );
 			}
@@ -460,6 +460,39 @@ function payWithPaypalMPL( pkgid ) {
 		});
 }
 
+function requestIAPProductInfo() {
+	var iap = window.plugins.InAppPurchaseManager;
+	var productIds = [];
+	for( var k in productsOnSale ) {
+		productIds.push( k );
+	}
+	iap.requestProductData( 
+		productIds, 
+		function( data ) {
+			window.plugins.InAppPurchaseManager.inUse = true;
+			
+			var validProducts = data.validProducts;
+			if( Array.isArray(validProducts) && (validProducts.length > 0) ) {
+				$('button#btn-iap').removeAttr('disabled');
+			} else {
+				$('button#btn-iap').attr('disabled', 'disabled');
+			}
+			
+			var invalidIds = data.invalidIds;
+			if( Array.isArray(invalidIds) ) {
+				for( var k in invalidIds ) {
+					productsOnSale[ k ].valid = false;
+				}
+			}
+			
+		}, function() {
+			$('button#btn-iap').attr('disabled', 'disabled');
+			
+			window.setTimeout( requestIAPProductInfo, 1000 * 30 );
+		}
+	);	
+}
+
 function initIAP() {
 	if(! window.plugins) return;
 	if(! window.plugins.InAppPurchaseManager) return;
@@ -497,34 +530,9 @@ function initIAP() {
 		// event.transactionReceipt
 	});
 	
-	var iap = window.plugins.InAppPurchaseManager;
-	iap.setup();
-	
-	var productIds = [];
-	for( var k in productsOnSale ) {
-		productIds.push( k );
-	}
-	iap.requestProductData(
-		productIds, function( data ) {
-			window.plugins.InAppPurchaseManager.inUse = true;
-			
-			var validProducts = data.validProducts;
-			if( Array.isArray(validProducts) && (validProducts.length > 0) ) {
-				$('button#btn-iap').removeAttr('disabled');
-			} else {
-				$('button#btn-iap').attr('disabled', 'disabled');
-			}
-			
-			var invalidIds = data.invalidIds;
-			if( Array.isArray(invalidIds) ) {
-				for( var k in invalidIds ) {
-					productsOnSale[ k ].valid = false;
-				}
-			}
-			
-		}, function() {
-			$('button#btn-iap').attr('disabled', 'disabled');
-		});
+	window.plugins.InAppPurchaseManager.setup();;
+
+	requestIAPProductInfo();
 }
 
 function payWithIAP( pkgid ) {
@@ -566,7 +574,7 @@ function buyProduct( productId ) {
 				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
 				hotjs.i18n.get( productId + 'price' ), 
 				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
-				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button> " +
+				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/> " +
 				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
 				);
 		
@@ -664,10 +672,10 @@ function showPlayerInfoDlg() {
 			"<table>" + 
 			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='m'>" + + app_data.my.win + '/' + app_data.my.total + 
 			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
-			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='m'><input class='round m' id='myname' size=32 value='"+ app_data.my.name + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='m'><input class='round m' id='myemail' size=32 value='"+ app_data.my.email + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='m'><input class='round m' id='mytwitter' size=32 value='"+ app_data.my.twitter + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='m'><input class='round m' id='myfacebook' size=32 value='"+ app_data.my.facebook + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='m'><input class='round m' id='myname' size=24 value='"+ app_data.my.name + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='m'><input class='round m' id='myemail' size=24 value='"+ app_data.my.email + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='m'><input class='round m' id='mytwitter' size=24 value='"+ app_data.my.twitter + "'/></td>" + 
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='m'><input class='round m' id='myfacebook' size=24 value='"+ app_data.my.facebook + "'/></td>" + 
 			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l' style='width:192px;'>" + navigator.userAgent + "</td>" + 
 			"</table>", {
 				'save' : function() {
@@ -1031,7 +1039,9 @@ img.icon, img.icon32, img.icon48 { width:64px; height:64px; }\
 img.logo, img.icon128 { width:256px; height:256px; }\
 img.dlgx { width:48px; height:48px; }\
 body, div, td, button, p, span, input { font-size:18px; }\
+button.dialog { height:64px; }\
 button.set { width:64px; height:64px; }\
+button.menu { width:144px; height:64px; }\
 </style>";
 	}	
 	
@@ -1194,7 +1204,7 @@ function game_main() {
 	var tWait = ( tUsed < 3000 ) ? (3000 - tUsed) : 10; 
 	window.setTimeout( function() {
 		hotjs.domUI.showSplash( false );
-		resources.playAudio( __DIR__('audio/hello.mp3'), true );
+		//resources.playAudio( __DIR__('audio/hello.mp3'), true );
 		toggleAd();
 		if( ! app_data.opt.get_gift ) {
 			showWelcomeDlg();		
@@ -1256,7 +1266,8 @@ var res =
    __DIR__('img/ad.png'),
    __DIR__('img/adoff.png'),
    __DIR__('img/paypal.png'),
-   __DIR__('img/iap.png')  
+   __DIR__('img/iap.png'),
+   __DIR__('img/loading16.gif')
   ];
 
 function game_init() {
