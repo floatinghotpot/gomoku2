@@ -304,14 +304,14 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 						var g = hitRating[i][j];
 						if( g > 0 ) {
 							c.globalAlpha = (g / hitMax) * 0.8;
-							c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
+							c.drawImage( img, 0, 0, img.width, img.height, x, y, ux, uy);
 						}
 					}
 				}
 				c.globalAlpha = 1;
 				var x = Math.floor(a.l + bestMove[0] * ux);
 				var y = Math.floor(a.t + bestMove[1] * uy);
-				c.drawImage( img, 0, 0, img.width, img.height, x+1, y+1, ux-2, uy-2);
+				c.drawImage( img, 0, 0, img.width, img.height, x, y, ux, uy);
 				
 				c.restore();
 			}
@@ -333,7 +333,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 				var g = this.matrix[i][j];
 				if( g > 0 ) {
 					var img = (g == 1) ? blackgoimg : whitegoimg;
-					c.drawImage( img, 0, 0, img.width, img.height, x+2, y+2, ux-4, uy-4);
+					c.drawImage( img, 0, 0, img.width, img.height, x, y, ux, uy);
 				}
 			}
 		}
