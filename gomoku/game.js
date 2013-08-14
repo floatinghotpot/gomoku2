@@ -1275,6 +1275,19 @@ function game_init() {
 	hotjs.domUI.showSplash( true, 
 			"<h1>GOMOKU<br/>MIST</h1><img class='logo round shadow' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
+
+	resources.preloadMusic([ 
+	                        __DIR__('audio/music1.mp3'), 
+	                        __DIR__('audio/music2.mp3'), 
+	                        __DIR__('audio/music3.mp3') 
+	                        ]);
+	resources.preloadFX([ 
+	                        __DIR__('audio/click.mp3'), 
+	                        __DIR__('audio/hello.mp3'), 
+	                        __DIR__('audio/magic.mp3'), 
+	                        __DIR__('audio/move2.mp3'), 
+	                        __DIR__('audio/move.mp3') 
+	                        ]);	
 	
 	resources.load( res, { ready: game_main } );
 }
