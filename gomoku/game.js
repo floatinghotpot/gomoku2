@@ -105,7 +105,7 @@ function save_data() {
 }
 
 function restartGame(){
-	if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+	if( dialog ) { dialog.dismiss(); dialog=null; }
 	
 	board.exchangeColor();
 	updateDataShow();
@@ -190,7 +190,7 @@ function worker_onmessage(evt) {
 		}
 		break;
 	case 'go':
-		if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		
 		if( board.getTipStatus() ) {
 			toggleTip( false );
@@ -372,12 +372,11 @@ function toggleTip( b ) {
 	if( b ) {
 		board.showTip( true );
 
-		if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('tipon'), 
 				'<p>' + hotjs.i18n.get('tipcost1gold') + '</p>',
-				{},
-				{'top':'5px'} );
+				{}, {'top':'0px'}, 'top' );
 		
 		app_data.my.gold --;
 		save_data();
@@ -386,7 +385,7 @@ function toggleTip( b ) {
 
 	} else {
 		board.showTip( false );
-		if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 	}
 	
 	if( board.getTipStatus() ) {
@@ -438,22 +437,19 @@ function payWithPaypalMPL( pkgid ) {
 				save_data();
 				updateDataShow();
 				
-				hotjs.domUI.dismiss(dialog);
-
+				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
 						hotjs.i18n.get('get500happy').replace('500', n) + '</p>');
 			}, function() {
-				hotjs.domUI.dismiss(dialog);
-
+				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
 								+ hotjs.i18n.get('payfailed_retrylater')
 								+ '</p>');
 			});
 		}, function() {
-			hotjs.domUI.dismiss(dialog);
-
+			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
 							+ hotjs.i18n.get('payfailed_retrylater') + '</p>');
@@ -509,8 +505,7 @@ function initIAP() {
 		save_data();
 		updateDataShow();
 
-		hotjs.domUI.dismiss(dialog);
-
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
 					hotjs.i18n.get('get500happy').replace('500', product.golds) + '</p>');
@@ -519,8 +514,7 @@ function initIAP() {
 	document.addEventListener('onInAppPurchaseFailed', function(event){
 		// event.errorCode
 		// event.errorMsg
-		hotjs.domUI.dismiss(dialog);
-		
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), event.errorMsg);
 	});
 
@@ -627,7 +621,7 @@ function watchAdGetGift() {
 }
 
 function popupNeedGoldDlg() {
-	if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+	if( dialog ) { dialog.dismiss(); dialog=null; }
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get('nogold'), 
 			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
@@ -647,6 +641,7 @@ function popupNeedGoldDlg() {
 }
 
 function showWelcomeDlg() {
+	if( dialog ) { dialog.dismiss(); dialog=null; }
 	dialog = hotjs.domUI.popupDialog( 
 		hotjs.i18n.get('welcome'),
 		"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('welcometogomoku') + '</p>', 
@@ -690,7 +685,7 @@ function showPlayerInfoDlg() {
 				'cancel' : function() {
 					return true;
 				}
-			} );
+			});
 }
 
 function init_events() {
@@ -734,23 +729,23 @@ function init_events() {
 	
 	$('img.icon-undo').on('click', function(){
 		if( ! board.canUndo() ) {
-			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
 		} else if( board.gameOver ) {
-			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
 		} else if( board.canUndo() ) {
 			if( app_data.my.gold >= 3 ) {
 				board.undo();
-				if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('undook'), 
 					"<p>" + hotjs.i18n.get('undocost3gold') + '</p>', 
-					{}, {'top':'5px'} );
+					{}, {'top':'0px'}, 'top' );
 				
 				app_data.my.gold -= 3;
 				save_data();
@@ -763,12 +758,12 @@ function init_events() {
 
 	$('img.icon-tip').on(touch_event, function(){
 		if( ! board.canUndo() ) {
-			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
 		} else if( board.gameOver ) {
-			if( dialog ) { hotjs.domUI.dismiss( dialog ); dialog=null; }
+			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
@@ -779,20 +774,25 @@ function init_events() {
 		}
 	});
 	
+	function togglePage( id ) {
+		var scrw = $(window).width(), scrh = $(window).height();
+		var o = $(id);
+		var w = o.width(), h = o.height();
+		o.css({'top': (scrh-h)/2 + 'px', 'left': (scrw-w)/2 + 'px'});
+		hotjs.domUI.toggle( o[0] );
+	}
 	$('img.pageopt').on(touch_event, function(){
-		hotjs.domUI.dismiss( dialog );
-		hotjs.domUI.toggle( $('div#pageopt')[0] );
+		togglePage('div#pageopt');
 	});
 	$('img.pageopt_x').on('click', function(){
-		hotjs.domUI.toggle( $('div#pageopt')[0] );
+		togglePage('div#pageopt');
 	});
 	
 	$('img.pagebuy').on(touch_event, function(){
-		hotjs.domUI.dismiss( dialog );
-		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+		togglePage('div#pagebuy');	
 	});
 	$('img.pagebuy_x').on('click', function(){
-		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+		togglePage('div#pagebuy');	
 	});
 	
 	$('button.btn-buy').on('click', function(){
@@ -801,32 +801,36 @@ function init_events() {
 	});
 
 	$('img.pageinfo').on(touch_event, function(){
-		hotjs.domUI.dismiss( dialog );
-		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+		togglePage('div#pageinfo');
 	});
 	$('img.pageinfo_x').on('click', function(){
-		hotjs.domUI.toggle( $('div#pageinfo')[0] );
+		togglePage('div#pageinfo');
 	});
 	
 	$('button#btn_gamerule').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gamerule'), 
 				"<table><tr><td class='l'>" + hotjs.i18n.get('gamerule_text') + "</td></tr></table>"
 				);
 	});
 	$('button#btn_gametip').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gametip'), 
 				"<table><tr><td class='l'>" + hotjs.i18n.get('gametip_text') + "</td></tr></table>"
 				);
 	});
 	$('button#btn_welcome').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		showWelcomeDlg();
 	});
 	$('button#btn_yourinfo').on('click', function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		showPlayerInfoDlg();
 	});
 	$('button#btn_toplist').on('click', function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('toplist'), 
 				"<table>" + 
@@ -837,6 +841,7 @@ function init_events() {
 				"</table>" );
 	});
 	$('button#btn_about').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gamename'), 
 				"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
@@ -854,20 +859,21 @@ function init_events() {
 	}
 
 	$('img#peer-img').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		var char_id = app_data.opt.level;
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get( 'peer' + char_id ), 
 				genBriefInfo( char_id ),
 				{
 					'selectpeer' : function() {
-						hotjs.domUI.toggle( $('div#pageopt')[0] );
+						togglePage('div#pageopt');
 						return true;
 					}
-				}
-				);
+				});
 	});
 	
 	$('img#my-img').on(touch_event, function(){
+		if( dialog ) { dialog.dismiss(); dialog=null; }
 		showPlayerInfoDlg();
 	});
 
@@ -970,18 +976,6 @@ function game_resize(w, h) {
 	
 	if(!! gameView) gameView.setSize(w,h);
 	if(!! board) board.setSize(w,h);
-
-	var pg = $('div#pageopt');
-	var sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
-	
-	pg = $('div#pagebuy');
-	sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
-
-	pg = $('div#pageinfo');
-	sw = pg.width(), sh = pg.height();
-	pg.css({'top': ((h-sh)/2 - 10) +'px', 'left': ((w-sw)/2) + 'px'});
 
 	if( w>h ) {
 		$('div#controlright').css({ // right
@@ -1088,7 +1082,7 @@ button.menu { width:144px; height:64px; }\
 </table></div>";
 	
 	pagemain.innerHTML += packDialogHTML( 'pageopt', 
-"<table class='m'>\
+"<table class='m full'>\
 <tr><td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'></td></tr>\
 <tr><td colspan=5 style='text-align:left'><span class='I18N' i18n='selectpeer'>Select</span></td></tr>\
 <tr>\
