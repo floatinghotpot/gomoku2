@@ -24,10 +24,10 @@ html, body, iframe {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
-	font-family: 'Combo', cursive;
+	font-family: 'Combo', fantasy, serif, Arial;
 }
 div, table, td, p, span, button, input, textarea {
-	font-family: 'Combo', cursive;
+	font-family: 'Combo', fantasy, serif, Arial;
 }
 .round {
 	-moz-border-radius: 10px;
