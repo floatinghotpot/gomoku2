@@ -1038,7 +1038,7 @@ function init_UI() {
 img.icon, img.icon32, img.icon48 { width:64px; height:64px; }\
 img.logo, img.icon128 { width:256px; height:256px; }\
 img.dlgx { width:48px; height:48px; }\
-body, div, td, button, p, span, input { font-size:18px; }\
+body, div, td, button, p, span, input { font-size:24px; }\
 button.dialog { height:64px; }\
 button.set { width:64px; height:64px; }\
 button.menu { width:144px; height:64px; }\
