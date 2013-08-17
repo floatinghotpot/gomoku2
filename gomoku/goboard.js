@@ -183,6 +183,9 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		
 		return this;
 	},
+	getStepCount : function() {
+		return this.undos.length;
+	},
 	canUndo : function() {
 		if( this.undos.length < 2 ) return false;
 		

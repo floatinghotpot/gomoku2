@@ -10,7 +10,7 @@ if( typeof(importScripts) == 'function') {
 	//importScripts('../../dev/hotjs/hotjs.js');
 	//importScripts('../../dev/hotjs/math.js');
 	//importScripts('../../dev/hotjs/ai.js');
-	importScripts('../lib/hotjs-mini.js');
+	importScripts('../lib/hotjs.min.js');
 }
 
 

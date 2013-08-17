@@ -17,7 +17,8 @@ hotjs.i18n.put('en', {
 	'youwin10gold':'Congratulations! You win 10 golds!',
 	'playagain':'Play Again',
 	'giveup' : 'Give Up',
-	'confirmgiveup' : 'Give up and start a new round?',
+	'confirmgiveup' : 'You only went 20 steps.<br/>Judged as losing if give up before 30.<br/></br>Really give up?',	
+	'confirmtie' : 'You went 30 steps.<br/>No win or lose if give up now.</br>Give up?',	
 	'undook': 'Undo',
 	'undocost3gold':'Undo costs 3 golds.',
 	'gameover':'Game Over',
@@ -109,7 +110,7 @@ hotjs.i18n.put('en', {
 	'device' : 'Device',
 	'save' : 'Save',
 	'gamename' : 'GomokuMist, v2.0',
-	'gamerule_text':'<ul><li>Win by connecting 5 go stones in a line.</li><li>Black go first.</li><li>Exchange turn after each play.</li><li>No forbidden step.</li><li>Tip costs 1 gold.</li><li>Undo costs 3 golds.</li><ul>',
+	'gamerule_text':'<ul><li>Win by connecting 5 go stones in a line.</li><li>Black go first.</li><li>Exchange turn after each play.</li><li>No forbidden step.</li><li>Quit within 30 steps regarded failure.</li><li>No win or lose if quit after 30 steps.</li><li>Tip costs 1 gold.</li><li>Undo costs 3 golds.</li><ul>',
 	'gametip_text' : '<ul><li>You can get golds for free everyday.</li><li>Watching Ad, suprising gift.</li><li>Zoom or move grid with fingers.</li><li>15x15 is standard size.</li><li>The 5 opponents have different styles.</li><li>Prize for each play varies from 10~50 golds.</li></ul>',
 	'about_text' : '<p>RNJSOFT, Create Fun.</p><p>Twitter: @rnjsoft</p><p>Email: rnjsoft.mobile@gmail.com</p><p>Website: www.rnjsoft.com</p>'
 });

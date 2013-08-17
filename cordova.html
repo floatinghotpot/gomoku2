@@ -19,55 +19,7 @@
 <div id='pagemain' class='page full' style='display:block;'></div>
 <script type="text/javascript" src="cordova.js"></script>
 <script>
-window.plugins = window.plugins || {};
-
-function initAd() {
-	var useiAd = false;
-	
-	if( useiAd && window.plugins.iAd) {
-		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
-	    	window.plugins.iAd.inUse = true;
-	    },function(){
-	    });
-	} else if ( window.plugins.AdMob ) {
-	    var adIdiOS = 'a151e6d43c5a28f';
-	    var adIdAndroid = 'a151e6d65b12438';
-	    var adId = (navigator.userAgent.indexOf('Android') >=0) ? adIdAndroid : adIdiOS;
-	    
-	    var am = window.plugins.AdMob;
-	    am.createBannerView( 
-	    		{
-		            'publisherId': adId,
-		            'adSize': am.AD_SIZE.BANNER,
-		            'bannerAtTop': false
-	            }, function() {
-	            	window.plugins.AdMob.isTesting = false; // change it to false later
-	            	
-	            	window.plugins.AdMob.inUse = true;
-	            }, function(){
-	            });
-	}
-}
-
-function initPayPalMPL() {
-	if(! window.plugins.PayPalMPL) return;
-	
-    var ppm = window.plugins.PayPalMPL;
-    ppm.construct( {
-	      'appId': 'APP-24H42331EP409445J', //'APP-80W284485P519543T',
-	      'appEnv': ppm.PaymentEnv.ENV_LIVE, //ENV_SANDBOX,
-	      }, function(){
-	    	  window.plugins.PayPalMPL.inUse = true;
-	      }, function(){
-	      });
-}
-
 document.addEventListener('deviceready', function(){
-	if( window.plugins ) {
-		initAd();
-		initPayPalMPL();
-	}
-	
 	resources.runAppFromJs('gomoku/game.js');
 }, false);
 

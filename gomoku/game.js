@@ -5,6 +5,21 @@ var ai_go = ai_go || {};
 
 (function(){
 
+// configuration 
+var app_key = 'com.rnjsoft.GomokuMist';
+
+var using_iad = false;
+
+var admob_ios_key = 'a151e6d43c5a28f';
+var admob_android_key = 'a151e6d65b12438';
+
+var paypal_app_id = 'APP-24H42331EP409445J'; //'APP-80W284485P519543T'
+
+var apple_iap_products = {};
+apple_iap_products[ app_key + '.pkg1' ] = { golds: 500, valid: true };
+apple_iap_products[ app_key + '.pkg2' ] = { golds: 2000, valid: true };
+apple_iap_products[ app_key + '.pkg3' ] = { golds: 10000, valid: true };
+
 var __FILE__;
 
 // Method 1: get path using the last loaded script, 
@@ -37,14 +52,59 @@ var net_player;
 var worker;
 var dialog;
 
-var app_key = 'com.rnjsoft.GomokuMist';
 
-var touch_event = 'click';
-if( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ) {
-	touch_event = 'touchstart';
+function isMobileDevice() {
+	return ( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ); 
 }
 
+function isIOSDevice(){
+	return ( /(ipad|iphone|ipod)/i.test(navigator.userAgent) );
+}
+
+function isAndroidDevice() {
+	return ( /(android)/i.test(navigator.userAgent) );
+}
+
+var touch_event = isMobileDevice() ? 'touchstart' : 'click';
+
 var tLoadingStart = Date.now();
+
+function initAd() {
+	if( isIOSDevice() && window.plugins.iAd && using_iad ) {
+		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
+	    	window.plugins.iAd.inUse = true;
+	    },function(){
+	    });
+	} else if ( window.plugins.AdMob ) {
+	    var adId = (navigator.userAgent.indexOf('Android') >=0) ? admob_android_key : admob_ios_key;
+	    
+	    var am = window.plugins.AdMob;
+	    am.createBannerView( 
+	    		{
+		            'publisherId': adId,
+		            'adSize': am.AD_SIZE.BANNER,
+		            'bannerAtTop': false
+	            }, function() {
+	            	window.plugins.AdMob.isTesting = false; // change it to false later
+	            	
+	            	window.plugins.AdMob.inUse = true;
+	            }, function(){
+	            });
+	}
+}
+
+function initPayPalMPL() {
+	if(! window.plugins.PayPalMPL) return;
+	
+    var ppm = window.plugins.PayPalMPL;
+    ppm.construct( {
+	      'appId': paypal_app_id,
+	      'appEnv': ppm.PaymentEnv.ENV_LIVE, //ENV_SANDBOX,
+	      }, function(){
+	    	  window.plugins.PayPalMPL.inUse = true;
+	      }, function(){
+	      });
+}
 
 function rankLevel( win, total ) {
 	if( total == 0 ) return 0;
@@ -73,11 +133,11 @@ function load_data() {
 	}
 	if(! data.ais) {
 		data.ais = {
-			peer1 : { level: 1, think_time: 500, attack_factor: 1.1, gold: 99, total: 10, win: 5, per: 10 },	
-			peer2 : { level: 2, think_time: 300, attack_factor: 1.2, gold: 499, total: 100, win: 60, per: 20 },	
-			peer3 : { level: 3, think_time: 10, attack_factor: 1.5, gold: 999, total: 200, win: 140, per: 30 },	
-			peer4 : { level: 4, think_time: 500, attack_factor: 0.9, gold: 4999, total: 500, win: 400, per: 40 },	
-			peer5 : { level: 5, think_time: 1500, attack_factor: 1.2, gold: 9999, total: 1000, win: 920, per: 50 }	
+			peer1 : { level: 1, think_time: 500, attack_factor: 1.1, gold: 99, total: 10, win: 3, per: 10 },	
+			peer2 : { level: 2, think_time: 500, attack_factor: 1.2, gold: 499, total: 100, win: 51, per: 20 },	
+			peer3 : { level: 3, think_time: 10, attack_factor: 1.5, gold: 999, total: 200, win: 128, per: 30 },	
+			peer4 : { level: 3, think_time: 500, attack_factor: 0.9, gold: 4999, total: 500, win: 350, per: 40 },	
+			peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, gold: 9999, total: 1000, win: 888, per: 50 }	
 		};
 	}
 	if(! data.opt) {
@@ -143,7 +203,7 @@ function worker_onmessage(evt) {
 								return true;
 							}
 						},
-						{'top':'5px'} );
+						{'top':'5px'}, 'top' );
 				
 				app_data.my.gold -= peer.per;
 				app_data.my.total ++;
@@ -172,7 +232,7 @@ function worker_onmessage(evt) {
 								return true;
 							}
 						},
-						{'top':'5px'} );
+						{'top':'5px'}, 'top' );
 				app_data.my.gold += peer.per;
 				app_data.my.total ++;
 				app_data.my.win ++;
@@ -201,6 +261,17 @@ function worker_onmessage(evt) {
 
 		if( ! board.gameOver ) {
 			var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			if( app_data.opt.level <= 1 ) {
+				var t = s.topMoves;
+				var guess = hotjs.Random.Integer(0, t.length);
+				for( var i=0; i<t.length; i++ ) {
+					if( i == guess ) {
+						var m = t[i];
+						bestMove = [ m[0], m[1], m[2] ];
+						break;
+					}
+				}
+			}
 			if( msg.used_time < peer.think_time ) {
 				window.setTimeout( function(){
 					board.go( bestMove[0], bestMove[1] );
@@ -395,21 +466,6 @@ function toggleTip( b ) {
 	}
 }
 
-var productsOnSale = {
-		'com.rnjsoft.GomokuMist.pkg1' : {
-			golds: 500,
-			valid: true
-		},
-		'com.rnjsoft.GomokuMist.pkg2' : {
-			golds: 2000,
-			valid: true
-		},
-		'com.rnjsoft.GomokuMist.pkg3' : {
-			golds: 10000,
-			valid: true
-		}
-};
-
 function payWithPaypalMPL( pkgid ) {
 	if(! window.plugins) return;
 	if(! window.plugins.PayPalMPL) return;	
@@ -432,7 +488,7 @@ function payWithPaypalMPL( pkgid ) {
 			'merchantName' : 'GomokuMist'
 		}, function() {
 			ppm.pay({}, function() {
-				var n = productsOnSale[ 'com.rnjsoft.GomokuMist.' + pkgid ].golds;
+				var n = apple_iap_products[ app_key + '.' + pkgid ].golds;
 				app_data.my.gold += n;
 				save_data();
 				updateDataShow();
@@ -459,7 +515,7 @@ function payWithPaypalMPL( pkgid ) {
 function requestIAPProductInfo() {
 	var iap = window.plugins.InAppPurchaseManager;
 	var productIds = [];
-	for( var k in productsOnSale ) {
+	for( var k in apple_iap_products ) {
 		productIds.push( k );
 	}
 	iap.requestProductData( 
@@ -477,7 +533,7 @@ function requestIAPProductInfo() {
 			var invalidIds = data.invalidIds;
 			if( Array.isArray(invalidIds) ) {
 				for( var k in invalidIds ) {
-					productsOnSale[ k ].valid = false;
+					apple_iap_products[ k ].valid = false;
 				}
 			}
 			
@@ -498,7 +554,7 @@ function initIAP() {
 		// event.transactionId
 		// event.transactionReceipt
 		
-		var product = productsOnSale[ event.productId ];
+		var product = apple_iap_products[ event.productId ];
 		if(! product) return;
 		
 		app_data.my.gold += product.golds;
@@ -515,7 +571,8 @@ function initIAP() {
 		// event.errorCode
 		// event.errorMsg
 		if( dialog ) { dialog.dismiss(); dialog=null; }
-		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), event.errorMsg);
+		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
+			hotjs.i18n.get('payfailed_retrylater'));
 	});
 
 	document.addEventListener('onInAppPurchaseRestored', function(event){
@@ -535,7 +592,7 @@ function payWithIAP( pkgid ) {
 	
 	var iap = window.plugins.InAppPurchaseManager;
 	
-	var productId = 'com.rnjsoft.GomokuMist.' + pkgid;
+	var productId = app_key + '.' + pkgid;
 	iap.makePurchase( productId, 1, function(){}, function(){} );
 }
 
@@ -608,8 +665,8 @@ function watchAdGetGift() {
 		app_data.my.adclicks = 0;
 	}
 	
-	if( app_data.my.adclicks < 2 ) {
-		app_data.my.gold += 10;
+	if( app_data.my.adclicks < 5 ) {
+		app_data.my.gold += 5;
 		
 		app_data.my.adclicks ++;
 		app_data.my.adtotal ++;
@@ -695,22 +752,43 @@ function init_events() {
 		resources.playAudio( __DIR__('audio/click.mp3'), true );
 	});
 	
+	// iAd
 	document.addEventListener( 'onClickAd', watchAdGetGift );
 	
+	// AdMob
+	document.addEventListener( 'onPresentAd', watchAdGetGift );
+	document.addEventListener( 'onLeaveToAd', watchAdGetGift );
+	
 	$('img.icon-start').on('click', function(){
-		if( board.gameOver ){
+		var step_count = board.getStepCount() / 2;
+		if( board.gameOver || (step_count < 1) ){
 			restartGame();
-		} else {
+			
+		} else if ( step_count >= 30 ) {
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('giveup'),
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('confirmgiveup') + "</p>",
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
+					hotjs.i18n.get('confirmtie').replace('30', step_count) + "</p>",
 	 				{
 						'ok' : function() {
-							var peer = app_data.ais[ 'peer' + app_data.opt.level ];
-							
+							restartGame();
+							return true;
+						},
+						'cancel' : function() {
+							return true;
+						}
+					});	
+			
+		} else {
+			var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			dialog = hotjs.domUI.popupDialog( 
+					hotjs.i18n.get('giveup'),
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
+					hotjs.i18n.get('confirmgiveup').replace('20', step_count).replace('10', peer.per) + "</p>",
+	 				{
+						'ok' : function() {
 							app_data.my.gold -= peer.per;
 							app_data.my.total ++;
-
 							peer.total ++;
 							peer.win ++;
 							peer.gold += peer.per;
@@ -1135,7 +1213,15 @@ button.menu { width:144px; height:64px; }\
 "</table>" );
 }
 
-initIAP();
+if( window.plugins ) {
+	if( isIOSDevice() ) {
+		initAd();
+		initIAP();
+	} else if ( isAndroidDevice() ) {
+		initAd();
+		initPayPalMPL();
+	}	
+}
 
 var app = new hotjs.App();
 
