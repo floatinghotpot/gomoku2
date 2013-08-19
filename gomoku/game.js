@@ -169,30 +169,6 @@ function load_data() {
 	app_data = data;
 }
 
-function updateNPCRecent( false_for_lost ) {
-	var peerN = 'peer' + app_data.opt.level;
-	var recent = app_data.npc_data[ peerN ].recent;
-	if(Array.isArray(recent)) {
-		if( recent.length >= 10 ) recent.shift();
-		recent.push( false_for_lost );
-	}
-}
-
-function calcNPCRecentWinRate() {
-	var peerN = 'peer' + app_data.opt.level;
-	var recent = app_data.npc_data[ peerN ].recent;
-	if(Array.isArray(recent)) {
-		if( recent.length > 0 ) {
-			var win = 0;
-			for( var i=0; i<recent.length; i++ ) {
-				if( recent[i] ) win ++;
-			}
-			return win / recent.length;
-		}
-	}
-	return 0;
-}
-
 function save_data() {
 	localStorage.setItem( app_key, JSON.stringify(app_data) );
 }
@@ -204,6 +180,97 @@ function restartGame(){
 	updateDataShow();
 
 	board.resetGame();
+}
+
+function onMyWin() {
+	window.setTimeout( function(){
+		var peerN = 'peer' + app_data.opt.level;
+		var npc = NPC_config[ peerN ];
+		var npc_data = app_data.npc_data[ peerN ];
+
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('youwin'), 
+				"<img class='icon192' src='"+ __DIR__('img/win.png') + "'><p>" 
+				+ hotjs.i18n.get('youwin10gold').replace('10',npc.perwin) + '</p>',
+				{
+					'playagain':function(){
+						restartGame();
+						return true;
+					}
+				},
+				{'top':'5px'}, 'top' );
+		app_data.my.gold += npc.perwin;
+		app_data.my.total ++;
+		app_data.my.win ++;
+
+		npc_data.total ++;
+		npc_data.gold -= npc.perwin;
+
+		if(! npc_data.recent) npc_data.recent = [];
+		npc_data.recent.push( 0 );
+		
+		var recent = npc_data.recent;
+		while( recent.length > 10 ) recent.shift();
+		if( recent.length > 0 ) {
+			var win = 0;
+			for( var i=0; i<recent.length; i++ ) {
+				if( recent[i] ) win ++;
+			}
+			npc_data.winrate = win / recent.length;
+		} else {
+			npc_data.winrate = 0;
+		}
+		
+		save_data();
+		
+		updateDataShow();
+	}, 1500);	
+}
+
+function onMyLost() {
+	window.setTimeout(function() {
+		var peerN = 'peer' + app_data.opt.level;
+		var npc = NPC_config[ peerN ];
+		var npc_data = app_data.npc_data[ peerN ];
+		
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('youlost'), 
+				"<img src='"+ __DIR__('img/peer' + app_data.opt.level + '-128.png') + "'><p>" 
+				+ hotjs.i18n.get('youlost10gold').replace('10', npc.perwin) + '</p>',
+				{
+					'playagain':function(){
+						restartGame();
+						return true;
+					}
+				},
+				{'top':'5px'}, 'top' );
+		
+		app_data.my.gold -= npc.perwin;
+		app_data.my.total ++;
+
+		npc_data.total ++;
+		npc_data.win ++;
+		npc_data.gold += npc.perwin;
+		
+		if(! npc_data.recent) npc_data.recent = [];
+		npc_data.recent.push( 1 );
+		
+		var recent = npc_data.recent;
+		while( recent.length > 10 ) recent.shift();
+		if( recent.length > 0 ) {
+			var win = 0;
+			for( var i=0; i<recent.length; i++ ) {
+				if( recent[i] ) win ++;
+			}
+			npc_data.winrate = win / recent.length;
+		} else {
+			npc_data.winrate = 0;
+		}
+		
+		save_data();
+		
+		updateDataShow();
+	}, 1500);	
 }
 
 function onAIMessage(evt) {
@@ -218,68 +285,14 @@ function onAIMessage(evt) {
 	case 'judge':
 		var s = msg.solution;
 		board.setTip( s );
-		
-		var peerN = 'peer' + app_data.opt.level;
-		var npc = NPC_config[ peerN ];
-		var npc_data = app_data.npc_data[ peerN ];
-		
 		if( s.myWinHits.length > 0 ) {
-			//console.log( 'Peer win!' );
 			board.gameOver = true;
-
-			window.setTimeout(function() {
-				dialog = hotjs.domUI.popupDialog( 
-						hotjs.i18n.get('youlost'), 
-						"<img src='"+ __DIR__('img/peer' + app_data.opt.level + '-128.png') + "'><p>" 
-						+ hotjs.i18n.get('youlost10gold').replace('10', npc.perwin) + '</p>',
-						{
-							'playagain':function(){
-								restartGame();
-								return true;
-							}
-						},
-						{'top':'5px'}, 'top' );
-				
-				app_data.my.gold -= npc.perwin;
-				app_data.my.total ++;
-
-				npc_data.total ++;
-				npc_data.win ++;
-				npc_data.gold += npc.perwin;
-				save_data();
-				
-				updateDataShow();
-			}, 1500);
+			onMyLost();
 		}
-		
 		if ( s.peerWinHits.length > 0 ) {
-			//console.log( 'You win! ' );
 			board.gameOver = true;
-
-			window.setTimeout( function(){
-				dialog = hotjs.domUI.popupDialog( 
-						hotjs.i18n.get('youwin'), 
-						"<img class='icon192' src='"+ __DIR__('img/win.png') + "'><p>" 
-						+ hotjs.i18n.get('youwin10gold').replace('10',npc.perwin) + '</p>',
-						{
-							'playagain':function(){
-								restartGame();
-								return true;
-							}
-						},
-						{'top':'5px'}, 'top' );
-				app_data.my.gold += npc.perwin;
-				app_data.my.total ++;
-				app_data.my.win ++;
-
-				npc_data.total ++;
-				npc_data.gold -= npc.perwin;
-				save_data();
-				
-				updateDataShow();
-			}, 1500);
+			onMyWin();
 		}
-
 		if( board.gameOver ) {
 			resources.playAudio( __DIR__('audio/magic.mp3'), true );
 		}
@@ -295,9 +308,11 @@ function onAIMessage(evt) {
 		var bestMove = s.bestMove;
 
 		if( ! board.gameOver ) {
-			var npc = NPC_config[ 'peer' + app_data.opt.level ];
-			var recent_winrate = calcNPCRecentWinRate();
-			if( recent_winrate > npc.winrate ) {
+			
+			var peerN = 'peer' + app_data.opt.level;
+			var npc = NPC_config[ peerN ];
+			var npc_data = app_data.npc_data[ peerN ];
+			if( npc_data.winrate > npc.winrate ) {
 				var t = s.topMoves;
 				var guess = hotjs.Random.Integer(0, t.length);
 				for( var i=0; i<t.length; i++ ) {
@@ -308,6 +323,7 @@ function onAIMessage(evt) {
 					}
 				}
 			}
+			
 			if( msg.used_time < npc.think_time ) {
 				window.setTimeout( function(){
 					board.go( bestMove[0], bestMove[1] );
@@ -512,7 +528,7 @@ function payWithPaypalMPL( pkgid ) {
 	}, function(){
 	});	 
 	
-	var name = hotjs.i18n.get( pkgid ) + ' ' + hotjs.i18n.get( 'golds' );
+	var golds = apple_iap_products[ app_key + '.' + pkgid ].golds;
 	var subTotal = hotjs.i18n.get( pkgid + '_subTotal' );
 	var currency = hotjs.i18n.get( 'currency' );
 
@@ -520,12 +536,11 @@ function payWithPaypalMPL( pkgid ) {
 			'paymentCurrency' : currency,
 			'subTotal' : subTotal,
 			'recipient' : 'rnjsoft.mobile@gmail.com',
-			'description' : 'game coin (' + name + ')',
+			'description' : 'game coins (' + golds + ')',
 			'merchantName' : 'GomokuMist'
 		}, function() {
 			ppm.pay({}, function() {
-				var n = apple_iap_products[ app_key + '.' + pkgid ].golds;
-				app_data.my.gold += n;
+				app_data.my.gold += golds;
 				save_data();
 				updateDataShow();
 				
@@ -965,7 +980,7 @@ function init_events() {
 	});
 	
 	function genBriefInfo( char_id ) {
-		var peerN = 'peer' + app_data.opt.level;
+		var peerN = 'peer' + char_id;
 		var npc = NPC_config[ peerN ];
 		var npc_data = app_data.npc_data[ peerN ];
 		var peer_winrate = ((npc_data.total > 0) ? (npc_data.win / npc_data.total) : 0);
@@ -980,8 +995,7 @@ function init_events() {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		var char_id = app_data.opt.level;
 		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get( 'peer' + char_id ), 
-				genBriefInfo( char_id ),
+				hotjs.i18n.get( 'peer' + char_id ), genBriefInfo( char_id ),
 				{
 					'selectpeer' : function() {
 						togglePage('div#pageopt');
