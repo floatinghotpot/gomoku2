@@ -8,6 +8,8 @@ var ai_go = ai_go || {};
 // configuration 
 var app_key = 'com.rnjsoft.GomokuMist';
 
+var app_version = 2.1;
+
 var using_iad = false;
 
 var admob_ios_key = 'a151e6d43c5a28f';
@@ -45,13 +47,13 @@ var __DIR__ = function(f) {
 	return hotjs.getAbsPath(f, __FILE__);
 };
 
+var app_data;
 var gameView;
 var board;
-var ai_player;
+var ai_agent;
 var net_player;
 var worker;
 var dialog;
-
 
 function isMobileDevice() {
 	return ( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ); 
@@ -106,19 +108,36 @@ function initPayPalMPL() {
 	      });
 }
 
-function rankLevel( win, total ) {
-	if( total == 0 ) return 0;
-	
-	var rate = win / total;
-	var level = Math.round( rate * 10 ) - 5;
-	return level;
-}
+var NPC_config = {
+	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 10, winrate: 0.33 },	
+	peer2 : { level: 2, think_time: 500, attack_factor: 1.2, perwin: 20, winrate: 0.5 },	
+	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 30, win: 122, winrate: 0.6 },	
+	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, win: 335, wirate: 0.67 },	
+	peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, perwin: 50, win: 802, winrate: 0.8 }	
+};
+
+var NPC_data_default = {
+	peer1 : { gold: 99, total: 10, win: 3, recent: [] },	
+	peer2 : { gold: 499, total: 100, win: 51, recent: [] },	
+	peer3 : { gold: 999, total: 200, win: 122, recent: [] },	
+	peer4 : { gold: 4999, total: 500, win: 335, recent: [] },	
+	peer5 : { gold: 9999, total: 1000, win: 802, recent: [] }	
+};
 
 function load_data() {
 	var data = {};
 	var data_str = localStorage.getItem( app_key );
 	if( data_str ) {
 		data = JSON.parse( data_str );
+	}
+	if( (! data.app_version) || (data.app_version < app_version) ) {
+		data.app_version = app_version;
+		
+		// do some update action here
+		if(!! data.ais) delete data.ais;
+	}
+	if(! data.npc_data ) {
+		data.npc_data = NPC_data_default;
 	}
 	if(! data.my) {
 		data.my = {
@@ -130,15 +149,6 @@ function load_data() {
 				twitter : '',
 				facebook : '',
 			};
-	}
-	if(! data.ais) {
-		data.ais = {
-			peer1 : { level: 1, think_time: 500, attack_factor: 1.1, gold: 99, total: 10, win: 3, per: 10 },	
-			peer2 : { level: 2, think_time: 500, attack_factor: 1.2, gold: 499, total: 100, win: 51, per: 20 },	
-			peer3 : { level: 3, think_time: 10, attack_factor: 1.5, gold: 999, total: 200, win: 128, per: 30 },	
-			peer4 : { level: 3, think_time: 500, attack_factor: 0.9, gold: 4999, total: 500, win: 350, per: 40 },	
-			peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, gold: 9999, total: 1000, win: 888, per: 50 }	
-		};
 	}
 	if(! data.opt) {
 		data.opt = {
@@ -155,10 +165,33 @@ function load_data() {
 	if( data.my.gold <= 0 ) {
 		data.opt.ad = true;
 	}
-	return data;
+	
+	app_data = data;
 }
 
-var app_data = load_data();
+function updatePeerRecent( false_for_lost ) {
+	var peerN = 'peer' + app_data.opt.level;
+	var recent = app_data.npc_data[ peerN ].recent;
+	if(Array.isArray(recent)) {
+		if( recent.length >= 10 ) recent.shift();
+		recent.push( false_for_lost );
+	}
+}
+
+function calcPeerRecentWinRate() {
+	var peerN = 'peer' + app_data.opt.level;
+	var recent = app_data.npc_data[ peerN ].recent;
+	if(Array.isArray(recent)) {
+		if( recent.length > 0 ) {
+			var win = 0;
+			for( var i=0; i<recent.length; i++ ) {
+				if( recent[i] ) win ++;
+			}
+			return win / recent.length;
+		}
+	}
+	return 0;
+}
 
 function save_data() {
 	localStorage.setItem( app_key, JSON.stringify(app_data) );
@@ -173,7 +206,7 @@ function restartGame(){
 	board.resetGame();
 }
 
-function worker_onmessage(evt) {
+function onAIMessage(evt) {
 	var msg = evt.data;
 	
 	switch(msg.api) {
@@ -186,7 +219,9 @@ function worker_onmessage(evt) {
 		var s = msg.solution;
 		board.setTip( s );
 		
-		var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+		var peerN = 'peer' + app_data.opt.level;
+		var npc = NPC_config[ peerN ];
+		var npc_data = app_data.npc_data[ peerN ];
 		
 		if( s.myWinHits.length > 0 ) {
 			//console.log( 'Peer win!' );
@@ -196,7 +231,7 @@ function worker_onmessage(evt) {
 				dialog = hotjs.domUI.popupDialog( 
 						hotjs.i18n.get('youlost'), 
 						"<img src='"+ __DIR__('img/peer' + app_data.opt.level + '-128.png') + "'><p>" 
-						+ hotjs.i18n.get('youlost10gold').replace('10', peer.per) + '</p>',
+						+ hotjs.i18n.get('youlost10gold').replace('10', npc.perwin) + '</p>',
 						{
 							'playagain':function(){
 								restartGame();
@@ -205,12 +240,12 @@ function worker_onmessage(evt) {
 						},
 						{'top':'5px'}, 'top' );
 				
-				app_data.my.gold -= peer.per;
+				app_data.my.gold -= npc.perwin;
 				app_data.my.total ++;
 
-				peer.total ++;
-				peer.win ++;
-				peer.gold += peer.per;
+				npc_data.total ++;
+				npc_data.win ++;
+				npc_data.gold += npc.perwin;
 				save_data();
 				
 				updateDataShow();
@@ -225,7 +260,7 @@ function worker_onmessage(evt) {
 				dialog = hotjs.domUI.popupDialog( 
 						hotjs.i18n.get('youwin'), 
 						"<img class='icon192' src='"+ __DIR__('img/win.png') + "'><p>" 
-						+ hotjs.i18n.get('youwin10gold').replace('10',peer.per) + '</p>',
+						+ hotjs.i18n.get('youwin10gold').replace('10',npc.perwin) + '</p>',
 						{
 							'playagain':function(){
 								restartGame();
@@ -233,12 +268,12 @@ function worker_onmessage(evt) {
 							}
 						},
 						{'top':'5px'}, 'top' );
-				app_data.my.gold += peer.per;
+				app_data.my.gold += npc.perwin;
 				app_data.my.total ++;
 				app_data.my.win ++;
 
-				peer.total ++;
-				peer.gold -= peer.per;
+				npc_data.total ++;
+				npc_data.gold -= npc.perwin;
 				save_data();
 				
 				updateDataShow();
@@ -260,7 +295,8 @@ function worker_onmessage(evt) {
 		var bestMove = s.bestMove;
 
 		if( ! board.gameOver ) {
-			var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			var peerN = 'peer' + app_data.opt.level;
+			var npc = NPC_config[ peerN ];
 			if( app_data.opt.level <= 1 ) {
 				var t = s.topMoves;
 				var guess = hotjs.Random.Integer(0, t.length);
@@ -272,10 +308,10 @@ function worker_onmessage(evt) {
 					}
 				}
 			}
-			if( msg.used_time < peer.think_time ) {
+			if( msg.used_time < npc.think_time ) {
 				window.setTimeout( function(){
 					board.go( bestMove[0], bestMove[1] );
-				}, (peer.think_time - msg.used_time) );				
+				}, (npc.think_time - msg.used_time) );				
 			} else {
 				board.go( bestMove[0], bestMove[1] );
 			}
@@ -288,29 +324,28 @@ function worker_onmessage(evt) {
 	}
 };
 
-var AIPlayer = function(){
+var AIAgent = function(){
 	hotjs.base(this);
 	this.mycolor = 2;
 	this.char_style = undefined;
 };
 
-hotjs.inherit(AIPlayer, hotjs.Class, {
+hotjs.inherit(AIAgent, hotjs.Class, {
 	init : function() {
 		//try {
 			// only through network, if local file, need embedded into html
 			//worker = new Worker( __DIR__('ai_go.js') );
-			//worker.onmessage = worker_onmessage;
+			//worker.onmessage = onAIMessage;
 		//} catch(err) {
 			// web worker is not supported by some browser, like Android 4.0.3 in HTC 328D 
 			// we just simulate and run the logic in same thread
 			hotjs.require( __DIR__('ai_go.js') );
 
 			worker = {};
+			worker.onmessage = onAIMessage;
 			worker.postMessage = function(data){
 				ai_go.onmessage({ data: data });
 			};
-			worker.onmessage = worker_onmessage;
-			
 			ai_go.postMessage = function(data){
 				worker.onmessage({ data: data});
 			};
@@ -338,11 +373,12 @@ hotjs.inherit(AIPlayer, hotjs.Class, {
 	},
 	go : function( move, mtx_str) {
 		if( this.char_style == undefined ) {
-			peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			var peerN = 'peer' + app_data.opt.level;
+			var npc = NPC_config[ peerN ];
 			this.setCharStyle( {
-				level: peer.level,
-				think_time: peer.think_time,
-				attack_factor: peer.attack_factor
+				level: npc.level,
+				think_time: npc.think_time,
+				attack_factor: npc.attack_factor
 			});
 		}
 		worker.postMessage({
@@ -385,8 +421,8 @@ function updateDataShow() {
 	$('#peer-img')[0].src = __DIR__('img/peer' + app_data.opt.level + '-64.png');
 	$('#peer-name').text( hotjs.i18n.get( 'peer' + app_data.opt.level ) );
 	
-	var peer = app_data.ais[ 'peer' + app_data.opt.level ];
-	$('#peer-gold').text( peer.gold );
+	var npc_data = app_data.npc_data[ 'peer' + app_data.opt.level ];
+	$('#peer-gold').text( npc_data.gold );
 }
 
 function toggleAudio(){
@@ -780,18 +816,20 @@ function init_events() {
 					});	
 			
 		} else {
-			var peer = app_data.ais[ 'peer' + app_data.opt.level ];
+			var peerN = 'peer' + app_data.opt.level;
+			var npc = NPC_config[ peerN ];
+			var npc_data = app_data.npc_data[ peerN ];
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('giveup'),
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
-					hotjs.i18n.get('confirmgiveup').replace('20', step_count).replace('10', peer.per) + "</p>",
+					hotjs.i18n.get('confirmgiveup').replace('20', step_count).replace('10', npc.perwin) + "</p>",
 	 				{
 						'ok' : function() {
-							app_data.my.gold -= peer.per;
+							app_data.my.gold -= npc.perwin;
 							app_data.my.total ++;
-							peer.total ++;
-							peer.win ++;
-							peer.gold += peer.per;
+							npc_data.total ++;
+							npc_data.win ++;
+							npc_data.gold += npc.perwin;
 							save_data();
 							
 							restartGame();
@@ -921,19 +959,21 @@ function init_events() {
 	$('button#btn_about').on(touch_event, function(){
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('gamename'), 
+				hotjs.i18n.get('gamename') + ', v' + app_version, 
 				"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
 				);
 	});
 	
 	function genBriefInfo( char_id ) {
-		var peer = app_data.ais[ 'peer' + char_id ];
-		var peer_winrate = ((peer.total > 0) ? (peer.win / peer.total) : 0);
+		var peerN = 'peer' + app_data.opt.level;
+		var npc = NPC_config[ peerN ];
+		var npc_data = app_data.npc_data[ peerN ];
+		var peer_winrate = ((npc_data.total > 0) ? (npc_data.win / npc_data.total) : 0);
 		return "<img src='" + __DIR__('img/peer' + char_id + '-128.png') + "'><p>" 
 			+ hotjs.i18n.get('peer' + char_id + 'desc') + '</p><p>'
-			+ hotjs.i18n.get('win') + peer.win + '/' + peer.total + ' ( ' 
+			+ hotjs.i18n.get('win') + npc_data.win + '/' + npc_data.total + ' ( ' 
 			+ hotjs.i18n.get('winrate') + Math.round(peer_winrate * 100) + '% )</p><p>'
-			+ hotjs.i18n.get('winlost10gold').replace('10', peer.per) + '</p>';
+			+ hotjs.i18n.get('winlost10gold').replace('10', npc.perwin) + '</p>';
 	}
 
 	$('img#peer-img').on(touch_event, function(){
@@ -957,21 +997,21 @@ function init_events() {
 
 	$('img.btn-char').on(touch_event, function(){
 		var char_id = $(this).attr('v');
-		var peer = app_data.ais[ 'peer' + char_id ];
+		var peerN = 'peer' + char_id;
+		var npc = NPC_config[ peerN ];
 		
 		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('peer' + char_id),
+				hotjs.i18n.get(peerN),
 				genBriefInfo( char_id ) + hotjs.i18n.get('confirmfight'),
  				{
 					'ok' : function() {
 						app_data.opt.level = char_id;
 						save_data();
 						
-						peer = app_data.ais[ 'peer' + app_data.opt.level ];
-						ai_player.setCharStyle( {
-							level: peer.level,
-							think_time: peer.think_time,
-							attack_factor: peer.attack_factor
+						ai_agent.setCharStyle( {
+							level: npc.level,
+							think_time: npc.think_time,
+							attack_factor: npc.attack_factor
 						});
 
 						updateDataShow();
@@ -1226,7 +1266,8 @@ if( window.plugins ) {
 var app = new hotjs.App();
 
 function game_main() {
-
+	
+	load_data();
 	init_UI();
 	init_events();
 	
@@ -1244,7 +1285,7 @@ function game_main() {
 		.setMaxFps( 25 )
 		.showFPS(false);
 
-	ai_player = new AIPlayer().init();
+	ai_agent = new AIAgent().init();
 	
 	function playMoveSound( player ){
 		if( player == 1 ) {
@@ -1257,7 +1298,6 @@ function game_main() {
 	board = (new GoBoard( app_data.opt.size ))
 		.setSize(w, h).showGrid(false)
 		.setColor("white").setGridStyle(true)
-		//.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) ) // transparent grid
 		.setGoImages( [ 
 		               resources.get(__DIR__('img/blackgo.png')),
 		               resources.get(__DIR__('img/whitego.png')),
@@ -1266,8 +1306,8 @@ function game_main() {
 		                ])
 		.showImg(true)
 		.setDraggable(true).setMoveable(true).setZoomable(true)
-		.setPeerPlayer( ai_player )
-		.setJudge( ai_player )
+		.setPeerPlayer( ai_agent )
+		.setJudge( ai_agent )
 		.onGo( playMoveSound )
 		.addTo( gameView )
 		.resetGame();
@@ -1277,17 +1317,18 @@ function game_main() {
 	updateDataShow();
 	toggleAudio();
 	toggleMusic();
+	
 	app.addNode(gameView).start();
 
+	var splash_time = 3000;
 	var tLoadingDone = Date.now();
 	var tUsed = tLoadingDone - tLoadingStart;
-	var tWait = ( tUsed < 3000 ) ? (3000 - tUsed) : 10; 
+	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
 	window.setTimeout( function() {
 		hotjs.domUI.showSplash( false );
-		//resources.playAudio( __DIR__('audio/hello.mp3'), true );
 		toggleAd();
 		if( ! app_data.opt.get_gift ) {
-			showWelcomeDlg();		
+			window.setTimeout( showWelcomeDlg, 2000 );		
 		}
 	}, tWait );
 }
