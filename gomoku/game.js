@@ -109,10 +109,10 @@ function initPayPalMPL() {
 }
 
 var NPC_config = {
-	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 5, winrate: 0.3 },	
-	peer2 : { level: 2, think_time: 300, attack_factor: 1.2, perwin: 10, winrate: 0.45 },	
-	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 20, winrate: 0.6 },	
-	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, wirate: 0.75 },	
+	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 5, winrate: 0.5 },	
+	peer2 : { level: 2, think_time: 300, attack_factor: 1.2, perwin: 10, winrate: 0.6 },	
+	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 20, winrate: 0.7 },	
+	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, wirate: 0.8 },	
 	peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, perwin: 80, winrate: 0.9 }	
 };
 
