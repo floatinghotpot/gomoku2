@@ -109,11 +109,11 @@ function initPayPalMPL() {
 }
 
 var NPC_config = {
-	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 10, winrate: 0.33 },	
-	peer2 : { level: 2, think_time: 500, attack_factor: 1.2, perwin: 20, winrate: 0.5 },	
-	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 30, win: 122, winrate: 0.6 },	
-	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, win: 335, wirate: 0.67 },	
-	peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, perwin: 50, win: 802, winrate: 0.8 }	
+	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 10, winrate: (1/3) },	
+	peer2 : { level: 2, think_time: 500, attack_factor: 1.2, perwin: 20, winrate: (1/2) },	
+	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 30, win: 122, winrate: (3/5) },	
+	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, win: 335, wirate: (2/3) },	
+	peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, perwin: 50, win: 802, winrate: (4/5) }	
 };
 
 var NPC_data_default = {
@@ -169,7 +169,7 @@ function load_data() {
 	app_data = data;
 }
 
-function updatePeerRecent( false_for_lost ) {
+function updateNPCRecent( false_for_lost ) {
 	var peerN = 'peer' + app_data.opt.level;
 	var recent = app_data.npc_data[ peerN ].recent;
 	if(Array.isArray(recent)) {
@@ -178,7 +178,7 @@ function updatePeerRecent( false_for_lost ) {
 	}
 }
 
-function calcPeerRecentWinRate() {
+function calcNPCRecentWinRate() {
 	var peerN = 'peer' + app_data.opt.level;
 	var recent = app_data.npc_data[ peerN ].recent;
 	if(Array.isArray(recent)) {
@@ -295,9 +295,9 @@ function onAIMessage(evt) {
 		var bestMove = s.bestMove;
 
 		if( ! board.gameOver ) {
-			var peerN = 'peer' + app_data.opt.level;
-			var npc = NPC_config[ peerN ];
-			if( app_data.opt.level <= 1 ) {
+			var npc = NPC_config[ 'peer' + app_data.opt.level ];
+			var recent_winrate = calcNPCRecentWinRate();
+			if( recent_winrate > npc.winrate ) {
 				var t = s.topMoves;
 				var guess = hotjs.Random.Integer(0, t.length);
 				for( var i=0; i<t.length; i++ ) {
