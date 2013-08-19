@@ -982,12 +982,8 @@ function init_events() {
 	function genBriefInfo( char_id ) {
 		var peerN = 'peer' + char_id;
 		var npc = NPC_config[ peerN ];
-		var npc_data = app_data.npc_data[ peerN ];
-		var peer_winrate = ((npc_data.total > 0) ? (npc_data.win / npc_data.total) : 0);
 		return "<img src='" + __DIR__('img/peer' + char_id + '-128.png') + "'><p>" 
 			+ hotjs.i18n.get('peer' + char_id + 'desc') + '</p><p>'
-			+ hotjs.i18n.get('win') + npc_data.win + '/' + npc_data.total + ' ( ' 
-			+ hotjs.i18n.get('winrate') + Math.round(peer_winrate * 100) + '% )</p><p>'
 			+ hotjs.i18n.get('winlost10gold').replace('10', npc.perwin) + '</p>';
 	}
 
