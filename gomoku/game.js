@@ -1272,7 +1272,7 @@ if( window.plugins ) {
 		init_IAP();
 		if(enable_paypal_in_ios) init_PayPalMPL();
 	} else if ( isAndroidDevice() ) {
-		init_AdMob;
+		init_AdMob();
 		init_PayPalMPL();
 	}	
 }
