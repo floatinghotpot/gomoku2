@@ -11,11 +11,13 @@ var app_key = 'com.rnjsoft.GomokuMist';
 var app_version = 2.1;
 
 var using_iad = false;
+var enable_paypal_in_ios = false;
 
 var admob_ios_key = 'a151e6d43c5a28f';
 var admob_android_key = 'a151e6d65b12438';
 
-var paypal_app_id = 'APP-24H42331EP409445J'; //'APP-80W284485P519543T'
+var paypal_app_id = 'APP-24H42331EP409445J'; // LIVE
+//var paypal_app_id = 'APP-80W284485P519543T'; // SANDBOX
 
 var apple_iap_products = {};
 apple_iap_products[ app_key + '.pkg1' ] = { golds: 500, valid: true };
@@ -71,13 +73,17 @@ var touch_event = isMobileDevice() ? 'touchstart' : 'click';
 
 var tLoadingStart = Date.now();
 
-function initAd() {
-	if( isIOSDevice() && window.plugins.iAd && using_iad ) {
+function init_iAd() {
+	if( window.plugins.iAd ) {
 		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
 	    	window.plugins.iAd.inUse = true;
 	    },function(){
 	    });
-	} else if ( window.plugins.AdMob ) {
+	}
+}
+
+function init_AdMob() {
+	if ( window.plugins.AdMob ) {
 	    var adId = (navigator.userAgent.indexOf('Android') >=0) ? admob_android_key : admob_ios_key;
 	    
 	    var am = window.plugins.AdMob;
@@ -88,20 +94,21 @@ function initAd() {
 		            'bannerAtTop': false
 	            }, function() {
 	            	window.plugins.AdMob.isTesting = false; // change it to false later
-	            	
 	            	window.plugins.AdMob.inUse = true;
 	            }, function(){
 	            });
-	}
+	}	
 }
 
-function initPayPalMPL() {
+
+function init_PayPalMPL() {
 	if(! window.plugins.PayPalMPL) return;
 	
     var ppm = window.plugins.PayPalMPL;
-    ppm.construct( {
+    var appEnv = ('APP-80W284485P519543T' === paypal_app_id) ? ppm.PaymentEnv.ENV_SANDBOX : ppm.PaymentEnv.ENV_LIVE;
+    ppm.initWithAppID( {
 	      'appId': paypal_app_id,
-	      'appEnv': ppm.PaymentEnv.ENV_LIVE, //ENV_SANDBOX,
+	      'appEnv': appEnv,
 	      }, function(){
 	    	  window.plugins.PayPalMPL.inUse = true;
 	      }, function(){
@@ -524,15 +531,14 @@ function payWithPaypalMPL( pkgid ) {
 	
 	var ppm = window.plugins.PayPalMPL;
 
-	ppm.prepare( ppm.PaymentType.GOODS, function(){
-	}, function(){
-	});	 
-	
 	var golds = apple_iap_products[ app_key + '.' + pkgid ].golds;
 	var subTotal = hotjs.i18n.get( pkgid + '_subTotal' );
 	var currency = hotjs.i18n.get( 'currency' );
 
 	ppm.setPaymentInfo({
+			'lang' : 'en_US',
+			'paymentType' : ppm.PaymentType.TYPE_GOODS,
+			'showPayPalButton': -1,
 			'paymentCurrency' : currency,
 			'subTotal' : subTotal,
 			'recipient' : 'rnjsoft.mobile@gmail.com',
@@ -547,19 +553,16 @@ function payWithPaypalMPL( pkgid ) {
 				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
-						hotjs.i18n.get('get500happy').replace('500', n) + '</p>');
-			}, function() {
+						hotjs.i18n.get('get500happy').replace('500', golds) + '</p>');
+			}, function( msg ) {
 				if( dialog ) { dialog.dismiss(); dialog=null; }
-				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
-						"<img src='" + __DIR__('img/shrug.png') + "'><p>"
-								+ hotjs.i18n.get('payfailed_retrylater')
-								+ '</p>');
+				dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
+						hotjs.i18n.get('payfailed_retrylater'));
 			});
 		}, function() {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
-			dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('payfailed'),
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>"
-							+ hotjs.i18n.get('payfailed_retrylater') + '</p>');
+			dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
+					hotjs.i18n.get('payfailed_retrylater'));
 		});
 }
 
@@ -596,7 +599,7 @@ function requestIAPProductInfo() {
 	);	
 }
 
-function initIAP() {
+function init_IAP() {
 	if(! window.plugins) return;
 	if(! window.plugins.InAppPurchaseManager) return;
 	
@@ -1265,11 +1268,12 @@ button.menu { width:144px; height:64px; }\
 
 if( window.plugins ) {
 	if( isIOSDevice() ) {
-		initAd();
-		initIAP();
+		( using_iad ) ? init_iAd() : init_AdMob(); 
+		init_IAP();
+		if(enable_paypal_in_ios) init_PayPalMPL();
 	} else if ( isAndroidDevice() ) {
-		initAd();
-		initPayPalMPL();
+		init_AdMob;
+		init_PayPalMPL();
 	}	
 }
 
