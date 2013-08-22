@@ -6,7 +6,7 @@ var ai_go = ai_go || {};
 (function(){
 
 // configuration 
-var app_key = 'com.rnjsoft.GomokuMist';
+var app_key = 'com.rnjsoft.Gomoku';
 
 var app_version = 2.1;
 
@@ -484,19 +484,19 @@ function toggleAd() {
 }
 
 // loop play: music1.mp3, music2.mp3, music3.mp3
-var music_index = 1;
-function toggleMusic() {
-	var music_file = __DIR__('audio/music' + music_index + '.mp3');
-	if( app_data.opt.music ) {
-		resources.playAudio(music_file, false, true);
-		$('img#icon-music').attr('src', __DIR__('img/music.png') );
-	} else {
-		resources.stopAudio(music_file);
-		$('img#icon-music').attr('src', __DIR__('img/musicoff.png') );
-		music_index ++;
-		if(music_index > 3) music_index = 1;
-	}
-}
+//var music_index = 1;
+//function toggleMusic() {
+//	var music_file = __DIR__('audio/music' + music_index + '.mp3');
+//	if( app_data.opt.music ) {
+//		resources.playAudio(music_file, false, true);
+//		$('img#icon-music').attr('src', __DIR__('img/music.png') );
+//	} else {
+//		resources.stopAudio(music_file);
+//		$('img#icon-music').attr('src', __DIR__('img/musicoff.png') );
+//		music_index ++;
+//		if(music_index > 3) music_index = 1;
+//	}
+//}
 
 function toggleTip( b ) {
 	if( b ) {
@@ -737,11 +737,11 @@ function popupNeedGoldDlg() {
 			hotjs.i18n.get('nogold'), 
 			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 			+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-				'buy':function(){
-					hotjs.domUI.dismiss( dialog );
-					hotjs.domUI.toggle( $('div#pagebuy')[0] );
-					return true;
-				},
+//				'buy':function(){
+//					hotjs.domUI.dismiss( dialog );
+//					hotjs.domUI.toggle( $('div#pagebuy')[0] );
+//					return true;
+//				},
 				'watchad':function(){
 					hotjs.domUI.dismiss( dialog );
 					toggleAd();
@@ -1134,7 +1134,7 @@ function game_resize(w, h) {
 			'bottom': (mh+2) + 'px'
 		});
 		
-		var h_info = Math.max($('div#user1').height(), h*220/960);
+		var h_info = $('div#user1').height();
 		var h_ctrl = $('div#controlbottom').height();
 		var h_in = h - h_info - h_ctrl;
 		var m = Math.min(w, h_in) - 20;
@@ -1198,7 +1198,7 @@ button.menu { width:144px; height:64px; }\
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td></tr>\
 <tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
 <td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td></tr>\
-<tr><td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<tr><td><!--img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/--></td>\
 <td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td></tr>\
 </table></div>\
 <div id='controlbottom' class='control'>\
@@ -1208,7 +1208,7 @@ button.menu { width:144px; height:64px; }\
 <td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td>\
 <td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
 <td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td>\
-<td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td>\
+<!--td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td-->\
 <td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td>\
 </table></div>";
 	
@@ -1231,12 +1231,12 @@ button.menu { width:144px; height:64px; }\
 <td><button class='btn-size clickable set button cyan' v='17'>17</button></td>\
 <td><button class='btn-size clickable set button blue' v='19'>19</button></td>\
 </tr>\
-<tr>\
+<!--tr>\
 <td style='text-align:right'><span  class='I18N' i18n='music'>Music</span></td>\
 <td><img id='icon-music' class='icon clickable' src='" + __DIR__('img/music.png') + "' width='32'></td>\
 <td colspan=2 style='text-align:right'><span  class='I18N' i18n='ad'>Ad</span></td>\
 <td><img id='icon-ad' class='icon clickable' src='" + __DIR__('img/ad.png') + "' width='32'></td>\
-</tr>\
+</tr-->\
 <tr>\
 <td style='text-align:right'><span  class='I18N' i18n='audio'>Audio</span></td>\
 <td><img id='icon-audio' class='icon clickable' src='" + __DIR__('img/audio.png') + "' width='32'></td>\
@@ -1257,23 +1257,23 @@ button.menu { width:144px; height:64px; }\
 	pagemain.innerHTML += packDialogHTML( 'pageinfo', 
 "<table>" + 
 "<tr><td colspan=2 class='m I18N' i18n='info'>Info</td></tr>" +
-"<tr><td><button class=' clickable menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
-"<td><button class=' clickable menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr>" +
 "<tr><td><button class=' clickable menu button yellow' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
 "<td><button class=' clickable menu button green' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-"<tr><td><button class=' clickable menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
+"<tr><td><button class=' clickable menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
 "<td><button class=' clickable menu button blue' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
+"<!--tr><td><button class=' clickable menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
+"<td><button class=' clickable menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr-->" +
 "</table>" );
 }
 
 if( window.plugins ) {
 	if( isIOSDevice() ) {
 		( using_iad ) ? init_iAd() : init_AdMob(); 
-		init_IAP();
-		if(enable_paypal_in_ios) init_PayPalMPL();
+		//init_IAP();
+		//if(enable_paypal_in_ios) init_PayPalMPL();
 	} else if ( isAndroidDevice() ) {
 		init_AdMob();
-		init_PayPalMPL();
+		//init_PayPalMPL();
 	}	
 }
 
@@ -1295,8 +1295,8 @@ function game_main() {
 	gameView = (new hotjs.View())
 		.setContainer('gameView')
 		.setSize(w,h)
-		.setBgImage( false, resources.get(__DIR__('img/yard.jpg')) )
-		.setMaxFps( 25 )
+		.setBgImage( true, resources.get(__DIR__('img/woodfloor.jpg')) )
+		.setMaxFps( 10 )
 		.showFPS(false);
 
 	ai_agent = new AIAgent().init();
@@ -1311,7 +1311,8 @@ function game_main() {
 	
 	board = (new GoBoard( app_data.opt.size ))
 		.setSize(w, h).showGrid(false)
-		.setColor("white").setGridStyle(true)
+		.setColor("black").setGridStyle(true)
+		.setAreaImage( true, resources.get(__DIR__('img/wood.jpg')) )
 		.setGoImages( [ 
 		               resources.get(__DIR__('img/blackgo.png')),
 		               resources.get(__DIR__('img/whitego.png')),
@@ -1330,7 +1331,7 @@ function game_main() {
 	game_resize();
 	updateDataShow();
 	toggleAudio();
-	toggleMusic();
+//	toggleMusic();
 	
 	app.addNode(gameView).start();
 
@@ -1341,9 +1342,9 @@ function game_main() {
 	window.setTimeout( function() {
 		hotjs.domUI.showSplash( false );
 		toggleAd();
-		if( ! app_data.opt.get_gift ) {
-			window.setTimeout( showWelcomeDlg, 2000 );		
-		}
+//		if( ! app_data.opt.get_gift ) {
+//			window.setTimeout( showWelcomeDlg, 2000 );		
+//		}
 	}, tWait );
 }
 
@@ -1355,7 +1356,8 @@ var res =
    __DIR__('lang/ja.lang.js'), 
    __DIR__('goboard.js'),
    __DIR__('net_go.js'),
-   __DIR__('img/yard.jpg'),
+   __DIR__('img/wood.jpg'),
+   __DIR__('img/woodfloor.jpg'),
    __DIR__('img/blackgo.png'),
    __DIR__('img/whitego.png'),
    __DIR__('img/greengo.png'),
@@ -1408,14 +1410,14 @@ var res =
 function game_init() {
 	// show logo
 	hotjs.domUI.showSplash( true, 
-			"<h1>GOMOKU<br/>MIST</h1><img class='logo round shadow' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
+			"<h1 class='I18N' i18n='gamename'>GOMOKU</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
 			{'background':'white'} );
 
-	resources.preloadMusic([ 
-	                        __DIR__('audio/music1.mp3'), 
-	                        __DIR__('audio/music2.mp3'), 
-	                        __DIR__('audio/music3.mp3') 
-	                        ]);
+//	resources.preloadMusic([ 
+//	                        __DIR__('audio/music1.mp3'), 
+//	                        __DIR__('audio/music2.mp3'), 
+//	                        __DIR__('audio/music3.mp3') 
+//	                        ]);
 	resources.preloadFX([ 
 	                        __DIR__('audio/click.mp3'), 
 	                        __DIR__('audio/hello.mp3'), 
