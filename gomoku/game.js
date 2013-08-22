@@ -315,18 +315,20 @@ function onAIMessage(evt) {
 		var bestMove = s.bestMove;
 
 		if( ! board.gameOver ) {
-			
-			var peerN = 'peer' + app_data.opt.level;
-			var npc = NPC_config[ peerN ];
-			var npc_data = app_data.npc_data[ peerN ];
-			if( npc_data.winrate > npc.winrate ) {
-				var t = s.topMoves;
-				var guess = hotjs.Random.Integer(0, t.length);
-				for( var i=0; i<t.length; i++ ) {
-					if( i == guess ) {
-						var m = t[i];
-						bestMove = [ m[0], m[1], m[2] ];
-						break;
+			if( bestMove[2] < 5000 ) { // must react on last step, or too stupid
+				var peerN = 'peer' + app_data.opt.level;
+				var npc = NPC_config[ peerN ];
+				var npc_data = app_data.npc_data[ peerN ];
+				if( npc_data.winrate > npc.winrate ) {
+					var t = s.topMoves;
+					var guess = hotjs.Random.Integer(0, t.length);
+					for( var i=0; i<t.length; i++ ) {
+						if( i == guess ) {
+							var m = t[i];
+							if( m[2] < 10 ) break; // ignore stupid step
+							bestMove = [ m[0], m[1], m[2] ];
+							break;
+						}
 					}
 				}
 			}
