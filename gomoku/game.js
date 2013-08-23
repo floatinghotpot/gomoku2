@@ -117,10 +117,10 @@ function init_PayPalMPL() {
 
 var NPC_config = {
 	peer1 : { level: 1, think_time: 500, attack_factor: 1.1, perwin: 5, winrate: 0.5 },	
-	peer2 : { level: 2, think_time: 300, attack_factor: 1.2, perwin: 10, winrate: 0.6 },	
-	peer3 : { level: 3, think_time: 10, attack_factor: 1.5, perwin: 20, winrate: 0.7 },	
+	peer2 : { level: 2, think_time: 300, attack_factor: 1.1, perwin: 10, winrate: 0.6 },	
+	peer3 : { level: 3, think_time: 10, attack_factor: 1.2, perwin: 20, winrate: 0.75 },	
 	peer4 : { level: 3, think_time: 500, attack_factor: 0.9, perwin: 40, wirate: 0.8 },	
-	peer5 : { level: 4, think_time: 1000, attack_factor: 1.2, perwin: 80, winrate: 0.9 }	
+	peer5 : { level: 4, think_time: 1000, attack_factor: 1.1, perwin: 80, winrate: 1 }	
 };
 
 var NPC_data_default = {
@@ -307,28 +307,36 @@ function onAIMessage(evt) {
 	case 'go':
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		
-		if( board.getTipStatus() ) {
-			toggleTip( false );
-		}
+		if( board.getTipStatus() ) toggleTip( false );
 		
 		var s = msg.solution;
+		var t = s.topMoves;
 		var bestMove = s.bestMove;
+		//var bestMove = (s.topMoves.length>0) ? s.topMoves[0] : s.bestMove;
 
 		if( ! board.gameOver ) {
-			if( bestMove[2] < 5000 ) { // must react on last step, or too stupid
-				var peerN = 'peer' + app_data.opt.level;
-				var npc = NPC_config[ peerN ];
-				var npc_data = app_data.npc_data[ peerN ];
+			var peerN = 'peer' + app_data.opt.level;
+			var npc = NPC_config[ peerN ];
+			var npc_data = app_data.npc_data[ peerN ];
+			//var tops = 'best: ' + Math.floor(bestMove[2]) + ', top: ';
+			//for(var i=0; i<t.length; i++) { tops += ' ' + Math.floor(t[i][2]); } console.log( tops );
+			if( bestMove[2] >= 1000 ) { // must react if already 4, or too stupid
+				//console.log( 'block!' );
+			} else {
+				var guess = -1;
 				if( npc_data.winrate > npc.winrate ) {
-					var t = s.topMoves;
-					var guess = hotjs.Random.Integer(0, t.length);
-					for( var i=0; i<t.length; i++ ) {
-						if( i == guess ) {
-							var m = t[i];
-							if( m[2] < 10 ) break; // ignore stupid step
-							bestMove = [ m[0], m[1], m[2] ];
-							break;
-						}
+					guess = Date.now() % Math.max(3, (5 - npc.level));
+				} else if ( bestMove[2] < 100 ) {
+					guess = Date.now() % 3; // random to avoid repeat step
+				} else { // keep the top move
+				}
+				
+				for( var i=0; i<t.length; i++ ) {
+					if( i == guess ) {
+						var m = t[i];
+						if( m[2] < 10 ) break; // ignore stupid step
+						bestMove = [ m[0], m[1], m[2] ];
+						break;
 					}
 				}
 			}

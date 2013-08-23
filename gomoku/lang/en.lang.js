@@ -10,7 +10,7 @@ hotjs.i18n.put('en', {
 	'welcometogomoku':'Hi! Welcome to Gomoku family. I am Ginny. <br/><br/>You will meet my family.<br/>Do you know? we are all gomoku players.<br/><br/>Click to start Gomoku Journey.<br/>You can get 100 golds as gift.<br/>',
 	'getgift':'Pick 100 golds',
 	'tipon': 'Tip On',
-	'tipcost1gold':'Tip costs 1 gold.',
+	'tipcost1gold':'Tip costs 1 gold, for every step.',
 	'youlost': 'You lost!',
 	'youlost10gold':'You lost 10 golds!',
 	'youwin': 'You win!',
@@ -111,6 +111,6 @@ hotjs.i18n.put('en', {
 	'save' : 'Save',
 	'gamename' : 'GomokuMist',
 	'gamerule_text':'<ul><li>Win by connecting 5 go stones in a line.</li><li>Black go first.</li><li>Exchange turn after each play.</li><li>No forbidden step.</li><li>Quit within 30 steps regarded failure.</li><li>No win or lose if quit after 30 steps.</li><li>Tip costs 1 gold.</li><li>Undo costs 3 golds.</li><ul>',
-	'gametip_text' : '<ul><li>You can get golds for free everyday.</li><li>Watching Ad, suprising gift.</li><li>Zoom or move grid with fingers.</li><li>15x15 is standard size.</li><li>The 5 opponents have different styles.</li><li>Prize for each play varies from 5~80 golds.</li></ul>',
+	'gametip_text' : '<ul><li>Watching Ad, suprising gift.</li><li>Zoom or move grid with fingers.</li><li>15x15 is standard size.</li><li>The 5 opponents have different styles.</li><li>Prize for each play varies from 5~80 golds.</li></ul>',
 	'about_text' : '<p>RNJSOFT, Create Fun.</p><p>Twitter: @rnjsoft</p><p>Email: rnjsoft.mobile@gmail.com</p><p>Website: www.rnjsoft.com</p>'
 });
