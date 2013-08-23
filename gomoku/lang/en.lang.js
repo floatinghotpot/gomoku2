@@ -10,7 +10,7 @@ hotjs.i18n.put('en', {
 	'welcometogomoku':'Hello! Welcome to Gomoku Mist!<br/>Ninja, Warrior, Kight, Nobel, and King.<br/>They are all good Gomoku plauers!<br/><br/>Begin your journey?<br/>You will get 100 golds for free!<br/>',
 	'getgift':'Pick 100 golds',
 	'tipon': 'Tip On',
-	'tipcost1gold':'Tip costs 1 gold.',
+	'tipcost1gold':'Tip costs 1 gold, for every step.',
 	'youlost': 'You lost!',
 	'youlost10gold':'You lost 10 golds!',
 	'youwin': 'You win!',
