@@ -31,7 +31,7 @@ hotjs.i18n.put('en', {
 	'watchad':'Watch Ad',
 	'buyhappy':'Easy Gold, Happy Game',
 	'golds' : 'golds',
-	'pkg0':'20',
+	'pkg0':'100',
 	'pkg1':'500',
 	'pkg2':'2000',
 	'pkg3':'10000',
@@ -112,5 +112,5 @@ hotjs.i18n.put('en', {
 	'gamename' : 'GomokuMist',
 	'gamerule_text':'<ul><li>Win by connecting 5 go stones in a line.</li><li>Black go first.</li><li>Exchange turn after each play.</li><li>No forbidden step.</li><li>Quit within 30 steps regarded failure.</li><li>No win or lose if quit after 30 steps.</li><li>Tip costs 1 gold.</li><li>Undo costs 3 golds.</li><ul>',
 	'gametip_text' : '<ul><li>Watching Ad, suprising gift.</li><li>Zoom or move grid with fingers.</li><li>15x15 is standard size.</li><li>The 5 opponents have different styles.</li><li>Prize for each play varies from 5~80 golds.</li></ul>',
-	'about_text' : '<p>RNJSOFT, Create Fun.</p><p>Twitter: @rnjsoft</p><p>Email: rnjsoft.mobile@gmail.com</p><p>Website: www.rnjsoft.com</p>'
+	'about_text' : '<p>RNJSOFT, Create Fun.</p><p>Twitter: @rjfun</p><p>Email: rjfun.mobile@gmail.com</p><p>Website: rjfun.com</p>'
 });

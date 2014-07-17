@@ -30,7 +30,7 @@ hotjs.i18n.put('zh', {
 	'watchad':'看广告送好礼',
 	'buyhappy':'轻松充值，欢乐游戏',
 	'golds' : '金币',
-	'pkg0':'20',
+	'pkg0':'100',
 	'pkg1':'500',
 	'pkg2':'2000',
 	'pkg3':'10000',
@@ -57,7 +57,7 @@ hotjs.i18n.put('zh', {
 	'payfailed_retrylater' : '请稍后再试试看。',
 	'free_picked' : '免费金币领取入账。</p><p>祝游戏愉快！',
 	'free_once_per_day' : '免费金币每天只能领一次。</p><p>您今天已经领取过了。',
-	'selectpeer': '选择对手',
+	'selectpeer': '对手',
 	'peer1':'伍小弟',
 	'peer2':'伍紫琪',
 	'peer3':'伍大郎',
@@ -111,5 +111,5 @@ hotjs.i18n.put('zh', {
 	'gamename' : '经典五子棋',
 	'gamerule_text':'※ 5个同色棋子连成一线即获胜。<br/>※ 黑棋先走。<br/>※ 每下一局，双方交换先手。<br/>※ 没有禁手。<br/>※ 不足 30 步放弃算认输。<br/>※ 超过 30 步放弃算平局，不计成绩。<br/>※ 可以提示。每一步花费 1 个金币。<br/>※ 可以悔棋。每次花费 3 个金币。',
 	'gametip_text' : '※ 看广告，有惊喜。<br/>※ 手指可以缩放和移动网格。<br/>※ 15x15是标准棋盘。<br/>※ 5位对手的棋力和风格不同。<br/>※ 胜局奖金从 5 到 80 个金币不等。',
-	'about_text' : '<p>安杰科技，智造乐趣</p><p>官方微博: @rnjsoft</p><p>邮箱: rnjsoft.mobile@gmail.com</p><p>官网: www.rnjsoft.com</p>'
+	'about_text' : '<p>安杰科技，智造乐趣</p><p>官方微博: @rjfun</p><p>邮箱: rjfun.mobile@gmail.com</p><p>官网: rjfun.com</p>'
 });

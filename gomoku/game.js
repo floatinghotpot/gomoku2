@@ -204,8 +204,7 @@ function onMyWin() {
 						restartGame();
 						return true;
 					}
-				},
-				{'top':'5px'}, 'top' );
+				} );
 		app_data.my.gold += npc.perwin;
 		app_data.my.total ++;
 		app_data.my.win ++;
@@ -249,8 +248,7 @@ function onMyLost() {
 						restartGame();
 						return true;
 					}
-				},
-				{'top':'5px'}, 'top' );
+				} );
 		
 		app_data.my.gold -= npc.perwin;
 		app_data.my.total ++;
@@ -516,7 +514,7 @@ function toggleTip( b ) {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('tipon'), 
 				'<p>' + hotjs.i18n.get('tipcost1gold') + '</p>',
-				{}, {'top':'0px'}, 'top' );
+				{ dismiss: 1500 }, {'top':'5px'}, 'top' );
 		
 		app_data.my.gold --;
 		save_data();
@@ -661,6 +659,8 @@ function payWithIAP( pkgid ) {
 }
 
 function buyProduct( productId ) {
+    $('div#pagebuy').hide();
+
 	if( productId == 'pkg0' ) {
 		var msg = hotjs.i18n.get('free_once_per_day');
 		var now = Date.now();
@@ -677,7 +677,7 @@ function buyProduct( productId ) {
 				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 				+ msg + '</p>' );
 	} else {
-		hotjs.domUI.toggle( $('div#pagebuy')[0] );
+ 		//hotjs.domUI.toggle( $('div#pagebuy')[0] );
 		
 		var imgs = {
 				'pkg1' : __DIR__('img/gold2.png'),
@@ -685,7 +685,7 @@ function buyProduct( productId ) {
 				'pkg3' : __DIR__('img/gold4.png')
 		};
 		dialog = hotjs.domUI.popupDialog( 
-				"<img class='icon48' src='" + imgs[productId] +  "'><br/>" + 
+				"<img class='icon96' src='" + imgs[productId] +  "'><br/>" +
 				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
 				hotjs.i18n.get( productId + 'price' ), 
 				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
@@ -741,21 +741,27 @@ function watchAdGetGift() {
 	}	
 }
 
-function popupNeedGoldDlg() {
+    function togglePage( id ) {
+        var scrw = $(window).width(), scrh = $(window).height();
+        var o = $(id);
+        var w = o.width(), h = o.height();
+        o.css({'top': (scrh-h)/2 + 'px', 'left': (scrw-w)/2 + 'px'});
+        hotjs.domUI.toggle( o[0] );
+    }
+
+
+
+    function popupNeedGoldDlg() {
 	if( dialog ) { dialog.dismiss(); dialog=null; }
 	dialog = hotjs.domUI.popupDialog( 
 			hotjs.i18n.get('nogold'), 
 			"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 			+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
-//				'buy':function(){
-//					hotjs.domUI.dismiss( dialog );
-//					hotjs.domUI.toggle( $('div#pagebuy')[0] );
-//					return true;
-//				},
-				'watchad':function(){
+				'buy':function(){
 					hotjs.domUI.dismiss( dialog );
-					toggleAd();
-					app_data.opt.ad = true;
+                    //$('div#pagebuy').show();
+                    togglePage('div#pagebuy');
+					//hotjs.domUI.toggle( $('div#pagebuy')[0] );
 					return true;
 				}
 			} );	
@@ -787,12 +793,11 @@ function showPlayerInfoDlg() {
 			hotjs.i18n.get( 'myinfo' ), 
 			"<table>" + 
 			"<tr><td nowrap>" + hotjs.i18n.get('win') + "</td><td class='m'>" + + app_data.my.win + '/' + app_data.my.total + 
-			" ( " + Math.round(my_winrate * 100) + "% )</td>" +
-			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='m'><input class='round m' id='myname' size=24 value='"+ app_data.my.name + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='m'><input class='round m' id='myemail' size=24 value='"+ app_data.my.email + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='m'><input class='round m' id='mytwitter' size=24 value='"+ app_data.my.twitter + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='m'><input class='round m' id='myfacebook' size=24 value='"+ app_data.my.facebook + "'/></td>" + 
-			"<tr><td>" + hotjs.i18n.get('device') + "</td><td class='l' style='width:192px;'>" + navigator.userAgent + "</td>" + 
+			" ( " + Math.round(my_winrate * 100) + "% )</td></tr>" +
+			"<tr><td>" + hotjs.i18n.get('name') + "</td><td class='m'><input class='round m' id='myname' size=24 value='"+ app_data.my.name + "'/></td></tr>" +
+			"<tr><td>" + hotjs.i18n.get('email') + "</td><td class='m'><input class='round m' id='myemail' size=24 value='"+ app_data.my.email + "'/></td></tr>" +
+			"<tr><td>" + hotjs.i18n.get('twitter') + "</td><td class='m'><input class='round m' id='mytwitter' size=24 value='"+ app_data.my.twitter + "'/></td></tr>" +
+			"<tr><td>" + hotjs.i18n.get('facebook') + "</td><td class='m'><input class='round m' id='myfacebook' size=24 value='"+ app_data.my.facebook + "'/></td></tr>" +
 			"</table>", {
 				'save' : function() {
 					app_data.my.name = $('input#myname').val();
@@ -823,7 +828,7 @@ function init_events() {
 	document.addEventListener( 'onPresentAd', watchAdGetGift );
 	document.addEventListener( 'onLeaveToAd', watchAdGetGift );
 	
-	$('img.icon-start').on('click', function(){
+	$('.icon-start').on('click', function(){
 		var step_count = board.getStepCount() / 2;
 		if( board.gameOver || (step_count < 1) ){
 			restartGame();
@@ -871,7 +876,7 @@ function init_events() {
 		}
 	});
 	
-	$('img.icon-undo').on('click', function(){
+	$('.icon-undo').on('click', function(){
 		if( ! board.canUndo() ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
@@ -900,7 +905,7 @@ function init_events() {
 		}
 	});
 
-	$('img.icon-tip').on(touch_event, function(){
+	$('.icon-tip').on(touch_event, function(){
 		if( ! board.canUndo() ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
@@ -918,40 +923,36 @@ function init_events() {
 		}
 	});
 	
-	function togglePage( id ) {
-		var scrw = $(window).width(), scrh = $(window).height();
-		var o = $(id);
-		var w = o.width(), h = o.height();
-		o.css({'top': (scrh-h)/2 + 'px', 'left': (scrw-w)/2 + 'px'});
-		hotjs.domUI.toggle( o[0] );
-	}
-	$('img.pageopt').on(touch_event, function(){
+    $('.pagemenu, .menu, .pagemenu_x').on('click' , function(){
+        togglePage('div#pagemenu');
+    });
+
+    $('.pageopt, .pageopt_x').on('click', function(){
 		togglePage('div#pageopt');
 	});
-	$('img.pageopt_x').on('click', function(){
-		togglePage('div#pageopt');
+
+	$('.pagebuy, .pagebuy_x').on('click', function(){
+		togglePage('div#pagebuy');
 	});
-	
-	$('img.pagebuy').on(touch_event, function(){
-		togglePage('div#pagebuy');	
-	});
-	$('img.pagebuy_x').on('click', function(){
-		togglePage('div#pagebuy');	
-	});
-	
-	$('button.btn-buy').on('click', function(){
+
+    $('.pagechar, .pagechar_x, .btn-char').on('click', function(){
+        togglePage('div#pagechar');
+    });
+
+    $('button.btn-buy').on('click', function(){
 		var productId = $(this).attr('id');
 		buyProduct( productId );
 	});
 
-	$('img.pageinfo').on(touch_event, function(){
-		togglePage('div#pageinfo');
-	});
-	$('img.pageinfo_x').on('click', function(){
-		togglePage('div#pageinfo');
-	});
-	
-	$('button#btn_gamerule').on(touch_event, function(){
+    $('.pageabout').on('click', function(){
+        if( dialog ) { dialog.dismiss(); dialog=null; }
+        dialog = hotjs.domUI.popupDialog(
+                hotjs.i18n.get('gamename') + ', v' + app_version,
+                "<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
+        );
+    });
+
+    $('button#btn_gamerule').on(touch_event, function(){
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gamerule'), 
@@ -984,14 +985,7 @@ function init_events() {
 				"<tr><td colspan=3>" + hotjs.i18n.get('comingsoon') + "</td></tr>" +
 				"</table>" );
 	});
-	$('button#btn_about').on(touch_event, function(){
-		if( dialog ) { dialog.dismiss(); dialog=null; }
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('gamename') + ', v' + app_version, 
-				"<table><tr><td class='m'><img class='icon128 round' src='" + __DIR__('img/icon256.png') +  "'><br/>" + hotjs.i18n.get('about_text') + "</td></tr></table>"
-				);
-	});
-	
+
 	function genBriefInfo( char_id ) {
 		var peerN = 'peer' + char_id;
 		var npc = NPC_config[ peerN ];
@@ -1007,18 +1001,18 @@ function init_events() {
 				hotjs.i18n.get( 'peer' + char_id ), genBriefInfo( char_id ),
 				{
 					'selectpeer' : function() {
-						togglePage('div#pageopt');
+						togglePage('div#pagechar');
 						return true;
 					}
 				});
 	});
 	
-	$('img#my-img').on(touch_event, function(){
+	$('img#my-img').on('click', function(){
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		showPlayerInfoDlg();
 	});
 
-	$('img.btn-char').on(touch_event, function(){
+	$('img.btn-char').on('click', function(){
 		var char_id = $(this).attr('v');
 		var peerN = 'peer' + char_id;
 		var npc = NPC_config[ peerN ];
@@ -1043,6 +1037,7 @@ function init_events() {
 						return true;
 					},
 					'cancel' : function() {
+                        $('div#pagechar').show();
 						return true;
 					}
 				});
@@ -1119,33 +1114,49 @@ function game_resize(w, h) {
 	if(!! board) board.setSize(w,h);
 
 	if( w>h ) {
-		$('div#controlright').css({ // right
+		$('div#controlleft').css({ // right
 			'display':'inline-block',
 			'width': '',
 			'height':'',
-			'left':'',
-			'right':'5px',
+			'right':'',
+			'left':'5px',
 			'top':'',
-			'bottom': (mh+2) + 'px'
+			'bottom': (mh+5) + 'px'
 		});
-		$('div#controlbottom').css({'display':'none'});
+        $('div#controlright').css({ // right
+            'display':'inline-block',
+            'width': '',
+            'height':'',
+            'left':'',
+            'right':'5px',
+            'top':'',
+            'bottom': (mh+5) + 'px'
+        });
 		
 		var m = Math.min(w, h) - 2;
 		board.setArea( (w-m)/2, (h-m)/2, m, m );
 	} else {
-		$('div#controlright').css({'display':'none'});
-		$('div#controlbottom').css({ // bottom
+		$('div#controlleft').css({ // bottom
 			'display':'inline-block',
-			'width':w+'px',
+			'width':'',
 			'height':'',
-			'left':'2px',
-			'right':'2px',
+			'left':'5px',
+			'right':'',
 			'top':'',
-			'bottom': (mh+2) + 'px'
+			'bottom': (mh+5) + 'px'
 		});
-		
-		var h_info = $('div#user1').height();
-		var h_ctrl = $('div#controlbottom').height();
+        $('div#controlright').css({ // bottom
+            'display':'inline-block',
+            'width':'',
+            'height':'',
+            'left':'',
+            'right':'5px',
+            'top':'',
+            'bottom': (mh+5) + 'px'
+        });
+
+		var h_info = $('div#user1').height() + 10;
+		var h_ctrl = $('div#controlleft').height();
 		var h_in = h - h_info - h_ctrl;
 		var m = Math.min(w, h_in) - 20;
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
@@ -1201,38 +1212,41 @@ button.menu { width:144px; height:64px; }\
 </div>";
 	
 	pagemain.innerHTML += 
-"<div id='controlright' class='control'>\
-<table class='control'>\
-<tr>\
-<tr><td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td></tr>\
-<tr><td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
-<td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td></tr>\
-<tr><td><!--img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/--></td>\
-<td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td></tr>\
+"<div id='controlleft' class='control'>\
+<table class='control' cellspacing='5'>\
+<tr><td class='m vm btn clickable pagemenu'><img class='icon' src='" + __DIR__('img/menu.png') + "'/><span class='I18N' i18n='menu'>Menu</span></td></tr>\
+<tr><td class='m vm btn clickable pagebuy'><img class='icon' src='" + __DIR__('img/gold.png') + "'/><span class='I18N' i18n='buy'>Coins</span></td></tr>\
 </table></div>\
-<div id='controlbottom' class='control'>\
-<table class='control'>\
-<tr>\
-<td><img class='icon clickable icon-tip' src='" + __DIR__('img/tipoff.png') + "'/></td>\
-<td><img class='icon clickable icon-undo' src='" + __DIR__('img/undo.png') + "'/></td>\
-<td><img class='icon clickable icon-start' src='" + __DIR__('img/restart.png') + "'/></td>\
-<td><img class='icon clickable pageopt' src='" + __DIR__('img/options.png') + "'/></td>\
-<!--td><img class='icon clickable pagebuy' src='" + __DIR__('img/gold.png') + "'/></td-->\
-<td><img class='icon clickable pageinfo' src='" + __DIR__('img/info.png') + "'/></td>\
+<div id='controlright' class='control'>\
+<table class='control' cellspacing='5'>\
+<tr><td class='m vm btn clickable icon-tip'><img class='icon' src='" + __DIR__('img/tipoff.png') + "'/><span class='I18N' i18n='tips'>Tips</span></td></tr>\
+<tr><td class='m vm btn clickable icon-undo'><img class='icon' src='" + __DIR__('img/undo.png') + "'/><span class='I18N' i18n='undo'>Undo</span></td></tr>\
 </table></div>";
-	
-	pagemain.innerHTML += packDialogHTML( 'pageopt', 
+
+
+    pagemain.innerHTML += packDialogHTML( 'pagemenu',
+"<table>\
+<tr><td><button class=' clickable menu button cyan icon-start' id='btn_new'><img class='icon' src='" + __DIR__('img/restart.png') + "'/> " + hotjs.i18n.get('new') + "</button></td></td>\
+<tr><td><button class=' clickable menu button cyan pagechar' id='btn_char'><img class='icon' src='" + __DIR__('img/peer2-64.png') + "'/> " + hotjs.i18n.get('selectpeer') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan pagebuy' id='btn_buy'><img class='icon' src='" + __DIR__('img/gold.png') + "'/> " + hotjs.i18n.get('buy') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan pageopt' id='btn_options'><img class='icon' src='" + __DIR__('img/options.png') + "'/> " + hotjs.i18n.get('options') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan pageabout' id='btn_about'><img class='icon' src='" + __DIR__('img/info.png') + "'/> " + hotjs.i18n.get('about') + "</button></td><tr>\
+</table>" );
+
+    pagemain.innerHTML += packDialogHTML( 'pagechar',
 "<table class='m full'>\
-<tr><td></td><td colspan=3><span class='I18N' i18n='options'>Options</span></td><td class='r'></td></tr>\
-<tr><td colspan=5 style='text-align:left'><span class='I18N' i18n='selectpeer'>Select</span></td></tr>\
+<tr><td></td><td><span class='I18N' i18n='selectpeer'>Select</span></td><td class='r'></td></tr>\
 <tr>\
-<td><img class='btn-char icon48 clickable' v='1' src='" + __DIR__('img/peer1-64.png') +"'/><br/><span class='I18N' i18n='peer1'>Kid</span></td>\
-<td><img class='btn-char icon48 clickable' v='2' src='" + __DIR__('img/peer2-64.png') +"'/><br/><span class='I18N' i18n='peer2'>Girl</span></td>\
-<td><img class='btn-char icon48 clickable' v='3' src='" + __DIR__('img/peer3-64.png') +"'/><br/><span class='I18N' i18n='peer3'>Boy</span></td>\
-<td><img class='btn-char icon48 clickable' v='4' src='" + __DIR__('img/peer4-64.png') +"'/><br/><span class='I18N' i18n='peer4'>Uncle</span></td>\
-<td><img class='btn-char icon48 clickable' v='5' src='" + __DIR__('img/peer5-64.png') +"'/><br/><span class='I18N' i18n='peer5'>Grandpa</span></td>\
-</tr>\
+<td><img class='btn-char icon64 clickable' v='1' src='" + __DIR__('img/peer1-64.png') +"'/><br/><span class='I18N' i18n='peer1'>Kid</span></td>\
+<td></td><td><img class='btn-char icon64 clickable' v='3' src='" + __DIR__('img/peer3-64.png') +"'/><br/><span class='I18N' i18n='peer3'>Boy</span></td></tr>\
+<tr><td></td><td><img class='btn-char icon64 clickable' v='2' src='" + __DIR__('img/peer2-64.png') +"'/><br/><span class='I18N' i18n='peer2'>Girl</span></td><td></td></tr>\
+<tr><td><img class='btn-char icon64 clickable' v='4' src='" + __DIR__('img/peer4-64.png') +"'/><br/><span class='I18N' i18n='peer4'>Uncle</span></td>\
+<td></td><td><img class='btn-char icon64 clickable' v='5' src='" + __DIR__('img/peer5-64.png') +"'/><br/><span class='I18N' i18n='peer5'>Grandpa</span></td>\
+</tr><tr><td>&nbsp;</td></tr>\
+</table>" );
+
+    pagemain.innerHTML += packDialogHTML( 'pageopt',
+"<table class='m full'>\
 <tr><td colspan=4 style='text-align:left'><span  class='I18N' i18n='boardsize'>Board Size</span></td></tr>\
 <tr>\
 <td><button class='btn-size clickable set button rosy' v='11'>11</button></td>\
@@ -1258,32 +1272,21 @@ button.menu { width:144px; height:64px; }\
 	pagemain.innerHTML += packDialogHTML( 'pagebuy', 
 "<table>\
 <tr><td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span></td></tr>\
-<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l I18N' i18n='pkg0'>5 golds</td><td><button id='pkg0' class=' clickable button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
+<tr><td><img class='icon32' src='" + __DIR__('img/gold.png') +"'/></td><td class='l I18N' i18n='pkg0'>100 golds</td><td><button id='pkg0' class=' clickable button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold2.png') +"'/></td><td class='l I18N' i18n='pkg1'>500 golds</td><td><button id='pkg1' class=' clickable button green btn-buy I18N' i18n='pkg1price'>$ 1</button></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold3.png') +"'/></td><td class='l I18N' i18n='pkg2'>2000 golds</td><td><button id='pkg2' class=' clickable button yellow btn-buy I18N' i18n='pkg2price'>$ 2</button></td></tr>\
 <tr><td><img class='icon48' src='" + __DIR__('img/gold4.png') +"'/></td><td class='l I18N' i18n='pkg3'>10000 golds</td><td><button id='pkg3' class=' clickable button gold btn-buy I18N' i18n='pkg3price'>$ 6</button></td></tr>\
 </table>" );
-	
-	pagemain.innerHTML += packDialogHTML( 'pageinfo', 
-"<table>" + 
-"<tr><td colspan=2 class='m I18N' i18n='info'>Info</td></tr>" +
-"<tr><td><button class=' clickable menu button yellow' id='btn_gamerule'>" + hotjs.i18n.get('gamerule') + "</button></td>" +
-"<td><button class=' clickable menu button green' id='btn_gametip'>" + hotjs.i18n.get('gametip') + "</button></td><tr>" +
-"<tr><td><button class=' clickable menu button rosy' id='btn_yourinfo'>" + hotjs.i18n.get('myinfo') + "</button></td>" +
-"<td><button class=' clickable menu button blue' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>" + 
-"<!--tr><td><button class=' clickable menu button cyan' id='btn_welcome'>" + hotjs.i18n.get('welcome') + "</button></td>" +
-"<td><button class=' clickable menu button gold' id='btn_toplist'>" + hotjs.i18n.get('toplist') + "</button></td></tr-->" +
-"</table>" );
 }
 
 if( window.plugins ) {
 	if( isIOSDevice() ) {
 		( using_iad ) ? init_iAd() : init_AdMob(); 
-		//init_IAP();
+		init_IAP();
 		//if(enable_paypal_in_ios) init_PayPalMPL();
 	} else if ( isAndroidDevice() ) {
 		init_AdMob();
-		//init_PayPalMPL();
+		init_PayPalMPL();
 	}	
 }
 
@@ -1345,7 +1348,7 @@ function game_main() {
 	
 	app.addNode(gameView).start();
 
-	var splash_time = 3000;
+	var splash_time = 1500;
 	var tLoadingDone = Date.now();
 	var tUsed = tLoadingDone - tLoadingStart;
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
@@ -1420,7 +1423,7 @@ var res =
 function game_init() {
 	// show logo
 	hotjs.domUI.showSplash( true, 
-			"<h1 class='I18N' i18n='gamename'>GOMOKU</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RNJSOFT</h3>",
+			"<h1 class='I18N' i18n='gamename'>GOMOKU</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RjFun</h3>",
 			{'background':'white'} );
 
 //	resources.preloadMusic([ 

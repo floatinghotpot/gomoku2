@@ -32,7 +32,7 @@ hotjs.i18n.put('ja', {
 	'watchad':'広告を見るとギフトがあるよ',
 	'buyhappy':'簡単に金、幸せゲーム',
 	'golds' : 'ゴルド',
-	'pkg0':'20',
+	'pkg0':'100',
 	'pkg1':'500',
 	'pkg2':'2000',
 	'pkg3':'10000',
@@ -113,5 +113,5 @@ hotjs.i18n.put('ja', {
 	'gamename' : '五目ミスト',
 	'gamerule_text':'※ 行に同じ色の5石を接続することによって勝つ。<br/>※ 黒が先。<br/>※ 次のゲーム、先手を変わる。<br/>※ 禁止手がありません。<br/>※ 30 手まで諦めると負けると判明するよ。<br/>※ あなたは、30ステップの後放棄する許可されています。いいえ勝利は、失うことはありません。<br/>※ ヒントは1ゴルドをかける。<br/>※ アンドゥは3ゴルドをかける。',
 	'gametip_text' : '※ 広告を見るとサプライすがでるよ。<br/>※ 指でチェッカーをズームと移動することができる。<br/>※ 15x15は標準基盤。<br/>※ 5人の相手のスタイルは違う。<br/>※ ボーナスゴルドは 5 から 80 の範囲。',
-	'about_text' : '<p>RNJSOFT、楽しみを造る</p><p>Twitter: @rnjsoft</p><p>メールアドレス：rnjsoft.mobile@gmail.com</p><p>ウェブサイト: www.rnjsoft.com</p>'
+	'about_text' : '<p>RNJSOFT、楽しみを造る</p><p>Twitter: @rjfun</p><p>メールアドレス：rjfun.mobile@gmail.com</p><p>ウェブサイト: rjfun.com</p>'
 });
