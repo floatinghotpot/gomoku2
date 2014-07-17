@@ -844,12 +844,12 @@ function init_events() {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>', {dismiss:2000} );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>', {}, {dismiss:2000} );
 		} else if( board.gameOver ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>', {dismiss:2000} );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>', {}, {dismiss:2000} );
 		} else if( board.canUndo() ) {
 			if( app_data.my.gold >= 3 ) {
 				board.undo();
