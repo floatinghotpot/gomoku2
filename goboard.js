@@ -7,11 +7,13 @@ var GoBoard = function( rows ){
 	this.gridStyle = true;
 	
 	this.rows = rows;
+    this.hostColor = 1; // black
+    this.first_hand = 1;
+
 	this.matrix = [];
 	this.undos = [];
 	this.player = 1;
-	this.hostColor = 1;
-	
+
 	this.peerPlayer = null;
 	this.judge = null;
 	
@@ -29,6 +31,20 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		
 		return this;
 	},
+    setRow : function( n ) {
+        if(n > 0) this.rows = n;
+        else this.rows = 15;
+    },
+    setFirstHand : function( first ) {
+        if(first == 1 || first == 2) {
+            this.first_hand = first;
+        } else {
+            this.first_hand = 1;
+        }
+    },
+    exchangeFirstHand : function() {
+        this.first_hand = (this.first_hand == 1) ? 2 : 1;
+    },
 	setGridStyle : function( g ) {
 		this.gridStyle = g;
 		return this;
@@ -50,10 +66,6 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		return this;
 	},
 	resetGame : function(n) {
-		if(!! n) {
-			this.rows = n;
-		}
-		
 		// init matrix with 0
 		this.matrix = [];
 		for( var i=0; i<this.rows; i++ ) {
@@ -66,7 +78,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		
 		// [ x, y, 1/2 ] 
 		this.undos = [];
-		this.player = 1;
+		this.player = this.first_hand;
 		
 		this.tip = null;
 		this.gameOver = false;

@@ -3,18 +3,14 @@ hotjs = hotjs || {};
 
 var ai_go = ai_go || {};
 
-(function(){
-
-// configuration 
-var app_key = 'com.rnjsoft.Gomoku';
+// configuration
+var app_key = 'com.rjfun.gomoku2';
 
 var app_version = 2.1;
 
-var using_iad = false;
+var using_iad = true;
 var enable_paypal_in_ios = false;
 
-var admob_ios_key = 'a151e6d43c5a28f';
-var admob_android_key = 'a151e6d65b12438';
 
 var paypal_app_id = 'APP-24H42331EP409445J'; // LIVE
 //var paypal_app_id = 'APP-80W284485P519543T'; // SANDBOX
@@ -72,34 +68,6 @@ function isAndroidDevice() {
 var touch_event = isMobileDevice() ? 'touchstart' : 'click';
 
 var tLoadingStart = Date.now();
-
-function init_iAd() {
-	if( window.plugins.iAd ) {
-		window.plugins.iAd.createBannerView({'bannerAtTop':false},function(){
-	    	window.plugins.iAd.inUse = true;
-	    },function(){
-	    });
-	}
-}
-
-function init_AdMob() {
-	if ( window.plugins.AdMob ) {
-	    var adId = (navigator.userAgent.indexOf('Android') >=0) ? admob_android_key : admob_ios_key;
-	    
-	    var am = window.plugins.AdMob;
-	    am.createBannerView( 
-	    		{
-		            'publisherId': adId,
-		            'adSize': am.AD_SIZE.BANNER,
-		            'bannerAtTop': false
-	            }, function() {
-	            	window.plugins.AdMob.isTesting = false; // change it to false later
-	            	window.plugins.AdMob.inUse = true;
-	            }, function(){
-	            });
-	}	
-}
-
 
 function init_PayPalMPL() {
 	if(! window.plugins.PayPalMPL) return;
@@ -183,13 +151,16 @@ function save_data() {
 function restartGame(){
 	if( dialog ) { dialog.dismiss(); dialog=null; }
 	
-	board.exchangeColor();
 	updateDataShow();
 
+    board.exchangeFirstHand();
 	board.resetGame();
+
+    dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('exchangefirsthand'),"",{'x':null},{dismiss:1500,top:20});
 }
 
 function onMyWin() {
+    resources.playAudio( ('audio/win.mp3'), true );
 	window.setTimeout( function(){
 		var peerN = 'peer' + app_data.opt.level;
 		var npc = NPC_config[ peerN ];
@@ -230,11 +201,12 @@ function onMyWin() {
 		save_data();
 		
 		updateDataShow();
-	}, 1500);	
+	}, 1000);
 }
 
 function onMyLost() {
-	window.setTimeout(function() {
+    resources.playAudio( ('audio/fail.mp3'), true );
+    window.setTimeout(function() {
 		var peerN = 'peer' + app_data.opt.level;
 		var npc = NPC_config[ peerN ];
 		var npc_data = app_data.npc_data[ peerN ];
@@ -275,7 +247,7 @@ function onMyLost() {
 		save_data();
 		
 		updateDataShow();
-	}, 1500);	
+	}, 1000);
 }
 
 function onAIMessage(evt) {
@@ -297,9 +269,6 @@ function onAIMessage(evt) {
 		if ( s.peerWinHits.length > 0 ) {
 			board.gameOver = true;
 			onMyWin();
-		}
-		if( board.gameOver ) {
-			resources.playAudio( __DIR__('audio/magic.mp3'), true );
 		}
 		break;
 	case 'go':
@@ -468,7 +437,7 @@ function toggleAudio(){
 
 function toggleAd() {
 	app_data.opt.ad = !! app_data.opt.ad;
-	
+
 	if( app_data.opt.ad ) {
 		$('img#icon-ad').attr('src', __DIR__('img/ad.png') );
 	} else {
@@ -476,19 +445,13 @@ function toggleAd() {
 	}
 
 	if( window.plugins ) {
-		if ( window.plugins.iAd && window.plugins.iAd.inUse ) {
-			window.plugins.iAd.showAd( app_data.opt.ad ); 
+		if ( window.plugins.iAd ) {
+			window.plugins.iAd.showAd( app_data.opt.ad );
 		}
-		if( window.plugins.AdMob && window.plugins.AdMob.inUse ) {
-			var isTesting = window.plugins.AdMob.isTesting;
-			if(! window.plugins.AdMob.requested) {
-				window.plugins.AdMob.requestAd({ 'isTesting':isTesting }, function(){
-					window.plugins.AdMob.requested = true;
-				}, function(){});
-			}
+		if( window.plugins.AdMob ) {
 			window.plugins.AdMob.showAd( app_data.opt.ad );
 		}
-	}	
+	}
 }
 
 // loop play: music1.mp3, music2.mp3, music3.mp3
@@ -514,7 +477,7 @@ function toggleTip( b ) {
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('tipon'), 
 				'<p>' + hotjs.i18n.get('tipcost1gold') + '</p>',
-				{ dismiss: 1500 }, {'top':'5px'}, 'top' );
+				{}, {'top':'5px', dismiss:1500}, 'top' );
 		
 		app_data.my.gold --;
 		save_data();
@@ -529,7 +492,7 @@ function toggleTip( b ) {
 	if( board.getTipStatus() ) {
 		$('.icon-tip').attr('src', __DIR__("img/tipon.png") );
 	} else {
-		$('.icon-tip').attr('src', __DIR__("img/tipoff.png") );
+		$('.icon-tip').attr('src', __DIR__("img/tipon.png") );
 	}
 }
 
@@ -818,7 +781,7 @@ function init_events() {
 	$(window).resize( game_resize );
 	
 	$('.clickable').on(touch_event, function(){
-		resources.playAudio( __DIR__('audio/click.mp3'), true );
+		resources.playAudio( ('audio/click.mp3'), true );
 	});
 	
 	// iAd
@@ -827,9 +790,9 @@ function init_events() {
 	// AdMob
 	document.addEventListener( 'onPresentAd', watchAdGetGift );
 	document.addEventListener( 'onLeaveToAd', watchAdGetGift );
-	
+
 	$('.icon-start').on('click', function(){
-		var step_count = board.getStepCount() / 2;
+		var step_count = Math.round(board.getStepCount() / 2);
 		if( board.gameOver || (step_count < 1) ){
 			restartGame();
 			
@@ -881,12 +844,12 @@ function init_events() {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>', {dismiss:2000} );
 		} else if( board.gameOver ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>', {dismiss:2000} );
 		} else if( board.canUndo() ) {
 			if( app_data.my.gold >= 3 ) {
 				board.undo();
@@ -894,7 +857,7 @@ function init_events() {
 				dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('undook'), 
 					"<p>" + hotjs.i18n.get('undocost3gold') + '</p>', 
-					{}, {'top':'0px'}, 'top' );
+					{}, {'top':'100px',dismiss:1500}, 'top' );
 				
 				app_data.my.gold -= 3;
 				save_data();
@@ -910,12 +873,12 @@ function init_events() {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('notstarted'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '</p>', {},{dismiss:2000} );
 		} else if( board.gameOver ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( 
 					hotjs.i18n.get('gameover'), 
-					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>' );
+					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '</p>', {},{dismiss:2000} );
 		} else if ( app_data.my.gold >= 1 ) {
 			toggleTip(! board.getTipStatus() );
 		} else {
@@ -1070,7 +1033,7 @@ function init_events() {
 	$('img#icon-ad').on('click', function(){
 		app_data.opt.ad = ! app_data.opt.ad;
 		save_data();
-		
+
 		toggleAd();
 	});
 
@@ -1168,7 +1131,7 @@ function packDialogHTML( dlg_id, content ) {
 "<div id='" + dlg_id + "' class='dialog round' popup='true' style='display:none;'>\
 <table class='dialog' cellspacing='0' cellpadding='0'>\
 <tr><td class='dlg00'></td><td class='dlg01 m'></td><td class='dlg02'><img class='dlgx " + dlg_id + "_x' src='" + __DIR__('img/x.png') + "'></td></tr>\
-<tr><td class='dlg10'></td><td class='dlg11 m'><div class='dlg11'>" + content + "</div></td><td class='dlg12'></td></tr>\
+<tr><td class='dlg10'></td><td class='dlg11 m'><div class='dlg11'>" + content + "</div><br/>&nbsp;</td><td class='dlg12'></td></tr>\
 <tr><td class='dlg20'></td><td class='dlg21'></td><td class='dlg22'></td></tr>\
 </table></div>";
 	return ret;
@@ -1178,26 +1141,13 @@ function init_UI() {
 	var pagemain = document.getElementById('pagemain');
 	pagemain.innerHTML = '';
 	
-	if( /(ipad)/i.test(navigator.userAgent) ) {
-		pagemain.innerHTML += 
-"<style TYPE='text/css'>\
-img.icon, img.icon32, img.icon48 { width:64px; height:64px; }\
-img.logo, img.icon128 { width:256px; height:256px; }\
-img.dlgx { width:48px; height:48px; }\
-body, div, td, button, p, span, input { font-size:24px; }\
-button.dialog { height:64px; }\
-button.set { width:64px; height:64px; }\
-button.menu { width:144px; height:64px; }\
-</style>";
-	}	
-	
 	pagemain.innerHTML +=
 "<div id='gameView' class='full' style='display:block;'></div>\
 <div id='user1' class='userinfo round shadow'>\
 <table class='m'>\
 <tr>\
 <td><img id='my-img' class='icon32 clickable' src='" + __DIR__('img/user2.png') + "'></td>\
-<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='my-gold'>1800</span></td>\
+<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='my-gold'>1800</span></td>\
 <td><img id='my-gocolor' class='icon32' src='" + __DIR__('img/blackgo.png') + "'/></td>\
 </tr>\
 </table></div>\
@@ -1205,7 +1155,7 @@ button.menu { width:144px; height:64px; }\
 <table class='m'>\
 <tr>\
 <td><img id='peer-gocolor' class='icon32' src='" + __DIR__('img/whitego.png') + "'/></td>\
-<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><span id='peer-gold'>1500</span></td>\
+<td><img class='icon32' src='" + __DIR__('img/gold.png') + "'><br/><span id='peer-gold'>1500</span></td>\
 <td><img id='peer-img' class='icon32 clickable' src='" + __DIR__('img/user1.png') + "'></td>\
 </tr>\
 </table>\
@@ -1214,23 +1164,22 @@ button.menu { width:144px; height:64px; }\
 	pagemain.innerHTML += 
 "<div id='controlleft' class='control'>\
 <table class='control' cellspacing='5'>\
-<tr><td class='m vm btn clickable pagemenu'><img class='icon' src='" + __DIR__('img/menu.png') + "'/><span class='I18N' i18n='menu'>Menu</span></td></tr>\
-<tr><td class='m vm btn clickable pagebuy'><img class='icon' src='" + __DIR__('img/gold.png') + "'/><span class='I18N' i18n='buy'>Coins</span></td></tr>\
+<tr><td class='m vm btn clickable pagemenu'><img class='icon48' src='" + __DIR__('img/menu.png') + "'/><br/><span class='I18N' i18n='menu'>Menu</span></td>\
+<td class='m vm btn clickable pagebuy'><img class='icon48' src='" + __DIR__('img/gold.png') + "'/><br/><span class='I18N' i18n='buy'>Coins</span></td></tr>\
 </table></div>\
 <div id='controlright' class='control'>\
 <table class='control' cellspacing='5'>\
-<tr><td class='m vm btn clickable icon-tip'><img class='icon' src='" + __DIR__('img/tipoff.png') + "'/><span class='I18N' i18n='tips'>Tips</span></td></tr>\
-<tr><td class='m vm btn clickable icon-undo'><img class='icon' src='" + __DIR__('img/undo.png') + "'/><span class='I18N' i18n='undo'>Undo</span></td></tr>\
+<tr><td class='m vm btn clickable icon-tip'><img class='icon48' src='" + __DIR__('img/tipon.png') + "'/><br/><span class='I18N' i18n='tips'>Tips</span></td>\
+<td class='m vm btn clickable icon-undo'><img class='icon48' src='" + __DIR__('img/undo.png') + "'/><br/><span class='I18N' i18n='undo'>Undo</span></td></tr>\
 </table></div>";
 
 
     pagemain.innerHTML += packDialogHTML( 'pagemenu',
 "<table>\
-<tr><td><button class=' clickable menu button cyan icon-start' id='btn_new'><img class='icon' src='" + __DIR__('img/restart.png') + "'/> " + hotjs.i18n.get('new') + "</button></td></td>\
-<tr><td><button class=' clickable menu button cyan pagechar' id='btn_char'><img class='icon' src='" + __DIR__('img/peer2-64.png') + "'/> " + hotjs.i18n.get('selectpeer') + "</button></td><tr>\
-<tr><td><button class=' clickable menu button cyan pagebuy' id='btn_buy'><img class='icon' src='" + __DIR__('img/gold.png') + "'/> " + hotjs.i18n.get('buy') + "</button></td><tr>\
-<tr><td><button class=' clickable menu button cyan pageopt' id='btn_options'><img class='icon' src='" + __DIR__('img/options.png') + "'/> " + hotjs.i18n.get('options') + "</button></td><tr>\
-<tr><td><button class=' clickable menu button cyan pageabout' id='btn_about'><img class='icon' src='" + __DIR__('img/info.png') + "'/> " + hotjs.i18n.get('about') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan icon-start' id='btn_new'>" + hotjs.i18n.get('new') + "</button></td></td>\
+<tr><td><button class=' clickable menu button cyan pagechar' id='btn_char'>" + hotjs.i18n.get('selectpeer') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan pageopt' id='btn_options'>" + hotjs.i18n.get('options') + "</button></td><tr>\
+<tr><td><button class=' clickable menu button cyan pageabout' id='btn_about'>" + hotjs.i18n.get('about') + "</button></td><tr>\
 </table>" );
 
     pagemain.innerHTML += packDialogHTML( 'pagechar',
@@ -1242,7 +1191,6 @@ button.menu { width:144px; height:64px; }\
 <tr><td></td><td><img class='btn-char icon64 clickable' v='2' src='" + __DIR__('img/peer2-64.png') +"'/><br/><span class='I18N' i18n='peer2'>Girl</span></td><td></td></tr>\
 <tr><td><img class='btn-char icon64 clickable' v='4' src='" + __DIR__('img/peer4-64.png') +"'/><br/><span class='I18N' i18n='peer4'>Uncle</span></td>\
 <td></td><td><img class='btn-char icon64 clickable' v='5' src='" + __DIR__('img/peer5-64.png') +"'/><br/><span class='I18N' i18n='peer5'>Grandpa</span></td>\
-</tr><tr><td>&nbsp;</td></tr>\
 </table>" );
 
     pagemain.innerHTML += packDialogHTML( 'pageopt',
@@ -1279,17 +1227,6 @@ button.menu { width:144px; height:64px; }\
 </table>" );
 }
 
-if( window.plugins ) {
-	if( isIOSDevice() ) {
-		( using_iad ) ? init_iAd() : init_AdMob(); 
-		init_IAP();
-		//if(enable_paypal_in_ios) init_PayPalMPL();
-	} else if ( isAndroidDevice() ) {
-		init_AdMob();
-		init_PayPalMPL();
-	}	
-}
-
 var app = new hotjs.App();
 
 function game_main() {
@@ -1316,9 +1253,9 @@ function game_main() {
 	
 	function playMoveSound( player ){
 		if( player == 1 ) {
-			resources.playAudio( __DIR__('audio/move2.mp3'), true );
+			resources.playAudio( ('audio/move2.mp3'), true );
 		} else {
-			resources.playAudio( __DIR__('audio/move.mp3'), true );
+			resources.playAudio( ('audio/move.mp3'), true );
 		}
 	}
 	
@@ -1348,7 +1285,7 @@ function game_main() {
 	
 	app.addNode(gameView).start();
 
-	var splash_time = 1500;
+	var splash_time = 2000;
 	var tLoadingDone = Date.now();
 	var tUsed = tLoadingDone - tLoadingStart;
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
@@ -1420,41 +1357,47 @@ var res =
    __DIR__('img/loading16.gif')
   ];
 
-function game_init() {
-	// show logo
+function readyToGo() {
+    hotjs.Ad.init();
+
+    if( window.plugins ) {
+        if( isIOSDevice() ) {
+            init_IAP();
+        } else if ( isAndroidDevice() ) {
+            init_PayPalMPL();
+        }
+    }
+
+//	resources.preloadMusic([
+//	                        ('audio/music1.mp3'),
+//	                        ('audio/music2.mp3'),
+//	                        ('audio/music3.mp3')
+//	                        ]);
+
+    resources.preloadFX([
+        ('audio/click.mp3'),
+        ('audio/hello.mp3'),
+        ('audio/magic.mp3'),
+        ('audio/win.mp3'),
+        ('audio/fail.mp3'),
+        ('audio/move2.mp3'),
+        ('audio/move.mp3')
+    ]);
+
+    resources.load( res, { ready: game_main } );
+}
+
+function main()
+{
+    // show logo
 	hotjs.domUI.showSplash( true, 
 			"<h1 class='I18N' i18n='gamename'>GOMOKU</h1><img class='logo' src='" + __DIR__('img/icon256.png') + "'/><h3>&copy; RjFun</h3>",
 			{'background':'white'} );
 
-//	resources.preloadMusic([ 
-//	                        __DIR__('audio/music1.mp3'), 
-//	                        __DIR__('audio/music2.mp3'), 
-//	                        __DIR__('audio/music3.mp3') 
-//	                        ]);
-	resources.preloadFX([ 
-	                        __DIR__('audio/click.mp3'), 
-	                        __DIR__('audio/hello.mp3'), 
-	                        __DIR__('audio/magic.mp3'), 
-	                        __DIR__('audio/move2.mp3'), 
-	                        __DIR__('audio/move.mp3') 
-	                        ]);	
-	
-	resources.load( res, { ready: game_main } );
+    if(isMobileDevice()) {
+        document.addEventListener('deviceready', readyToGo, false);
+    } else {
+        readyToGo();
+    }
 }
-
-function game_exit() {
-	app.stop();
-	
-	var pagemain = document.getElementById('pagemain');
-	pagemain.innerHTML = "";
-}
-
-resources.regApp( {
-	addRes : function() {},
-	getRes : function() { return res; },
-	init : game_init,
-	exit : game_exit
-});
-
-})();
 

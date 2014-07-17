@@ -31,6 +31,7 @@ hotjs.i18n.put('ja', {
 	'buy':'買う',
 	'watchad':'広告を見るとギフトがあるよ',
 	'buyhappy':'簡単に金、幸せゲーム',
+    'exchangefirsthand' : 'Exchange attach/defense',
 	'golds' : 'ゴルド',
 	'pkg0':'100',
 	'pkg1':'500',

@@ -3,14 +3,14 @@
   font-family: 'Joti One';
   font-style: normal;
   font-weight: 400;
-  src: local('Joti One'), local('JotiOne-Regular'), url(../lib/jotione.woff) format('woff');
+  src: local('Joti One'), local('JotiOne-Regular'), url(lib/jotione.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Combo';
   font-style: normal;
   font-weight: 400;
-  src: local('Combo'), local('Combo-Regular'), url(../lib/combov1.woff) format('woff');
+  src: local('Combo'), local('Combo-Regular'), url(lib/combov1.woff) format('woff');
 }
 
 * {
@@ -78,11 +78,11 @@ td.btn {
     border-radius: 30px;
     color: white;
     text-shadow: 1px 1px 2px black;
-    font-size: 24px;
     cursor:pointer;
     padding: 10px;
     box-shadow:5px 5px 10px black;
     background: url(img/bg_linen.png) /*#666666*/;
+    font-size: 18px;
 }
 div.logo {
 	width: 100%;
@@ -200,8 +200,8 @@ img.icon32 {
 	height: 32px;
 }
 img.icon48 {
-	width: 40px;
-	height: 40px;
+	width: 48px;
+	height: 48px;
 }
 img.icon64 {
 	width: 64px;
@@ -228,6 +228,7 @@ div.dialog {
 button.dialog {
     width: 96px;
 	height: 48px;
+    font-size: 18px;
 }
 img.dlgx {
 	padding: 0px;
@@ -428,3 +429,36 @@ td.dlg22 {
 	background-color: #D4A017;
 }
 
+@media screen and (min-width: 520px) {
+    img.icon, img.icon32, img.icon48 { width:64px; height:64px; }
+    img.logo, img.icon128 { width:256px; height:256px; }
+    img.dlgx { width:48px; height:48px; }
+    body, div, td, button, p, span, input { font-size:24px; }
+
+    button.dialog {
+        width: 192px;
+        height: 96px;
+        font-size: 24px;
+    }
+    button.set {
+        width: 96px;
+        height: 96px;
+    }
+    .btn-buy {
+        width: 192px;
+        height: 96px;
+        padding: 0px;
+        margin: 0px;
+        display: block;
+    }
+    button.menu {
+        width: 400px;
+        height: 96px;
+        vertical-align: middle;
+        font-size: 64px;
+    }
+    td.btn {
+        font-size: 24px;
+    }
+
+}
