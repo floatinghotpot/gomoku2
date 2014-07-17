@@ -108,7 +108,7 @@ function init_PayPalMPL() {
     var appEnv = ('APP-80W284485P519543T' === paypal_app_id) ? ppm.PaymentEnv.ENV_SANDBOX : ppm.PaymentEnv.ENV_LIVE;
     ppm.initWithAppID( {
 	      'appId': paypal_app_id,
-	      'appEnv': appEnv,
+	      'appEnv': appEnv
 	      }, function(){
 	    	  window.plugins.PayPalMPL.inUse = true;
 	      }, function(){
@@ -154,7 +154,7 @@ function load_data() {
 				win : 0,
 				email : '',
 				twitter : '',
-				facebook : '',
+				facebook : ''
 			};
 	}
 	if(! data.opt) {
