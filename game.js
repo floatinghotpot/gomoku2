@@ -629,7 +629,7 @@ function buyProduct( productId ) {
 		var now = Date.now();
 		if(! app_data.my.free_time) app_data.my.free_time = 0;
 		if( now > app_data.my.free_time + 1000*3600*8 ) {
-			app_data.my.gold += 20;
+			app_data.my.gold += 100;
 			app_data.my.free_time = now;
 			save_data();
 			updateDataShow();
@@ -1291,7 +1291,7 @@ function game_main() {
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
 	window.setTimeout( function() {
 		hotjs.domUI.showSplash( false );
-		toggleAd();
+//		toggleAd();
 //		if( ! app_data.opt.get_gift ) {
 //			window.setTimeout( showWelcomeDlg, 2000 );		
 //		}
@@ -1358,7 +1358,14 @@ var res =
   ];
 
 function readyToGo() {
-    hotjs.Ad.init();
+    // we only display ad if screen large enough
+    var w = screen.width, h = screen.height;
+    if((w <= 640) && (h <= w * 1.5)) {
+        // iphone, screen not long enough
+        //$('p.game-explanation').hide();
+    } else {
+        hotjs.Ad.init();
+    }
 
     if( window.plugins ) {
         if( isIOSDevice() ) {
