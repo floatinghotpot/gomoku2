@@ -185,7 +185,7 @@ button.menu {
 	width: 160px;
 	height: 48px;
     vertical-align: middle;
-    font-size: 32px;
+    font-size: 24px;
 }
 img {
 	padding: 0px;
@@ -455,7 +455,7 @@ td.dlg22 {
         width: 400px;
         height: 96px;
         vertical-align: middle;
-        font-size: 64px;
+        font-size: 48px;
     }
     td.btn {
         font-size: 24px;

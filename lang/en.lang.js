@@ -1,5 +1,5 @@
 hotjs.i18n.put('en', {
-	'new': 'New',
+	'new': 'New Game',
 	'undo': 'Undo',
 	'tips': 'Tips',
 	'options': 'Options',
@@ -59,7 +59,7 @@ hotjs.i18n.put('en', {
 	'payfailed_retrylater' : 'Please try again later.',
 	'free_picked' : 'Free golds picked.</p><p>Enjoy gaming!',
 	'free_once_per_day' : 'Free golds once per day.</p><p>You have picked today.',
-	'selectpeer': 'Select opponent',
+	'selectpeer': 'Level',
 	'peer1':'Tom',
 	'peer2':'Ginny',
 	'peer3':'David',
