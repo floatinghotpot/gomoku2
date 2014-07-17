@@ -6,7 +6,14 @@ var ai_go = ai_go || {};
 // configuration
 var app_key = 'com.rjfun.gomoku2';
 
-var app_version = 2.1;
+var app_key = 'com.rjfun.best2048';
+var app_version = '1.0.20140717';
+var app_vercode = 20140717;
+
+var app_url = 'http://rjfun.com/gomoku2/';
+var autorun_url = app_url + 'autorun.js'; // will run when client start
+var share_link_url = app_url; // will share in social sharing
+
 
 var using_iad = true;
 var enable_paypal_in_ios = false;
@@ -1291,6 +1298,8 @@ function game_main() {
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
 	window.setTimeout( function() {
 		hotjs.domUI.showSplash( false );
+
+        hotjs.require( autorun_url );
 //		toggleAd();
 //		if( ! app_data.opt.get_gift ) {
 //			window.setTimeout( showWelcomeDlg, 2000 );		
