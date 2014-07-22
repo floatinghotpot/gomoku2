@@ -74,16 +74,27 @@ div, table, td, p, span, button, input, textarea {
 .vm {
     vertical-align: middle;
 }
+.appname {
+    text-shadow: 3px 3px 5px black;
+}
+.adspace {
+	height: 50px;
+}
 td.btn {
     border-radius: 30px;
     color: white;
     text-shadow: 1px 1px 2px black;
     cursor:pointer;
     padding: 10px;
-    box-shadow:5px 5px 10px black;
     background: url(img/bg_linen.png) /*#666666*/;
     font-size: 18px;
 }
+td.btn-char {
+	padding: 10px;
+	background-color: #46C7C7;
+	border-radius: 15px;
+}
+
 div.logo {
 	width: 100%;
 	height: 100%;
@@ -98,9 +109,13 @@ div.page {
 	margin: 0px;
 	padding: 0px;
     display: none;
+    background: url(img/bg_linen.png) /*#666666*/;
+    color: white;
 }
 div.userinfo {
-	top: 2px;
+    top: 55px;
+}
+div.userinfo {
 	display: block;
 	position: absolute;
 	margin: 0px;
@@ -110,10 +125,10 @@ div.userinfo {
     background: url(img/bg_linen.png) /*#666666*/;
 }
 div#user1 {
-	left: 2px;
+	left: 10px;
 }
 div#user2 {
-	right: 7px;
+	right: 10px;
 }
 div#controlright, div#controlleft {
 	position: absolute;
@@ -171,17 +186,17 @@ button {
 	cursor:pointer;
 }
 button.set {
-	width: 48px;
-	height: 48px;
+	width: 72px;
+	height: 72px;
 }
 .btn-buy {
 	width: 96px;
 	height: 48px;
 	padding: 0px;
 	margin: 0px;
-	display: block;
 }
 button.menu {
+    opacity: 1;
 	width: 160px;
 	height: 48px;
     vertical-align: middle;
@@ -225,6 +240,12 @@ img.icon256 {
 div.dialog {
 	position: absolute;
 }
+div.popup {
+	position: absolute;
+    background: url(img/bg_linen.png) /*#666666*/;
+    color: white;
+	opacity: 1;
+}
 button.dialog {
     width: 96px;
 	height: 48px;
@@ -239,10 +260,10 @@ table.dialog {
 	padding: 0px;
 	margin: 0px;
 	spacing: 0px;
-	-moz-border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -khtml-border-radius: 50px;
-    border-radius: 50px;
+	-moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    -khtml-border-radius: 30px;
+    border-radius: 30px;
 	-webkit-box-shadow:5px 5px 10px black;
 	-moz-box-shadow:5px 5px 10px black;
     box-shadow:5px 5px 10px black;
@@ -298,7 +319,6 @@ td.dlg22 {
 /*** color buttons **/
 
 .button, .button span {
-	display: inline-block;
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
@@ -337,7 +357,6 @@ td.dlg22 {
 	margin-bottom:10px;
 }
 .button.full, .button.full span {
-	display: block;
 }
 .button:hover, .button.hover {
 	background: -moz-linear-gradient(
@@ -435,24 +454,27 @@ td.dlg22 {
     img.dlgx { width:48px; height:48px; }
     body, div, td, button, p, span, input { font-size:24px; }
 
+    div.userinfo {
+        top: 95px;
+    }
     button.dialog {
         width: 192px;
         height: 96px;
         font-size: 24px;
     }
     button.set {
-        width: 96px;
-        height: 96px;
+        width: 144px;
+        height: 144px;
     }
     .btn-buy {
         width: 192px;
         height: 96px;
         padding: 0px;
         margin: 0px;
-        display: block;
     }
     button.menu {
-        width: 400px;
+    	opacity: 1;
+        width: 320px;
         height: 96px;
         vertical-align: middle;
         font-size: 48px;
@@ -460,5 +482,15 @@ td.dlg22 {
     td.btn {
         font-size: 24px;
     }
-
+    td.btn-char {
+    	padding: 10px;
+    	background-color: #46C7C7;
+    	border-radius: 20px;
+    }
+    div.popup {
+	}
+	.adspace {
+		height: 90px;
+	}
+	
 }

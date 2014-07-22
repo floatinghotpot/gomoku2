@@ -65,7 +65,7 @@ hotjs.inherit( GoBoard, hotjs.Scene, {
 		
 		return this;
 	},
-	resetGame : function(n) {
+	resetGame : function() {
 		// init matrix with 0
 		this.matrix = [];
 		for( var i=0; i<this.rows; i++ ) {

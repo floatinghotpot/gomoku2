@@ -13,14 +13,166 @@
           content='user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width' />
     <script src='lib/jquery-1.9.js'></script>
     <script src='lib/hotjs-src.js'></script>
-    <script src='hotjs-ad.js'></script>
     <script src="cordova.js"></script>
-    <script src="game.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
-<div id='pagemain' class='page full' style='display:block;'></div>
 <script>
     $(document).ready( main );
 </script>
+
+<!-- page splash -->
+<div id='splash' class='page full' style='display:block'>
+<table class='full'><tr><td class='full m'>
+<h1 class='appname I18N' i18n='gamename'>GOMOKU</h1><br/>
+<img class='logo' src='img/icon256.png'/><br/>
+<h3>&copy; RjFun</h3>
+</td></tr>
+</table>
+</div>
+
+<!-- page game -->
+<div id='pagemain' class='page full' style='display:none;'>
+
+<div id='gameView' class='full'></div>
+
+<div id='user1' class='userinfo round'>
+<table class='m'>
+<tr>
+<td><img id='my-img' class='icon32 clickable' src='img/user2.png'></td>
+<td><img class='icon32' src='img/gold.png'><br/><span id='my-gold'>1800</span></td>
+<td><img id='my-gocolor' class='icon32' src='img/blackgo.png'/></td>
+</tr>
+</table></div>
+<div id='user2' class='userinfo round'>
+<table class='m'>
+<tr>
+<td><img id='peer-gocolor' class='icon32' src='"img/whitego.png'/></td>
+<td><img class='icon32' src='img/gold.png'><br/><span id='peer-gold'>1500</span></td>
+<td><img id='peer-img' class='icon32 clickable' src='img/user1.png'></td>
+</tr>
+</table>
+</div>
+
+<div id='controlleft' class='control'>
+<table class='control' cellspacing='5'>
+<tr><td class='m vm btn clickable pagemenu'><img class='icon48' src='img/menu.png'/><br/><span class='I18N' i18n='menu'>Menu</span></td>
+<td class='m vm btn clickable pagebuy'><img class='icon48' src='img/gold.png'/><br/><span class='I18N' i18n='buy'>Coins</span></td></tr>
+</table></div>
+<div id='controlright' class='control'>
+<table class='control' cellspacing='5'>
+<tr><td class='m vm btn clickable icon-tip'><img class='icon48' src='img/tipon.png'/><br/><span class='I18N' i18n='tips'>Tips</span></td>
+<td class='m vm btn clickable icon-undo'><img class='icon48' src='img/undo.png'/><br/><span class='I18N' i18n='undo'>Undo</span></td></tr>
+</table></div>
+
+</div>
+
+<!-- page about -->
+<div id='pageabout' class='full popup dialog round clickable' popup='true' style='display:none;'>
+<table class='full'><tr><td class='full m'>
+<h1 class='appname I18N' i18n='gamename'>GOMOKU</h1><br/>
+<img class='logo' src='img/icon256.png'/><br/>
+<h3>&copy; RjFun</h3>
+<div id='pageaboutinfo'></div>
+</td></tr>
+</table>
+</div>
+
+<!-- page menu -->
+<div id='pagemenu' class='full popup dialog round' popup='true' style='display:none;'>
+<table class='full'>
+<tr><td colspan=2 class='m b'><h1 class='appname I18N' i18n='gamename'>GOMOKU</h1></td></tr>
+<tr>
+<td class='r'>
+<img src='img/peer1-128.png'/><br/>
+<p><br/><br/></p>
+<img src='img/peer5-128.png'/>
+</td>
+<td class='l'>
+<table>
+<tr><td><button class=' I18N clickable menu button cyan icon-start' id='btn_new' i18n='new'>New Game</button></td></td>
+<tr><td><button class=' I18N clickable menu button cyan pagechar' id='btn_char' i18n='selectpeer'>Select Player</button></td><tr>
+<tr><td><button class=' I18N clickable menu button cyan pageopt' id='btn_options' i18n='options'>Settings</button></td><tr>
+<tr><td><button class=' I18N clickable menu button cyan pageabout' id='btn_about' i18n='about'>About</button></td><tr>
+<tr><td><button class=' I18N clickable menu button cyan ' id='btn_quit' i18n='quit'>Quit</button></td><tr>
+<tr><td><button class=' I18N clickable menu button cyan' id='btn_backgame' i18n='backgame'>Resume Game</button></td><tr>
+</table>
+</td></tr></table>
+</div>
+
+<!-- page select peer -->
+<div id='pagechar' class='full popup dialog round' popup='true' style='display:none;'>
+<table class='m full' cellspacing=5>
+<tr><td class='adspace'>&nbsp;</td></tr>
+<tr><td colspan=2 style='m'><span class='I18N' i18n='selectpeer'>Select Player</span></td></tr>
+<tr>
+<td class='btn-char clickable button rosy' v='1'><img class='icon64' src='img/peer1-64.png'/><br/><br/><span class='I18N' i18n='peer1'>Kid</span></td>
+<td class='btn-char clickable button green' v='2'><img class='icon64' src='img/peer2-64.png'/><br/><br/><span class='I18N' i18n='peer2'>Girl</span></td>
+</tr>
+<tr>
+<td class='btn-char clickable button yellow' v='3'><img class='icon64' src='img/peer3-64.png'/><br/><br/><span class='I18N' i18n='peer3'>Boy</span></td>
+<td class='btn-char clickable button cyan' v='4'><img class='icon64' src='img/peer4-64.png'/><br/><br/><span class='I18N' i18n='peer4'>Uncle</span></td>
+</tr>
+<tr>
+<td class='btn-char clickable button blue' v='5'><img class='icon64' src='img/peer5-64.png'/><br/><br/><span class='I18N' i18n='peer5'>Grandpa</span></td>
+<td class=''><button class='dialog clickable pagechar_x I18N' i18n='cancel'>Cancel</button></td>
+</tr>
+</table>
+</div>
+
+<!-- page settings -->
+<div id='pageopt' class='full popup dialog round' popup='true' style='display:none;'>
+<table class='m full'>
+<tr><td class='adspace'>&nbsp;</td></tr>
+<tr><td colspan=3 style='m'><span class='I18N' i18n='boardsize'>Board Size</span></td></tr>
+<tr>
+<td><button class='btn-size clickable set button rosy' v='9'>9 x 9</button></td>
+<td><button class='btn-size clickable set button rosy' v='11'>11 x 11</button></td>
+<td><button class='btn-size clickable set button yellow' v='13'>13 x 13</button></td></tr>
+<tr><td><button class='btn-size clickable set button green' v='15'>15 x 15</button></td>
+<td><button class='btn-size clickable set button cyan' v='17'>17 x 17</button></td>
+<td><button class='btn-size clickable set button blue' v='19'>19 x 19</button></td>
+<td></td></tr>
+<tr>
+<td style='text-align:right'><span  class='I18N' i18n='music'>Music</span></td>
+<td><img id='icon-music' class='icon clickable' src='img/music.png' width='32'></td>
+</tr>
+<tr>
+<td style='text-align:right'><span  class='I18N' i18n='audio'>Audio</span></td>
+<td><img id='icon-audio' class='icon clickable' src='img/audio.png' width='32'></td><td></td></tr>
+<tr><td style='text-align:right'><span  class='I18N' i18n='resetdata'>Reset Data</span></td>
+<td><img id='icon-reset' class='icon clickable' src='img/reset.png' width='32'></td><td></td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td colspan=3><button class='dialog clickable pageopt_x I18N' i18n='cancel'>Cancel</button></td></tr></table>
+</div>
+
+<!-- page buy -->
+<div id='pagebuy' class='full popup dialog round' popup='true' style='display:none;'>
+<table class='full'>
+<tr><td class='adspace'>&nbsp;</td></tr>
+<tr>
+<td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span><br/><br/></td></tr>
+
+<tr><td class='m'><img class='icon32' src='img/gold.png'/><br/><span class='I18N' i18n='pkg0'>100 golds</span><br/>
+<button id='pkg0' class=' clickable button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td>
+
+<td class='m'><img class='icon48' src='img/gold2.png'/><br/><span class='I18N' i18n='pkg1'>500 golds</span><br/>
+<button id='pkg1' class=' clickable button green btn-buy I18N' i18n='pkg1price'>$ 1</button>
+</td>
+</tr>
+
+<tr>
+<td class='m'><img class='icon48' src='img/gold3.png'/><br/><span class='I18N' i18n='pkg2'>2000 golds</span><br/>
+<button id='pkg2' class=' clickable button yellow btn-buy I18N' i18n='pkg2price'>$ 2</button></td>
+
+<td class='m'><img class='icon48' src='img/gold4.png'/><br/><span class='I18N' i18n='pkg3'>10000 golds</span><br/>
+<button id='pkg3' class=' clickable button gold btn-buy I18N' i18n='pkg3price'>$ 6</button></td>
+</tr>
+
+<tr><td colspan=2 class='m'><br/><button class='dialog clickable pagebuy_x I18N' i18n='cancel'>Cancel</button></td></tr></table>
+
+</div>
+
 </body>
 </html>
