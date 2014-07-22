@@ -519,19 +519,28 @@ function payWithPaypalMPL( pkgid ) {
 				save_data();
 				updateDataShow();
 				
+			    $('div#pagebuy').hide();
+
 				if( dialog ) { dialog.dismiss(); dialog=null; }
-				dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
+				dialog = hotjs.domUI.popupDialog(
+						hotjs.i18n.get('paydone'),
 						"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
-						hotjs.i18n.get('get500happy').replace('500', golds) + '</p>');
+						hotjs.i18n.get('get500happy').replace('500', golds) + '</p>',
+						{ok:function(){return true;}, x:null},
+						{dismiss:1500} );
 			}, function( msg ) {
+			    $('div#pagebuy').hide();
+
 				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
-						hotjs.i18n.get('payfailed_retrylater'));
+						hotjs.i18n.get('payfailed_retrylater'),{ok:function(){return true;}, x:null},{dismiss:1500});
 			});
 		}, function() {
+		    $('div#pagebuy').hide();
+		    
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
-					hotjs.i18n.get('payfailed_retrylater'));
+					hotjs.i18n.get('payfailed_retrylater'),{ok:function(){return true;}, x:null},{dismiss:1500});
 		});
 }
 
@@ -573,6 +582,8 @@ function init_IAP() {
 	if(! window.plugins.InAppPurchaseManager) return;
 	
 	document.addEventListener('onInAppPurchaseSuccess', function(event){
+	    $('div#pagebuy').hide();
+
 		// event.productId
 		// event.transactionId
 		// event.transactionReceipt
@@ -587,18 +598,22 @@ function init_IAP() {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('paydone'),
 					"<img src='" + __DIR__('img/shrug.png') + "'><p>" + 
-					hotjs.i18n.get('get500happy').replace('500', product.golds) + '</p>');
+					hotjs.i18n.get('get500happy').replace('500', product.golds) + '</p>',{ok:function(){return true;}, x:null},{dismiss:1500});
 	});
 
 	document.addEventListener('onInAppPurchaseFailed', function(event){
+	    $('div#pagebuy').hide();
+
 		// event.errorCode
 		// event.errorMsg
 		if( dialog ) { dialog.dismiss(); dialog=null; }
-		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
-			hotjs.i18n.get('payfailed_retrylater'));
+		dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed') + '<br/>' + hotjs.i18n.get('payfailed_retrylater'), "", 
+				{ok:function(){return true;}, x:null});
 	});
 
 	document.addEventListener('onInAppPurchaseRestored', function(event){
+	    $('div#pagebuy').hide();
+
 		// event.productId
 		// event.transactionId
 		// event.transactionReceipt
@@ -617,67 +632,6 @@ function payWithIAP( pkgid ) {
 	
 	var productId = app_key + '.' + pkgid;
 	iap.makePurchase( productId, 1, function(){}, function(){} );
-}
-
-function buyProduct( productId ) {
-    $('div#pagebuy').hide();
-
-	if( productId == 'pkg0' ) {
-		var msg = hotjs.i18n.get('free_once_per_day');
-		var now = Date.now();
-		if(! app_data.my.free_time) app_data.my.free_time = 0;
-		if( now > app_data.my.free_time + 1000*3600*8 ) {
-			app_data.my.gold += 100;
-			app_data.my.free_time = now;
-			save_data();
-			updateDataShow();
-			msg = hotjs.i18n.get('free_picked');
-		}
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('pkg0info'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
-				+ msg + '<br/><br/></p>', {'ok':function(){return true;}, x:null} );
-	} else {
- 		//hotjs.domUI.toggle( $('div#pagebuy')[0] );
-		
-		var imgs = {
-				'pkg1' : __DIR__('img/gold2.png'),
-				'pkg2' : __DIR__('img/gold3.png'),
-				'pkg3' : __DIR__('img/gold4.png')
-		};
-		dialog = hotjs.domUI.popupDialog( 
-				"<img class='icon96' src='" + imgs[productId] +  "'><br/>" +
-				hotjs.i18n.get( productId ) + ' ' + hotjs.i18n.get('golds') + '<br/>' +
-				hotjs.i18n.get( productId + 'price' ), 
-				'<p>' + hotjs.i18n.get('select_payment') + '</p>' +
-				"<button id='btn-iap' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/iap.png') + "'></button><br/> " +
-				"<button id='btn-paypal' class='button round btn-buy'><img class='btn-buy' src='" + __DIR__('img/paypal.png') + "'></button>" 
-				);
-		
-		if( window.plugins && 
-				window.plugins.InAppPurchaseManager &&
-				window.plugins.InAppPurchaseManager.inUse ) {
-			$('button#btn-iap').on('click', function(){
-				$(this).html("<img src='" + resources.getLoadingGif() + "'>");
-				$(this).attr('disabled', 'disabled');
-				payWithIAP( productId );
-			});
-		} else {
-			$('button#btn-iap').css({'display':'none'});
-		}
-		
-		if( window.plugins &&
-				window.plugins.PayPalMPL &&
-				window.plugins.PayPalMPL.inUse ) {
-			$('button#btn-paypal').on('click', function(){
-				$(this).html("<img src='" + resources.getLoadingGif() + "'>");
-				$(this).attr('disabled', 'disabled');
-				payWithPaypalMPL( productId );
-			});
-		} else {
-			$('button#btn-paypal').css({'display':'none'});
-		}
-	}
 }
 
 function watchAdGetGift() {
@@ -953,6 +907,52 @@ function onClickPeerHead(){
 			});
 }
 
+function onClickBuyItem(){
+	var productId = $(this).attr('id');
+
+	if( productId == 'pkg0' ) {
+		var msg = hotjs.i18n.get('free_once_per_day');
+		var now = Date.now();
+		if(! app_data.my.free_time) app_data.my.free_time = 0;
+		if( now > app_data.my.free_time + 1000*3600*8 ) {
+			app_data.my.gold += 100;
+			app_data.my.free_time = now;
+			save_data();
+			updateDataShow();
+			msg = hotjs.i18n.get('free_picked');
+		}
+		dialog = hotjs.domUI.popupDialog( 
+				hotjs.i18n.get('pkg0info'), 
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
+				+ msg + '<br/><br/></p>', {'ok':function(){return true;}, x:null} );
+		
+	    $('div#pagebuy').hide();
+	} else {
+		if( window.plugins && 
+				window.plugins.InAppPurchaseManager &&
+				window.plugins.InAppPurchaseManager.inUse ) {
+			payWithIAP( productId );
+			
+		} else if( window.plugins &&
+				window.plugins.PayPalMPL &&
+				window.plugins.PayPalMPL.inUse ) {
+			payWithPaypalMPL( productId );
+		}
+	}
+}
+
+function onClickBackButton(){
+	dialog = hotjs.domUI.popupDialog('',hotjs.i18n.get('confirmquit'),{
+        'ok':function(){
+           navigator.app.exitApp();
+        },
+        'cancel':function(){
+           return true;
+        }, 
+        x: null
+        });
+}
+
 function init_events() {
 	$(window).resize( game_resize );
 	
@@ -966,6 +966,8 @@ function init_events() {
 	// AdMob
 	document.addEventListener( 'onPresentAd', watchAdGetGift );
 	document.addEventListener( 'onLeaveToAd', watchAdGetGift );
+	
+	document.addEventListener('backbutton', onClickBackButton);
 
 	$('.icon-start').on('click', onClickStart);
 	$('.icon-undo').on(touch_event, onClickUndo);
@@ -987,10 +989,7 @@ function init_events() {
         togglePage('div#pagechar');
     });
 
-    $('button.btn-buy').on('click', function(){
-		var productId = $(this).attr('id');
-		buyProduct( productId );
-	});
+    $('button.btn-buy').on('click', onClickBuyItem);
 
     $('.pageabout').on('click', onClickAbout);
     
@@ -1078,18 +1077,23 @@ function game_resize() {
 	var w = window.innerWidth, h = window.innerHeight;
 	var mh = $("div#bottom-menu").height();
 	h -= mh;
+	$('div.full').css({width:w+'px', height:h+'px'});
 	
 	var small_screen = (w <= 640);
     var short_screen = ((w <= 640) && (h <= w * 1.5));
+    
+    var space_top = short_screen ? 0 : (small_screen ? 50: 66);
 
-	$('div.full').css({width:w+'px', height:h+'px'});
-	
     if( isMobileDevice() && (! short_screen) ) {
-    	$('div.userinfo').css({top: (small_screen ? 55: 95)});
-    	$('.adspace').css({height: (small_screen ? 50: 90)});
+    	$('div.userinfo').css({top: space_top +5});
+    	$('.adspace').css({height: space_top});
     } else {
     	$('div.userinfo').css({top:5});
     	$('.adspace').css({height:5});
+    }
+    
+    if( isIOSDevice() ) {
+    	$('button#btn_quit').hide();
     }
 
 	if(!! gameView) gameView.setSize(w,h);
@@ -1101,18 +1105,18 @@ function game_resize() {
 			'width': '',
 			'height':'',
 			'right':'',
-			'left':'5px',
+			'left':'0px',
 			'top':'',
-			'bottom': (mh+5) + 'px'
+			'bottom': (mh+0) + 'px'
 		});
         $('div#controlright').css({ // right
             'display':'inline-block',
             'width': '',
             'height':'',
             'left':'',
-            'right':'5px',
+            'right':'0px',
             'top':'',
-            'bottom': (mh+5) + 'px'
+            'bottom': (mh+0) + 'px'
         });
 		
 		var m = Math.min(w, h) - 2;
@@ -1122,25 +1126,25 @@ function game_resize() {
 			'display':'inline-block',
 			'width':'',
 			'height':'',
-			'left':'5px',
+			'left':'0px',
 			'right':'',
 			'top':'',
-			'bottom': (mh+5) + 'px'
+			'bottom': (mh+0) + 'px'
 		});
         $('div#controlright').css({ // bottom
             'display':'inline-block',
             'width':'',
             'height':'',
             'left':'',
-            'right':'5px',
+            'right':'0px',
             'top':'',
-            'bottom': (mh+5) + 'px'
+            'bottom': (mh+0) + 'px'
         });
 
-		var h_info = $('div#user1').position().top + $('div#user1').height() + 10;
+		var h_info = space_top + 5 + $('div#user1').height() + 5;
 		var h_ctrl = $('div#controlleft').height();
 		var h_in = h - h_info - h_ctrl;
-		var m = Math.min(w, h_in) - 10;
+		var m = Math.min(w, h_in) - (small_screen ? 10 : 30);
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }

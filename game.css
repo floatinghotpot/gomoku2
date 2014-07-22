@@ -78,11 +78,11 @@ div, table, td, p, span, button, input, textarea {
     text-shadow: 3px 3px 5px black;
 }
 td.btn {
-    border-radius: 30px;
+    border-radius: 20px;
+    padding: 5px;
     color: white;
     text-shadow: 1px 1px 2px black;
     cursor:pointer;
-    padding: 10px;
     background: url(img/bg_linen.png) /*#666666*/;
     font-size: 18px;
 }
@@ -120,10 +120,10 @@ div.userinfo {
     background: url(img/bg_linen.png) /*#666666*/;
 }
 div#user1 {
-	left: 10px;
+	left: 5px;
 }
 div#user2 {
-	right: 10px;
+	right: 5px;
 }
 div#controlright, div#controlleft {
 	position: absolute;
