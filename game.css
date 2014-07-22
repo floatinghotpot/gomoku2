@@ -77,9 +77,6 @@ div, table, td, p, span, button, input, textarea {
 .appname {
     text-shadow: 3px 3px 5px black;
 }
-.adspace {
-	height: 50px;
-}
 td.btn {
     border-radius: 30px;
     color: white;
@@ -113,11 +110,9 @@ div.page {
     color: white;
 }
 div.userinfo {
-    top: 55px;
-}
-div.userinfo {
 	display: block;
 	position: absolute;
+	/*top: 5px;*/
 	margin: 0px;
 	padding: 2px;
 	opacity: 1;
@@ -454,9 +449,6 @@ td.dlg22 {
     img.dlgx { width:48px; height:48px; }
     body, div, td, button, p, span, input { font-size:24px; }
 
-    div.userinfo {
-        top: 95px;
-    }
     button.dialog {
         width: 192px;
         height: 96px;
@@ -487,10 +479,4 @@ td.dlg22 {
     	background-color: #46C7C7;
     	border-radius: 20px;
     }
-    div.popup {
-	}
-	.adspace {
-		height: 90px;
-	}
-	
 }

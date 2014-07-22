@@ -1074,13 +1074,24 @@ function init_events() {
 	}, false);
 }
 
-function game_resize(w, h) {
+function game_resize() {
 	var w = window.innerWidth, h = window.innerHeight;
 	var mh = $("div#bottom-menu").height();
 	h -= mh;
+	
+	var small_screen = (w <= 640);
+    var short_screen = ((w <= 640) && (h <= w * 1.5));
 
 	$('div.full').css({width:w+'px', height:h+'px'});
 	
+    if( isMobileDevice() && (! short_screen) ) {
+    	$('div.userinfo').css({top: (small_screen ? 55: 95)});
+    	$('.adspace').css({height: (small_screen ? 50: 90)});
+    } else {
+    	$('div.userinfo').css({top:5});
+    	$('.adspace').css({height:5});
+    }
+
 	if(!! gameView) gameView.setSize(w,h);
 	if(!! board) board.setSize(w,h);
 
@@ -1129,7 +1140,7 @@ function game_resize(w, h) {
 		var h_info = $('div#user1').position().top + $('div#user1').height() + 10;
 		var h_ctrl = $('div#controlleft').height();
 		var h_in = h - h_info - h_ctrl;
-		var m = Math.min(w, h_in) - 20;
+		var m = Math.min(w, h_in) - 10;
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }
@@ -1184,7 +1195,6 @@ function game_main() {
 		.resetGame();
 	
 	hotjs.i18n.translate();
-	game_resize();
 	updateDataShow();
 	toggleAudio();
 	toggleMusic();
@@ -1196,6 +1206,8 @@ function game_main() {
 	var tUsed = tLoadingDone - tLoadingStart;
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
 	window.setTimeout( function() {
+		game_resize();
+		
 		$('div#splash').hide();
 		$('div#pagemain').show();
 		
@@ -1272,7 +1284,6 @@ function loadApp() {
     if((w <= 640) && (h <= w * 1.5)) {
         // iphone, screen not long enough
         //$('p.game-explanation').hide();
-    	$('div.userinfo').css({top:5});
     } else {
         hotjs.Ad.init( ad_options );
     }
