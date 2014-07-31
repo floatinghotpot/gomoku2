@@ -5,6 +5,7 @@ hotjs.i18n.put('en', {
 	'options': 'Options',
 	'more':	'More',
 	'welcome':'Welcome',
+	'confirmquit':'Rally quit?',
 	'backgame':'Back Game',
 	'gift_picked' : 'You have picked the free gift.',
 	'info':'Info',

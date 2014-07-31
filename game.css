@@ -74,17 +74,13 @@ div, table, td, p, span, button, input, textarea {
 .vm {
     vertical-align: middle;
 }
-.appname {
-    text-shadow: 3px 3px 5px black;
-}
 td.btn {
-    border-radius: 20px;
-    padding: 5px;
+    border-radius: 5px;
+    padding: 2px;
     color: white;
     text-shadow: 1px 1px 2px black;
     cursor:pointer;
     background: url(img/bg_linen.png) /*#666666*/;
-    font-size: 18px;
 }
 td.btn-char {
 	padding: 10px;
@@ -103,6 +99,8 @@ img.logo {
 	height: 256px;
 }
 div.page {
+	width: 100%;
+	height: 100%;
 	margin: 0px;
 	padding: 0px;
     display: none;
@@ -112,7 +110,6 @@ div.page {
 div.userinfo {
 	display: block;
 	position: absolute;
-	/*top: 5px;*/
 	margin: 0px;
 	padding: 2px;
 	opacity: 1;
@@ -120,10 +117,12 @@ div.userinfo {
     background: url(img/bg_linen.png) /*#666666*/;
 }
 div#user1 {
-	left: 5px;
+	top: 2px;
+	left: 2px;
 }
 div#user2 {
-	right: 5px;
+	top: 2px;
+	right: 2px;
 }
 div#controlright, div#controlleft {
 	position: absolute;
@@ -136,6 +135,7 @@ table.control {
 	padding: 0px;
 	margin: 0px;
 	border-spacing: 2px;
+	font-size: 14px;
 }
 div.icon {
 	width:32px;
@@ -190,16 +190,21 @@ button.set {
 	padding: 0px;
 	margin: 0px;
 }
-button.menu {
+.appname {
+    text-shadow: 3px 3px 5px black;
+    font-size: 22px;
+}
+button.menuitem {
     opacity: 1;
-	width: 160px;
-	height: 48px;
+	width: 144px;
+	height: 36px;
     vertical-align: middle;
-    font-size: 24px;
+    font-size: 20px;
 }
 img {
 	padding: 0px;
 	margin: 0px;
+	display: inline-block;
 }
 img.icon {
 	width: 32px;
@@ -443,11 +448,15 @@ td.dlg22 {
 	background-color: #D4A017;
 }
 
-@media screen and (min-width: 520px) {
-    img.icon, img.icon32, img.icon48 { width:64px; height:64px; }
+@media 
+only screen and (min-width: 640px),
+only screen and (min-device-pixel-ratio: 2) {
+    img.icon, img.icon32 { width:64px; height:64px; }
+    img.icon48 { width:96px; height:96px; }
+    img.icon64 { width:128px; height:128px; }
     img.logo, img.icon128 { width:256px; height:256px; }
     img.dlgx { width:48px; height:48px; }
-    body, div, td, button, p, span, input { font-size:24px; }
+    body, div, td, button, p, span, input { font-size:28px; }
 
     button.dialog {
         width: 192px;
@@ -464,7 +473,17 @@ td.dlg22 {
         padding: 0px;
         margin: 0px;
     }
-    button.menu {
+    .appname {
+	    text-shadow: 3px 3px 5px black;
+	    font-size: 48px;
+	}
+    table.control {
+		padding: 0px;
+		margin: 0px;
+		border-spacing: 2px;
+		font-size: 28px;
+	}
+    button.menuitem {
     	opacity: 1;
         width: 320px;
         height: 96px;

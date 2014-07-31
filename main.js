@@ -6,21 +6,27 @@ var ai_go = ai_go || {};
 // configuration
 var app_key = 'com.rjfun.gomoku2';
 
-var app_version = '1.0.20140722';
-var app_vercode = 20140722;
+var app_version = '1.0.20140730';
+var app_vercode = 20140730;
 
 var app_url = 'http://rjfun.com/gomoku2/';
 var autorun_url = app_url + 'autorun.js'; // will run when client start
 var share_link_url = app_url; // will share in social sharing
 
-var ad_options = {
-    admob_ios : 'ca-app-pub-6869992474017983/6582687956',
-    admob_android : 'ca-app-pub-6869992474017983/9536154357',
-    bannerAtTop : true,
-    overlap: true,
-    offsetTopBar: false,
-    isTesting : false
-};
+function isMobileDevice() {
+	return ( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ); 
+}
+
+function isIOSDevice(){
+	return ( /(ipad|iphone|ipod)/i.test(navigator.userAgent) );
+}
+
+function isAndroidDevice() {
+	return ( /(android)/i.test(navigator.userAgent) );
+}
+
+var admob_ios = 'ca-app-pub-6869992474017983/6582687956';
+var admob_android = 'ca-app-pub-6869992474017983/9536154357';
 
 var using_iad = true;
 var enable_paypal_in_ios = false;
@@ -65,18 +71,6 @@ var ai_agent;
 var net_player;
 var worker;
 var dialog;
-
-function isMobileDevice() {
-	return ( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) ); 
-}
-
-function isIOSDevice(){
-	return ( /(ipad|iphone|ipod)/i.test(navigator.userAgent) );
-}
-
-function isAndroidDevice() {
-	return ( /(android)/i.test(navigator.userAgent) );
-}
 
 var touch_event = isMobileDevice() ? 'touchstart' : 'click';
 
@@ -169,10 +163,40 @@ function restartGame(){
     board.exchangeFirstHand();
 	board.resetGame();
 
-    dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('exchangefirsthand'),"",{'x':null},{top:100,dismiss:1500});
+    dialog = hotjs.domUI.popupDialog(hotjs.i18n.get('exchangefirsthand'),"",{'x':null},{top:40,dismiss:1500});
+    
+    // prepare ad
+    requestInterstitial();
+}
+
+var stackedPages = [];
+var currentPage = null;
+
+function showPage( pgid ) {
+	$('div.page').hide();
+	$('div#' + pgid).show();
+	currentPage = pgid;
+}
+
+function pushPage( pgid ) {
+	if(currentPage != null) stackedPages.push( currentPage );
+	showPage( pgid );
+}
+
+function popPage() {
+	if( stackedPages.length >0) {
+		showPage( stackedPages.pop() );
+		return true;
+	}
+	
+	return false;
 }
 
 function onMyWin() {
+	// now show ad
+	showInterstitial();
+	console.log('showInterstitial');
+	
     hotjs.Audio.play('win');
 	window.setTimeout( function(){
 		var peerN = 'peer' + app_data.opt.level;
@@ -222,6 +246,9 @@ function onMyWin() {
 }
 
 function onMyLost() {
+	// now show ad
+	showInterstitial();
+	
     hotjs.Audio.play('fail');
     window.setTimeout(function() {
 		var peerN = 'peer' + app_data.opt.level;
@@ -295,7 +322,10 @@ function onAIMessage(evt) {
 	case 'go':
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		
-		if( board.getTipStatus() ) toggleTip( false );
+		if( board.getTipStatus() ) {
+			board.showTip( false );
+			if( dialog ) { dialog.dismiss(); dialog=null; }
+		}
 		
 		var s = msg.solution;
 		var t = s.topMoves;
@@ -467,33 +497,6 @@ function toggleAudio(){
 	}
 };
 
-function toggleTip( b ) {
-	if( b ) {
-		board.showTip( true );
-
-		if( dialog ) { dialog.dismiss(); dialog=null; }
-		dialog = hotjs.domUI.popupDialog( 
-				hotjs.i18n.get('tipon'), 
-				'<p>' + hotjs.i18n.get('tipcost1gold') + '</p>',
-				{}, {top:100, dismiss:1500}, 'top' );
-		
-		app_data.my.gold --;
-		save_data();
-		
-		updateDataShow();
-
-	} else {
-		board.showTip( false );
-		if( dialog ) { dialog.dismiss(); dialog=null; }
-	}
-	
-	if( board.getTipStatus() ) {
-		$('.icon-tip').attr('src', __DIR__("img/tipon.png") );
-	} else {
-		$('.icon-tip').attr('src', __DIR__("img/tipon.png") );
-	}
-}
-
 function payWithPaypalMPL( pkgid ) {
 	if(! window.plugins) return;
 	if(! window.plugins.PayPalMPL) return;	
@@ -519,7 +522,7 @@ function payWithPaypalMPL( pkgid ) {
 				save_data();
 				updateDataShow();
 				
-			    $('div#pagebuy').hide();
+				popPage();
 
 				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog(
@@ -529,14 +532,14 @@ function payWithPaypalMPL( pkgid ) {
 						{ok:function(){return true;}, x:null},
 						{dismiss:1500} );
 			}, function( msg ) {
-			    $('div#pagebuy').hide();
+				popPage();
 
 				if( dialog ) { dialog.dismiss(); dialog=null; }
 				dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
 						hotjs.i18n.get('payfailed_retrylater'),{ok:function(){return true;}, x:null},{dismiss:1500});
 			});
 		}, function() {
-		    $('div#pagebuy').hide();
+			popPage();
 		    
 			if( dialog ) { dialog.dismiss(); dialog=null; }
 			dialog = hotjs.domUI.popupDialog( hotjs.i18n.get('payfailed'), 
@@ -556,11 +559,6 @@ function requestIAPProductInfo() {
 			window.plugins.InAppPurchaseManager.inUse = true;
 			
 			var validProducts = data.validProducts;
-			if( Array.isArray(validProducts) && (validProducts.length > 0) ) {
-				$('button#btn-iap').removeAttr('disabled');
-			} else {
-				$('button#btn-iap').attr('disabled', 'disabled');
-			}
 			
 			var invalidIds = data.invalidIds;
 			if( Array.isArray(invalidIds) ) {
@@ -570,9 +568,7 @@ function requestIAPProductInfo() {
 			}
 			
 		}, function() {
-			$('button#btn-iap').attr('disabled', 'disabled');
-			
-			window.setTimeout( requestIAPProductInfo, 1000 * 30 );
+			window.setTimeout( requestIAPProductInfo, 1000 * 10 );
 		}
 	);	
 }
@@ -582,7 +578,7 @@ function init_IAP() {
 	if(! window.plugins.InAppPurchaseManager) return;
 	
 	document.addEventListener('onInAppPurchaseSuccess', function(event){
-	    $('div#pagebuy').hide();
+	    popPage();
 
 		// event.productId
 		// event.transactionId
@@ -602,7 +598,7 @@ function init_IAP() {
 	});
 
 	document.addEventListener('onInAppPurchaseFailed', function(event){
-	    $('div#pagebuy').hide();
+	    popPage();
 
 		// event.errorCode
 		// event.errorMsg
@@ -612,7 +608,7 @@ function init_IAP() {
 	});
 
 	document.addEventListener('onInAppPurchaseRestored', function(event){
-	    $('div#pagebuy').hide();
+	    popPage();
 
 		// event.productId
 		// event.transactionId
@@ -656,14 +652,6 @@ function watchAdGetGift() {
 	}	
 }
 
-function togglePage( id ) {
-    var scrw = window.innerWidth, scrh = window.innerHeight;
-    var o = $(id);
-    var w = o.width(), h = o.height();
-    o.toggle();
-    o.css({'top': (scrh-h)/2, 'left': (scrw-w)/2});
-}
-
 function popupNeedGoldDlg() {
 	if( dialog ) { dialog.dismiss(); dialog=null; }
 	dialog = hotjs.domUI.popupDialog( 
@@ -672,9 +660,8 @@ function popupNeedGoldDlg() {
 			+ hotjs.i18n.get('nogoldcannotdo') + '</p>', {
 				'buy':function(){
 					hotjs.domUI.dismiss( dialog );
-                    //$('div#pagebuy').show();
-                    togglePage('div#pagebuy');
-					//hotjs.domUI.toggle( $('div#pagebuy')[0] );
+					dialog = null;
+					pushPage('pagebuy');
 					return true;
 				}
 			} );	
@@ -776,25 +763,41 @@ function onClickStart(){
 }
 
 function onClickUndo(){
+	var peerN = 'peer' + app_data.opt.level;
+	var npc = NPC_config[ peerN ];
+	var cost = Math.round( npc.perwin / 5 );
+	
 	if( ! board.canUndo() ) {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('notstarted'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '<br/><br/></p>', {x:null}, {top:100,dismiss:1500} );
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '<br/><br/></p>', {x:null}, {top:40,dismiss:1500} );
 	} else if( board.gameOver ) {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gameover'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '<br/><br/></p>', {x:null}, {top:100,dismiss:1500} );
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '<br/><br/></p>', {x:null}, {top:40,dismiss:1500} );
 	} else if( board.canUndo() ) {
-		if( app_data.my.gold >= 3 ) {
-			board.undo();
+		if( app_data.my.gold >= cost ) {
 			if( dialog ) { dialog.dismiss(); dialog=null; }
-			dialog = hotjs.domUI.popupDialog(  hotjs.i18n.get('undook'),  "<p>" + hotjs.i18n.get('undocost3gold') + '<br/><br/></p>',  {x:null}, {top:100,dismiss:1500}, 'top' );
+			dialog = hotjs.domUI.popupDialog(  "",  
+					"<p>" + hotjs.i18n.get('undocost3gold').replace('3', cost) + '<br/><br/></p>',  
+				{
+				ok: function(){
+					board.undo();
+					
+					app_data.my.gold -= cost;
+					save_data();
+					updateDataShow();
+					
+					return true;
+				},
+				cancel: function(){
+					return true;
+				},
+				x:null
+				} );
 			
-			app_data.my.gold -= 3;
-			save_data();
-			updateDataShow();
 		} else {
 			popupNeedGoldDlg();
 		}
@@ -802,18 +805,48 @@ function onClickUndo(){
 }
 
 function onTouchTip(){
+	var tips_on = board.getTipStatus();
+	if(tips_on) {
+		board.showTip( false );
+		return;
+	}
+		
+	var peerN = 'peer' + app_data.opt.level;
+	var npc = NPC_config[ peerN ];
+	var cost = Math.round( npc.perwin / 10 );
+	
 	if( ! board.canUndo() ) {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('notstarted'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '<br/><br/></p>', {x:null},{top:100,dismiss:1500} );
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('notstartedcannotdo') + '<br/><br/></p>', {x:null},{top:40,dismiss:1500} );
 	} else if( board.gameOver ) {
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
 				hotjs.i18n.get('gameover'), 
-				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '<br/><br/></p>', {x:null},{top:100,dismiss:1500} );
-	} else if ( app_data.my.gold >= 1 ) {
-		toggleTip(! board.getTipStatus() );
+				"<img src='" + __DIR__('img/shrug.png') + "'><p>" + hotjs.i18n.get('gameovercannotdo') + '<br/><br/></p>', {x:null},{top:40,dismiss:1500} );
+	} else if ( app_data.my.gold >= cost ) {
+		if( dialog ) { dialog.dismiss(); dialog=null; }
+		dialog = hotjs.domUI.popupDialog( 
+				'', 
+				'<p>' + hotjs.i18n.get('tipcost1gold').replace('1', cost) + '</p>',
+				{
+					ok: function(){
+						board.showTip( true );
+						
+						app_data.my.gold -= cost;
+						save_data();
+						updateDataShow();
+						
+						return true;
+					},
+					cancel: function(){
+						return true;
+					},
+					x:null
+					});
+		
+
 	} else {
 		popupNeedGoldDlg();
 	}
@@ -839,12 +872,10 @@ function onClickChar(){
 					});
 
 					updateDataShow();
-					
-					hotjs.domUI.toggle( $('div#pageopt')[0] );
 					return true;
 				},
 				'cancel' : function() {
-                    $('div#pagechar').show();
+					pushPage('pagechar');
 					return true;
 				},
 				x:null
@@ -881,11 +912,6 @@ function onClickResetData(){
 	
 }
 
-function onClickAbout(){
-	$('div#pageaboutinfo').html( hotjs.i18n.get('about_text') );
-	togglePage('div#pageabout');
-}
-
 function genBriefInfo( char_id ) {
 	var peerN = 'peer' + char_id;
 	var npc = NPC_config[ peerN ];
@@ -901,7 +927,7 @@ function onClickPeerHead(){
 			hotjs.i18n.get( 'peer' + char_id ), genBriefInfo( char_id ),
 			{
 				'selectpeer' : function() {
-					togglePage('div#pagechar');
+					pushPage('pagechar');
 					return true;
 				}
 			});
@@ -926,7 +952,7 @@ function onClickBuyItem(){
 				"<img src='" + __DIR__('img/shrug.png') + "'><p>" 
 				+ msg + '<br/><br/></p>', {'ok':function(){return true;}, x:null} );
 		
-	    $('div#pagebuy').hide();
+		popPage();
 	} else {
 		if( window.plugins && 
 				window.plugins.InAppPurchaseManager &&
@@ -942,15 +968,15 @@ function onClickBuyItem(){
 }
 
 function onClickBackButton(){
-	dialog = hotjs.domUI.popupDialog('',hotjs.i18n.get('confirmquit'),{
-        'ok':function(){
-           navigator.app.exitApp();
-        },
-        'cancel':function(){
-           return true;
-        }, 
-        x: null
-        });
+	if(dialog != null) {
+		dialog.dismiss();
+		dialog = null;
+		return;
+	}
+	
+	if(popPage()) return;
+	
+	pushPage('pagemenu');
 }
 
 function init_events() {
@@ -973,30 +999,43 @@ function init_events() {
 	$('.icon-undo').on(touch_event, onClickUndo);
 	$('.icon-tip').on(touch_event, onTouchTip);
 	
-    $('.pagemenu, .menu, .pagemenu_x').on('click' , function(){
-        togglePage('div#pagemenu');
+    $('.pagemenu_x, .pageopt_x, .pagebuy_x, .pagechar_x, div#pageabout').on('click' , function(e){
+    	e.preventDefault();
+        popPage();
     });
 
-    $('.pageopt, .pageopt_x').on('click', function(){
-		togglePage('div#pageopt');
+    $('button.menuitem, td.btn-char').on('click' , function(e){
+    	e.preventDefault();
+        popPage();
+    });
+
+    $('.pagemenu').on('click' , function(e){
+    	e.preventDefault();
+    	pushPage('pagemenu');
+    });
+
+    $('.pageopt').on('click', function(e){
+    	e.preventDefault();
+		pushPage('pageopt');
 	});
 
-	$('.pagebuy, .pagebuy_x').on('click', function(){
-		togglePage('div#pagebuy');
+	$('.pagebuy').on('click', function(e){
+    	e.preventDefault();
+		pushPage('pagebuy');
 	});
 
-    $('.pagechar, .pagechar_x, .btn-char').on('click', function(){
-        togglePage('div#pagechar');
+    $('.pagechar').on('click', function(e){
+    	e.preventDefault();
+        pushPage('pagechar');
     });
 
     $('button.btn-buy').on('click', onClickBuyItem);
 
-    $('.pageabout').on('click', onClickAbout);
+    $('.pageabout').on('click', function(e){
+    	$('div#pageaboutinfo').html( hotjs.i18n.get('about_text') );
+    	pushPage('pageabout');
+    });
     
-	$('div#pageabout').on('click', function(){
-		togglePage('div#pageabout');
-	});
-
     $('button#btn_gamerule').on(touch_event, function(){
 		if( dialog ) { dialog.dismiss(); dialog=null; }
 		dialog = hotjs.domUI.popupDialog( 
@@ -1028,7 +1067,7 @@ function init_events() {
 		app_data.opt.size = $(this).attr('v');
 		save_data();
 		
-		hotjs.domUI.toggle( $('div#pageopt')[0] );
+		popPage();
 		
 		board.setRow( app_data.opt.size );
 		board.resetGame();
@@ -1057,7 +1096,7 @@ function init_events() {
 
 	$('img#icon-reset').on('click', onClickResetData);
 	
-	$('#btn_quit').on('click', function(){
+	$('button#btn_quit').on('click', function(){
 		hotjs.Audio.stop('bg');
 		navigator.app.exitApp();
 	});
@@ -1075,24 +1114,9 @@ function init_events() {
 
 function game_resize() {
 	var w = window.innerWidth, h = window.innerHeight;
-	var mh = $("div#bottom-menu").height();
-	h -= mh;
 	$('div.full').css({width:w+'px', height:h+'px'});
 	
-	var small_screen = (w <= 640);
-    var short_screen = ((w <= 640) && (h <= w * 1.5));
-    
-    var space_top = short_screen ? 0 : (small_screen ? 50: 66);
-
-    if( isMobileDevice() && (! short_screen) ) {
-    	$('div.userinfo').css({top: space_top +5});
-    	$('.adspace').css({height: space_top});
-    } else {
-    	$('div.userinfo').css({top:5});
-    	$('.adspace').css({height:5});
-    }
-    
-    if( isIOSDevice() ) {
+    if( ! isAndroidDevice() ) {
     	$('button#btn_quit').hide();
     }
 
@@ -1107,7 +1131,7 @@ function game_resize() {
 			'right':'',
 			'left':'0px',
 			'top':'',
-			'bottom': (mh+0) + 'px'
+			'bottom': '0px'
 		});
         $('div#controlright').css({ // right
             'display':'inline-block',
@@ -1116,7 +1140,7 @@ function game_resize() {
             'left':'',
             'right':'0px',
             'top':'',
-            'bottom': (mh+0) + 'px'
+			'bottom': '0px'
         });
 		
 		var m = Math.min(w, h) - 2;
@@ -1129,7 +1153,7 @@ function game_resize() {
 			'left':'0px',
 			'right':'',
 			'top':'',
-			'bottom': (mh+0) + 'px'
+			'bottom': '0px'
 		});
         $('div#controlright').css({ // bottom
             'display':'inline-block',
@@ -1138,13 +1162,13 @@ function game_resize() {
             'left':'',
             'right':'0px',
             'top':'',
-            'bottom': (mh+0) + 'px'
+			'bottom': '0px'
         });
 
-		var h_info = space_top + 5 + $('div#user1').height() + 5;
+		var h_info = 2 + $('div#user1').height();
 		var h_ctrl = $('div#controlleft').height();
 		var h_in = h - h_info - h_ctrl;
-		var m = Math.min(w, h_in) - (small_screen ? 10 : 30);
+		var m = Math.min(w, h_in);
 		board.setArea( (w-m)/2, h_info + (h_in - m)/2, m, m );
 	}
 }
@@ -1157,7 +1181,6 @@ function game_main() {
 	init_events();
 	
 	var w = window.innerWidth, h = window.innerHeight;
-	h -= $("div#bottom-menu").height();
 	
 	var v = document.getElementById('gameView');
 	v.style.width = w;
@@ -1169,7 +1192,7 @@ function game_main() {
 		.setBgImage( true, resources.get(__DIR__('img/woodfloor.jpg')) )
 		.setMaxFps( 10 )
 		.showFPS(false);
-
+	
 	ai_agent = new AIAgent().init();
 	
 	function playMoveSound( player ){
@@ -1210,10 +1233,9 @@ function game_main() {
 	var tUsed = tLoadingDone - tLoadingStart;
 	var tWait = ( tUsed < splash_time ) ? (splash_time - tUsed) : 10; 
 	window.setTimeout( function() {
-		game_resize();
+		showPage('pagemain');
 		
-		$('div#splash').hide();
-		$('div#pagemain').show();
+		game_resize();
 		
         hotjs.require( autorun_url );
         
@@ -1283,14 +1305,29 @@ var res =
   ];
 
 function loadApp() {
-    // we only display ad if screen large enough
-    var w = screen.width, h = screen.height;
-    if((w <= 640) && (h <= w * 1.5)) {
-        // iphone, screen not long enough
-        //$('p.game-explanation').hide();
-    } else {
-        hotjs.Ad.init( ad_options );
-    }
+	if ( window.plugins && window.plugins.EasyAdMob ) {
+		var ad = window.plugins.EasyAdMob;
+		ad.setOptions({
+			publisherId: (isAndroidDevice() ? admob_android : admob_ios),
+		    bannerAtTop : true,
+		    overlap: false,
+		    offsetTopBar: false,
+		    isTesting: false,
+		    autoShow: false
+		});
+		window.showBanner = ad.showBanner;
+		window.removeBanner = ad.removeBanner;
+		window.requestInterstitial = ad.requestInterstitial;
+		window.showInterstitial = ad.showInterstitial;
+		
+		showBanner(true);
+	} else {
+		// avoid error when debugging in PC broswer
+		window.showBanner = function(){};
+        window.removeBanner = function(){};
+		window.requestInterstitial = function(){};
+		window.showInterstitial = function(){};
+	}
 
     if( window.plugins ) {
         if( isIOSDevice() ) {
@@ -1315,9 +1352,23 @@ function loadApp() {
     resources.load( res, { ready: game_main } );
 }
 
+function adjustResolution() {
+	var scw = screen.width * window.devicePixelRatio;
+	
+	if((window.devicePixelRatio >=2) && (scw <= 640)) {
+		$('meta').each(function(){
+			if($(this).attr('name') == 'viewport') {
+				$(this).attr('content','user-scalable=no, initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, width=device-width');
+			}
+		})
+	}
+}
+
 function main()
 {
     if(isMobileDevice()) {
+    	adjustResolution();
+    	
         document.addEventListener('deviceready', loadApp, false);
     } else {
         loadApp();

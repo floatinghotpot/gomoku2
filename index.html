@@ -40,7 +40,7 @@
 <table class='m'>
 <tr>
 <td><img id='my-img' class='icon32 clickable' src='img/user2.png'></td>
-<td><img class='icon32' src='img/gold.png'><br/><span id='my-gold'>1800</span></td>
+<td><img class='icon32' src='img/gold.png'><span id='my-gold'>1800</span></td>
 <td><img id='my-gocolor' class='icon32' src='img/blackgo.png'/></td>
 </tr>
 </table></div>
@@ -48,7 +48,7 @@
 <table class='m'>
 <tr>
 <td><img id='peer-gocolor' class='icon32' src='"img/whitego.png'/></td>
-<td><img class='icon32' src='img/gold.png'><br/><span id='peer-gold'>1500</span></td>
+<td><img class='icon32' src='img/gold.png'><span id='peer-gold'>1500</span></td>
 <td><img id='peer-img' class='icon32 clickable' src='img/user1.png'></td>
 </tr>
 </table>
@@ -68,7 +68,7 @@
 </div>
 
 <!-- page about -->
-<div id='pageabout' class='full popup dialog round clickable' popup='true' style='display:none;'>
+<div id='pageabout' class='page clickable' style='display:none;'>
 <table class='full'><tr><td class='full m'>
 <h1 class='appname I18N' i18n='gamename'>GOMOKU</h1><br/>
 <img class='logo' src='img/icon256.png'/><br/>
@@ -79,31 +79,30 @@
 </div>
 
 <!-- page menu -->
-<div id='pagemenu' class='full popup dialog round' popup='true' style='display:none;'>
+<div id='pagemenu' class='page' style='display:none;'>
 <table class='full'>
-<tr><td colspan=2 class='m b'><h1 class='appname I18N' i18n='gamename'>GOMOKU</h1></td></tr>
 <tr>
 <td class='r'>
-<img src='img/peer1-128.png'/><br/>
+<img class='icon128' src='img/peer1-128.png'/><br/>
 <p><br/><br/></p>
-<img src='img/peer5-128.png'/>
+<img class='icon128' src='img/peer5-128.png'/>
 </td>
 <td class='l'>
 <table>
-<tr><td><button class=' I18N clickable menu button cyan icon-start' id='btn_new' i18n='new'>New Game</button></td></td>
-<tr><td><button class=' I18N clickable menu button cyan pagechar' id='btn_char' i18n='selectpeer'>Select Player</button></td><tr>
-<tr><td><button class=' I18N clickable menu button cyan pageopt' id='btn_options' i18n='options'>Settings</button></td><tr>
-<tr><td><button class=' I18N clickable menu button cyan pageabout' id='btn_about' i18n='about'>About</button></td><tr>
-<tr><td><button class=' I18N clickable menu button cyan ' id='btn_quit' i18n='quit'>Quit</button></td><tr>
-<tr><td><button class=' I18N clickable menu button cyan' id='btn_backgame' i18n='backgame'>Resume Game</button></td><tr>
+<tr><td><h1 class='appname I18N' i18n='gamename'>GOMOKU</h1></td></tr>
+<tr><td><button class=' I18N clickable menuitem button cyan icon-start' id='btn_new' i18n='new'>New Game</button></td></td>
+<tr><td><button class=' I18N clickable menuitem button cyan pagechar' id='btn_char' i18n='selectpeer'>Select Player</button></td><tr>
+<tr><td><button class=' I18N clickable menuitem button cyan pageopt' id='btn_options' i18n='options'>Settings</button></td><tr>
+<tr><td><button class=' I18N clickable menuitem button cyan pageabout' id='btn_about' i18n='about'>About</button></td><tr>
+<tr><td><button class=' I18N clickable menuitem button cyan ' id='btn_quit' i18n='quit'>Quit</button></td><tr>
+<tr><td><button class=' I18N clickable menuitem button cyan' id='btn_backgame' i18n='backgame'>Resume Game</button></td><tr>
 </table>
 </td></tr></table>
 </div>
 
 <!-- page select peer -->
-<div id='pagechar' class='full popup dialog round' popup='true' style='display:none;'>
+<div id='pagechar' class='page' style='display:none;'>
 <table class='m full' cellspacing=5>
-<tr><td class='adspace'>&nbsp;</td></tr>
 <tr><td colspan=2 style='m'><span class='I18N' i18n='selectpeer'>Select Player</span></td></tr>
 <tr>
 <td class='btn-char clickable button rosy' v='1'><img class='icon64' src='img/peer1-64.png'/><br/><br/><span class='I18N' i18n='peer1'>Kid</span></td>
@@ -121,13 +120,12 @@
 </div>
 
 <!-- page settings -->
-<div id='pageopt' class='full popup dialog round' popup='true' style='display:none;'>
+<div id='pageopt' class='page' style='display:none;'>
 <table class='m full'>
-<tr><td class='adspace'>&nbsp;</td></tr>
 <tr><td colspan=3 style='m'><span class='I18N' i18n='boardsize'>Board Size</span></td></tr>
 <tr>
 <td><button class='btn-size clickable set button rosy' v='9'>9 x 9</button></td>
-<td><button class='btn-size clickable set button rosy' v='11'>11 x 11</button></td>
+<td><button class='btn-size clickable set button gold' v='11'>11 x 11</button></td>
 <td><button class='btn-size clickable set button yellow' v='13'>13 x 13</button></td></tr>
 <tr><td><button class='btn-size clickable set button green' v='15'>15 x 15</button></td>
 <td><button class='btn-size clickable set button cyan' v='17'>17 x 17</button></td>
@@ -148,11 +146,9 @@
 </div>
 
 <!-- page buy -->
-<div id='pagebuy' class='full popup dialog round' popup='true' style='display:none;'>
+<div id='pagebuy' class='page' style='display:none;'>
 <table class='full'>
-<tr><td class='adspace'>&nbsp;</td></tr>
-<tr>
-<td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span><br/><br/></td></tr>
+<tr><td colspan=3 class='m'><span class='I18N' i18n='buyhappy'>Buy Happy</span><br/><br/></td></tr>
 
 <tr><td class='m'><img class='icon32' src='img/gold.png'/><br/><span class='I18N' i18n='pkg0'>100 golds</span><br/>
 <button id='pkg0' class=' clickable button cyan btn-buy I18N' i18n='pkg0price'>Get It</button></td>

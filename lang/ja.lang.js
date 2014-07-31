@@ -5,6 +5,7 @@ hotjs.i18n.put('ja', {
 	'options': 'オプション',
 	'more':	'もっと',
 	'welcome':'ようこそ',
+	'confirmquit':'本当に終了しますか？',
 	'backgame':'ゲームに戻る',
 	'gift_picked' : '100ゴールドのギフトはもう受け取りました！',
 	'info':'インフォメーション',
